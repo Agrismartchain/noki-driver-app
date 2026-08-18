@@ -21,14 +21,28 @@ export 'auth_state.dart';
 /// abstractions (both overridable in tests), never on Dio or
 /// flutter_secure_storage directly.
 class AuthController extends Notifier<AuthState> implements AuthSessionGateway {
-  late final DriverApiClient _apiClient;
   late final SecureSessionStorage _storage;
+
+  /// Resolved lazily (`ref.read`, not captured via `ref.watch` in [build]).
+  ///
+  /// `driverApiClientProvider` → `driverApiDioProvider` →
+  /// `authSessionGatewayProvider` → `ref.watch(authControllerProvider.notifier)`
+  /// - i.e. constructing the API client requires reading this very provider
+  /// (the Dio auth interceptor needs an [AuthSessionGateway], which this
+  /// class implements). Resolving it eagerly, synchronously, inside this
+  /// Notifier's own [build] reads `authControllerProvider` while it is still
+  /// being built - a genuine, literal `CircularDependencyError`, reproduced
+  /// on real Android and locally (see DRIVER-APP-01R3). Every real use is
+  /// inside an `async` method, called after [build] has already returned, so
+  /// resolving lazily here (each read happens strictly after this provider
+  /// has finished building at least once) is sufficient to break the cycle
+  /// with no change in behavior.
+  DriverApiClient get _apiClient => ref.read(driverApiClientProvider);
 
   String? _cachedAccessToken;
 
   @override
   AuthState build() {
-    _apiClient = ref.watch(driverApiClientProvider);
     _storage = ref.watch(secureSessionStorageProvider);
     // Forwards status changes to go_router's refresh signal via `listenSelf`
     // (a Notifier observing its own state) plus a `ref.read` of an unrelated,
@@ -40,7 +54,17 @@ class AuthController extends Notifier<AuthState> implements AuthSessionGateway {
     // `CircularDependencyError`) - see DRIVER-APP-01R2, RD-1.
     final routerRefreshListenable = ref.read(routerRefreshListenableProvider);
     listenSelf((previous, next) {
-      if (previous?.status != next.status) {
+      // `listenSelf`'s callback also fires once immediately after this very
+      // build completes, with `previous == null` - not a real transition,
+      // just this Notifier's own construction echoing back. Forwarding that
+      // as a "status changed" notification fires `refresh()` synchronously
+      // while this provider's own first read (`RootGate`, nested inside the
+      // same initial widget-mount pass) is still on the call stack, which
+      // go_router's `Router` widget reacts to with `setState()` mid-build -
+      // a distinct real crash from DRIVER-APP-01R3's CircularDependencyError,
+      // surfaced only once that one was fixed. `previous == null` is
+      // filtered out; every actual transition still forwards normally.
+      if (previous != null && previous.status != next.status) {
         routerRefreshListenable.status = next.status;
         routerRefreshListenable.refresh();
       }
