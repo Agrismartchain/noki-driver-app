@@ -31,7 +31,7 @@ class _HomeShellState extends ConsumerState<HomeShell> {
     final scope = driverContext == null ? null : activeScopeFrom(driverContext);
 
     final tabs = [
-      const HomeScreen(),
+      HomeScreen(onOpenWork: () => setState(() => _index = 1)),
       if (scope != null) WorkFeedScreen(scope: scope) else const SizedBox.shrink(),
       const SettingsScreen(),
     ];

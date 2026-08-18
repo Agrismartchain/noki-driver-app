@@ -76,6 +76,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeCapabilitiesLabel => 'Services';
 
   @override
+  String get homeNoServices => 'No services yet';
+
+  @override
   String get homeWorkFeedSummaryTitle => 'Work feed';
 
   @override
@@ -164,6 +167,18 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String availabilityPendingOffers(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count pending ride offers',
+      one: '1 pending ride offer',
+      zero: 'No pending ride offers',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get workFeedTitle => 'Work feed';
 
   @override
@@ -178,6 +193,284 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get workFeedTypeRide => 'Ride';
+
+  @override
+  String get workFeedFilterAll => 'All';
+
+  @override
+  String get workFeedFilterDelivery => 'Delivery';
+
+  @override
+  String get workFeedFilterRides => 'Rides';
+
+  @override
+  String get workFeedFilterActive => 'Active';
+
+  @override
+  String get workFeedFilterPending => 'Pending';
+
+  @override
+  String deliveryCodBadge(String amount) {
+    return 'COD: $amount';
+  }
+
+  @override
+  String get missionDetailTitle => 'Mission';
+
+  @override
+  String get missionSectionPickup => 'Pickup';
+
+  @override
+  String get missionSectionDropoff => 'Drop-off';
+
+  @override
+  String get missionSectionFinancial => 'Financial';
+
+  @override
+  String get missionSectionMission => 'Mission';
+
+  @override
+  String get missionSectionEvidence => 'Handoff verification';
+
+  @override
+  String get missionSectionIncidents => 'Incidents';
+
+  @override
+  String get missionSectionNotAvailable => 'Not available for this mission';
+
+  @override
+  String get missionCallAction => 'Call';
+
+  @override
+  String get missionNavigateAction => 'Navigate';
+
+  @override
+  String get missionFinancialCodLabel => 'Cash on delivery';
+
+  @override
+  String get missionFinancialNoCurrency =>
+      'Currency code not available for this amount';
+
+  @override
+  String missionLineItemsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count items',
+      one: '1 item',
+      zero: 'No items',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get missionTimestampAssigned => 'Assigned';
+
+  @override
+  String get missionTimestampOutForDelivery => 'Out for delivery';
+
+  @override
+  String get missionTimestampDelivered => 'Delivered';
+
+  @override
+  String get missionTimestampFailed => 'Failed';
+
+  @override
+  String get missionStatusReadyForDispatch => 'Ready for dispatch';
+
+  @override
+  String get missionStatusAssigned => 'Assigned';
+
+  @override
+  String get missionStatusOutForDelivery => 'Out for delivery';
+
+  @override
+  String get missionStatusDelivered => 'Delivered';
+
+  @override
+  String get missionStatusFailed => 'Failed';
+
+  @override
+  String get missionStatusCancelled => 'Cancelled';
+
+  @override
+  String get missionOtpRequestCta => 'Request handoff code';
+
+  @override
+  String get missionOtpRequestAgainCta => 'Request a new code';
+
+  @override
+  String missionOtpChallengeStatus(String status) {
+    return 'Code status: $status';
+  }
+
+  @override
+  String get missionOtpCodeLabel => '6-digit code';
+
+  @override
+  String get missionOtpVerifyCta => 'Verify code';
+
+  @override
+  String get missionOtpVerifiedLabel => 'Handoff code verified';
+
+  @override
+  String get otpStatusPending => 'Pending';
+
+  @override
+  String get otpStatusVerified => 'Verified';
+
+  @override
+  String get otpStatusExpired => 'Expired';
+
+  @override
+  String get otpStatusLocked => 'Locked';
+
+  @override
+  String get otpStatusRevoked => 'Revoked';
+
+  @override
+  String get missionCompleteCta => 'Complete mission';
+
+  @override
+  String get missionCompleteRequiresOtp =>
+      'Verify the handoff code before completing';
+
+  @override
+  String get missionCompleteRequiresOutForDelivery =>
+      'This mission can be completed once it is out for delivery';
+
+  @override
+  String get missionAlreadyCompleted =>
+      'This mission has already been completed';
+
+  @override
+  String get incidentTypeLabel => 'Incident type';
+
+  @override
+  String get incidentTypeDelay => 'Delay';
+
+  @override
+  String get incidentTypeVehicleIssue => 'Vehicle issue';
+
+  @override
+  String get incidentTypeSafety => 'Safety';
+
+  @override
+  String get incidentTypeOther => 'Other';
+
+  @override
+  String get incidentStatusOpen => 'Open';
+
+  @override
+  String get incidentStatusResolved => 'Resolved';
+
+  @override
+  String get incidentCommentLabel => 'Comment (optional)';
+
+  @override
+  String get incidentSubmitCta => 'Report incident';
+
+  @override
+  String get incidentsEmpty => 'No incidents reported';
+
+  @override
+  String get qrEntryTitle => 'Scan QR';
+
+  @override
+  String get qrEntryHint =>
+      'Enter the handoff QR token manually. Camera scanning is coming in a later update.';
+
+  @override
+  String get qrEntryTokenLabel => 'QR token';
+
+  @override
+  String get qrEntrySubmitCta => 'Submit';
+
+  @override
+  String get serviceTypeTaxi => 'Taxi';
+
+  @override
+  String get serviceTypeTaxiMoto => 'Taxi Moto';
+
+  @override
+  String get mobilityOfferLabel => 'Offer';
+
+  @override
+  String get mobilityRideLabel => 'Active ride';
+
+  @override
+  String get mobilityOfferDetailTitle => 'Ride offer';
+
+  @override
+  String get mobilityOfferNoLongerAvailable =>
+      'This offer is no longer available';
+
+  @override
+  String get mobilityEstimatedFareLabel => 'Estimated fare';
+
+  @override
+  String get mobilityAcceptOfferCta => 'Accept offer';
+
+  @override
+  String get mobilityRideDetailTitle => 'Ride';
+
+  @override
+  String get mobilityFareLabel => 'Fare';
+
+  @override
+  String get mobilityTimelineTitle => 'Timeline';
+
+  @override
+  String get mobilityRideNoActionsAvailable =>
+      'No actions available for this ride right now';
+
+  @override
+  String get rideStatusDriverAssigned => 'Assigned';
+
+  @override
+  String get rideStatusDriverEnRoute => 'Driver en route';
+
+  @override
+  String get rideStatusDriverArrived => 'Driver arrived';
+
+  @override
+  String get rideStatusInProgress => 'In progress';
+
+  @override
+  String get rideStatusCompleted => 'Completed';
+
+  @override
+  String get rideStatusCancelled => 'Cancelled';
+
+  @override
+  String get rideActionMarkEnRoute => 'Mark en route';
+
+  @override
+  String get rideActionMarkArrived => 'Mark arrived';
+
+  @override
+  String get rideActionStart => 'Start ride';
+
+  @override
+  String get rideActionComplete => 'Complete ride';
+
+  @override
+  String get rideActionCancel => 'Cancel ride';
+
+  @override
+  String get mobilityIncidentTypeRide => 'Ride';
+
+  @override
+  String get mobilityIncidentTypeDriver => 'Driver';
+
+  @override
+  String get mobilityIncidentTypeCustomerComplaint => 'Customer complaint';
+
+  @override
+  String get mobilityIncidentStatusInProgress => 'In progress';
+
+  @override
+  String get mobilityIncidentStatusDismissed => 'Dismissed';
 
   @override
   String get settingsTitle => 'Profile';

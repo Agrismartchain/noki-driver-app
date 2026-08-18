@@ -226,6 +226,12 @@ abstract class AppLocalizations {
   /// **'Services'**
   String get homeCapabilitiesLabel;
 
+  /// No description provided for @homeNoServices.
+  ///
+  /// In en, this message translates to:
+  /// **'No services yet'**
+  String get homeNoServices;
+
   /// No description provided for @homeWorkFeedSummaryTitle.
   ///
   /// In en, this message translates to:
@@ -346,6 +352,12 @@ abstract class AppLocalizations {
   /// **'{count, plural, =0{No active rides} =1{1 active ride} other{{count} active rides}}'**
   String availabilityActiveRides(int count);
 
+  /// No description provided for @availabilityPendingOffers.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No pending ride offers} =1{1 pending ride offer} other{{count} pending ride offers}}'**
+  String availabilityPendingOffers(int count);
+
   /// No description provided for @workFeedTitle.
   ///
   /// In en, this message translates to:
@@ -375,6 +387,522 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Ride'**
   String get workFeedTypeRide;
+
+  /// No description provided for @workFeedFilterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get workFeedFilterAll;
+
+  /// No description provided for @workFeedFilterDelivery.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery'**
+  String get workFeedFilterDelivery;
+
+  /// No description provided for @workFeedFilterRides.
+  ///
+  /// In en, this message translates to:
+  /// **'Rides'**
+  String get workFeedFilterRides;
+
+  /// No description provided for @workFeedFilterActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get workFeedFilterActive;
+
+  /// No description provided for @workFeedFilterPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get workFeedFilterPending;
+
+  /// No description provided for @deliveryCodBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'COD: {amount}'**
+  String deliveryCodBadge(String amount);
+
+  /// No description provided for @missionDetailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Mission'**
+  String get missionDetailTitle;
+
+  /// No description provided for @missionSectionPickup.
+  ///
+  /// In en, this message translates to:
+  /// **'Pickup'**
+  String get missionSectionPickup;
+
+  /// No description provided for @missionSectionDropoff.
+  ///
+  /// In en, this message translates to:
+  /// **'Drop-off'**
+  String get missionSectionDropoff;
+
+  /// No description provided for @missionSectionFinancial.
+  ///
+  /// In en, this message translates to:
+  /// **'Financial'**
+  String get missionSectionFinancial;
+
+  /// No description provided for @missionSectionMission.
+  ///
+  /// In en, this message translates to:
+  /// **'Mission'**
+  String get missionSectionMission;
+
+  /// No description provided for @missionSectionEvidence.
+  ///
+  /// In en, this message translates to:
+  /// **'Handoff verification'**
+  String get missionSectionEvidence;
+
+  /// No description provided for @missionSectionIncidents.
+  ///
+  /// In en, this message translates to:
+  /// **'Incidents'**
+  String get missionSectionIncidents;
+
+  /// No description provided for @missionSectionNotAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Not available for this mission'**
+  String get missionSectionNotAvailable;
+
+  /// No description provided for @missionCallAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Call'**
+  String get missionCallAction;
+
+  /// No description provided for @missionNavigateAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Navigate'**
+  String get missionNavigateAction;
+
+  /// No description provided for @missionFinancialCodLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash on delivery'**
+  String get missionFinancialCodLabel;
+
+  /// No description provided for @missionFinancialNoCurrency.
+  ///
+  /// In en, this message translates to:
+  /// **'Currency code not available for this amount'**
+  String get missionFinancialNoCurrency;
+
+  /// No description provided for @missionLineItemsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No items} =1{1 item} other{{count} items}}'**
+  String missionLineItemsCount(int count);
+
+  /// No description provided for @missionTimestampAssigned.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned'**
+  String get missionTimestampAssigned;
+
+  /// No description provided for @missionTimestampOutForDelivery.
+  ///
+  /// In en, this message translates to:
+  /// **'Out for delivery'**
+  String get missionTimestampOutForDelivery;
+
+  /// No description provided for @missionTimestampDelivered.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivered'**
+  String get missionTimestampDelivered;
+
+  /// No description provided for @missionTimestampFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed'**
+  String get missionTimestampFailed;
+
+  /// No description provided for @missionStatusReadyForDispatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Ready for dispatch'**
+  String get missionStatusReadyForDispatch;
+
+  /// No description provided for @missionStatusAssigned.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned'**
+  String get missionStatusAssigned;
+
+  /// No description provided for @missionStatusOutForDelivery.
+  ///
+  /// In en, this message translates to:
+  /// **'Out for delivery'**
+  String get missionStatusOutForDelivery;
+
+  /// No description provided for @missionStatusDelivered.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivered'**
+  String get missionStatusDelivered;
+
+  /// No description provided for @missionStatusFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed'**
+  String get missionStatusFailed;
+
+  /// No description provided for @missionStatusCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get missionStatusCancelled;
+
+  /// No description provided for @missionOtpRequestCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Request handoff code'**
+  String get missionOtpRequestCta;
+
+  /// No description provided for @missionOtpRequestAgainCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Request a new code'**
+  String get missionOtpRequestAgainCta;
+
+  /// No description provided for @missionOtpChallengeStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Code status: {status}'**
+  String missionOtpChallengeStatus(String status);
+
+  /// No description provided for @missionOtpCodeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'6-digit code'**
+  String get missionOtpCodeLabel;
+
+  /// No description provided for @missionOtpVerifyCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify code'**
+  String get missionOtpVerifyCta;
+
+  /// No description provided for @missionOtpVerifiedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Handoff code verified'**
+  String get missionOtpVerifiedLabel;
+
+  /// No description provided for @otpStatusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get otpStatusPending;
+
+  /// No description provided for @otpStatusVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'Verified'**
+  String get otpStatusVerified;
+
+  /// No description provided for @otpStatusExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired'**
+  String get otpStatusExpired;
+
+  /// No description provided for @otpStatusLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Locked'**
+  String get otpStatusLocked;
+
+  /// No description provided for @otpStatusRevoked.
+  ///
+  /// In en, this message translates to:
+  /// **'Revoked'**
+  String get otpStatusRevoked;
+
+  /// No description provided for @missionCompleteCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete mission'**
+  String get missionCompleteCta;
+
+  /// No description provided for @missionCompleteRequiresOtp.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify the handoff code before completing'**
+  String get missionCompleteRequiresOtp;
+
+  /// No description provided for @missionCompleteRequiresOutForDelivery.
+  ///
+  /// In en, this message translates to:
+  /// **'This mission can be completed once it is out for delivery'**
+  String get missionCompleteRequiresOutForDelivery;
+
+  /// No description provided for @missionAlreadyCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'This mission has already been completed'**
+  String get missionAlreadyCompleted;
+
+  /// No description provided for @incidentTypeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Incident type'**
+  String get incidentTypeLabel;
+
+  /// No description provided for @incidentTypeDelay.
+  ///
+  /// In en, this message translates to:
+  /// **'Delay'**
+  String get incidentTypeDelay;
+
+  /// No description provided for @incidentTypeVehicleIssue.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle issue'**
+  String get incidentTypeVehicleIssue;
+
+  /// No description provided for @incidentTypeSafety.
+  ///
+  /// In en, this message translates to:
+  /// **'Safety'**
+  String get incidentTypeSafety;
+
+  /// No description provided for @incidentTypeOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get incidentTypeOther;
+
+  /// No description provided for @incidentStatusOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get incidentStatusOpen;
+
+  /// No description provided for @incidentStatusResolved.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolved'**
+  String get incidentStatusResolved;
+
+  /// No description provided for @incidentCommentLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Comment (optional)'**
+  String get incidentCommentLabel;
+
+  /// No description provided for @incidentSubmitCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Report incident'**
+  String get incidentSubmitCta;
+
+  /// No description provided for @incidentsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No incidents reported'**
+  String get incidentsEmpty;
+
+  /// No description provided for @qrEntryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan QR'**
+  String get qrEntryTitle;
+
+  /// No description provided for @qrEntryHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the handoff QR token manually. Camera scanning is coming in a later update.'**
+  String get qrEntryHint;
+
+  /// No description provided for @qrEntryTokenLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'QR token'**
+  String get qrEntryTokenLabel;
+
+  /// No description provided for @qrEntrySubmitCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit'**
+  String get qrEntrySubmitCta;
+
+  /// No description provided for @serviceTypeTaxi.
+  ///
+  /// In en, this message translates to:
+  /// **'Taxi'**
+  String get serviceTypeTaxi;
+
+  /// No description provided for @serviceTypeTaxiMoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Taxi Moto'**
+  String get serviceTypeTaxiMoto;
+
+  /// No description provided for @mobilityOfferLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Offer'**
+  String get mobilityOfferLabel;
+
+  /// No description provided for @mobilityRideLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Active ride'**
+  String get mobilityRideLabel;
+
+  /// No description provided for @mobilityOfferDetailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ride offer'**
+  String get mobilityOfferDetailTitle;
+
+  /// No description provided for @mobilityOfferNoLongerAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'This offer is no longer available'**
+  String get mobilityOfferNoLongerAvailable;
+
+  /// No description provided for @mobilityEstimatedFareLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated fare'**
+  String get mobilityEstimatedFareLabel;
+
+  /// No description provided for @mobilityAcceptOfferCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept offer'**
+  String get mobilityAcceptOfferCta;
+
+  /// No description provided for @mobilityRideDetailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ride'**
+  String get mobilityRideDetailTitle;
+
+  /// No description provided for @mobilityFareLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Fare'**
+  String get mobilityFareLabel;
+
+  /// No description provided for @mobilityTimelineTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Timeline'**
+  String get mobilityTimelineTitle;
+
+  /// No description provided for @mobilityRideNoActionsAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No actions available for this ride right now'**
+  String get mobilityRideNoActionsAvailable;
+
+  /// No description provided for @rideStatusDriverAssigned.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned'**
+  String get rideStatusDriverAssigned;
+
+  /// No description provided for @rideStatusDriverEnRoute.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver en route'**
+  String get rideStatusDriverEnRoute;
+
+  /// No description provided for @rideStatusDriverArrived.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver arrived'**
+  String get rideStatusDriverArrived;
+
+  /// No description provided for @rideStatusInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'In progress'**
+  String get rideStatusInProgress;
+
+  /// No description provided for @rideStatusCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get rideStatusCompleted;
+
+  /// No description provided for @rideStatusCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get rideStatusCancelled;
+
+  /// No description provided for @rideActionMarkEnRoute.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark en route'**
+  String get rideActionMarkEnRoute;
+
+  /// No description provided for @rideActionMarkArrived.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark arrived'**
+  String get rideActionMarkArrived;
+
+  /// No description provided for @rideActionStart.
+  ///
+  /// In en, this message translates to:
+  /// **'Start ride'**
+  String get rideActionStart;
+
+  /// No description provided for @rideActionComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete ride'**
+  String get rideActionComplete;
+
+  /// No description provided for @rideActionCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel ride'**
+  String get rideActionCancel;
+
+  /// No description provided for @mobilityIncidentTypeRide.
+  ///
+  /// In en, this message translates to:
+  /// **'Ride'**
+  String get mobilityIncidentTypeRide;
+
+  /// No description provided for @mobilityIncidentTypeDriver.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver'**
+  String get mobilityIncidentTypeDriver;
+
+  /// No description provided for @mobilityIncidentTypeCustomerComplaint.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer complaint'**
+  String get mobilityIncidentTypeCustomerComplaint;
+
+  /// No description provided for @mobilityIncidentStatusInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'In progress'**
+  String get mobilityIncidentStatusInProgress;
+
+  /// No description provided for @mobilityIncidentStatusDismissed.
+  ///
+  /// In en, this message translates to:
+  /// **'Dismissed'**
+  String get mobilityIncidentStatusDismissed;
 
   /// No description provided for @settingsTitle.
   ///

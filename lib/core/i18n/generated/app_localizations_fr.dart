@@ -76,6 +76,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get homeCapabilitiesLabel => 'Services';
 
   @override
+  String get homeNoServices => 'Aucun service pour le moment';
+
+  @override
   String get homeWorkFeedSummaryTitle => 'Fil de travail';
 
   @override
@@ -165,6 +168,18 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String availabilityPendingOffers(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count offres de course en attente',
+      one: '1 offre de course en attente',
+      zero: 'Aucune offre de course en attente',
+    );
+    return '$_temp0';
+  }
+
+  @override
   String get workFeedTitle => 'Fil de travail';
 
   @override
@@ -179,6 +194,283 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get workFeedTypeRide => 'Course';
+
+  @override
+  String get workFeedFilterAll => 'Tout';
+
+  @override
+  String get workFeedFilterDelivery => 'Livraison';
+
+  @override
+  String get workFeedFilterRides => 'Courses';
+
+  @override
+  String get workFeedFilterActive => 'En cours';
+
+  @override
+  String get workFeedFilterPending => 'En attente';
+
+  @override
+  String deliveryCodBadge(String amount) {
+    return 'Encaissement : $amount';
+  }
+
+  @override
+  String get missionDetailTitle => 'Mission';
+
+  @override
+  String get missionSectionPickup => 'Enlèvement';
+
+  @override
+  String get missionSectionDropoff => 'Livraison';
+
+  @override
+  String get missionSectionFinancial => 'Finances';
+
+  @override
+  String get missionSectionMission => 'Mission';
+
+  @override
+  String get missionSectionEvidence => 'Vérification de remise';
+
+  @override
+  String get missionSectionIncidents => 'Incidents';
+
+  @override
+  String get missionSectionNotAvailable => 'Non disponible pour cette mission';
+
+  @override
+  String get missionCallAction => 'Appeler';
+
+  @override
+  String get missionNavigateAction => 'Itinéraire';
+
+  @override
+  String get missionFinancialCodLabel => 'Paiement à la livraison';
+
+  @override
+  String get missionFinancialNoCurrency =>
+      'Devise non disponible pour ce montant';
+
+  @override
+  String missionLineItemsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count articles',
+      one: '1 article',
+      zero: 'Aucun article',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get missionTimestampAssigned => 'Assignée';
+
+  @override
+  String get missionTimestampOutForDelivery => 'En cours de livraison';
+
+  @override
+  String get missionTimestampDelivered => 'Livrée';
+
+  @override
+  String get missionTimestampFailed => 'Échouée';
+
+  @override
+  String get missionStatusReadyForDispatch => 'Prête à expédier';
+
+  @override
+  String get missionStatusAssigned => 'Assignée';
+
+  @override
+  String get missionStatusOutForDelivery => 'En cours de livraison';
+
+  @override
+  String get missionStatusDelivered => 'Livrée';
+
+  @override
+  String get missionStatusFailed => 'Échouée';
+
+  @override
+  String get missionStatusCancelled => 'Annulée';
+
+  @override
+  String get missionOtpRequestCta => 'Demander le code de remise';
+
+  @override
+  String get missionOtpRequestAgainCta => 'Demander un nouveau code';
+
+  @override
+  String missionOtpChallengeStatus(String status) {
+    return 'Statut du code : $status';
+  }
+
+  @override
+  String get missionOtpCodeLabel => 'Code à 6 chiffres';
+
+  @override
+  String get missionOtpVerifyCta => 'Vérifier le code';
+
+  @override
+  String get missionOtpVerifiedLabel => 'Code de remise vérifié';
+
+  @override
+  String get otpStatusPending => 'En attente';
+
+  @override
+  String get otpStatusVerified => 'Vérifié';
+
+  @override
+  String get otpStatusExpired => 'Expiré';
+
+  @override
+  String get otpStatusLocked => 'Bloqué';
+
+  @override
+  String get otpStatusRevoked => 'Révoqué';
+
+  @override
+  String get missionCompleteCta => 'Terminer la mission';
+
+  @override
+  String get missionCompleteRequiresOtp =>
+      'Vérifiez le code de remise avant de terminer';
+
+  @override
+  String get missionCompleteRequiresOutForDelivery =>
+      'Cette mission peut être terminée une fois en cours de livraison';
+
+  @override
+  String get missionAlreadyCompleted => 'Cette mission a déjà été terminée';
+
+  @override
+  String get incidentTypeLabel => 'Type d\'incident';
+
+  @override
+  String get incidentTypeDelay => 'Retard';
+
+  @override
+  String get incidentTypeVehicleIssue => 'Problème véhicule';
+
+  @override
+  String get incidentTypeSafety => 'Sécurité';
+
+  @override
+  String get incidentTypeOther => 'Autre';
+
+  @override
+  String get incidentStatusOpen => 'Ouvert';
+
+  @override
+  String get incidentStatusResolved => 'Résolu';
+
+  @override
+  String get incidentCommentLabel => 'Commentaire (facultatif)';
+
+  @override
+  String get incidentSubmitCta => 'Signaler un incident';
+
+  @override
+  String get incidentsEmpty => 'Aucun incident signalé';
+
+  @override
+  String get qrEntryTitle => 'Scanner le QR code';
+
+  @override
+  String get qrEntryHint =>
+      'Saisissez le jeton du QR code de remise manuellement. La lecture par caméra arrivera dans une prochaine mise à jour.';
+
+  @override
+  String get qrEntryTokenLabel => 'Jeton QR';
+
+  @override
+  String get qrEntrySubmitCta => 'Valider';
+
+  @override
+  String get serviceTypeTaxi => 'Taxi';
+
+  @override
+  String get serviceTypeTaxiMoto => 'Taxi Moto';
+
+  @override
+  String get mobilityOfferLabel => 'Offre';
+
+  @override
+  String get mobilityRideLabel => 'Course en cours';
+
+  @override
+  String get mobilityOfferDetailTitle => 'Offre de course';
+
+  @override
+  String get mobilityOfferNoLongerAvailable =>
+      'Cette offre n\'est plus disponible';
+
+  @override
+  String get mobilityEstimatedFareLabel => 'Tarif estimé';
+
+  @override
+  String get mobilityAcceptOfferCta => 'Accepter l\'offre';
+
+  @override
+  String get mobilityRideDetailTitle => 'Course';
+
+  @override
+  String get mobilityFareLabel => 'Tarif';
+
+  @override
+  String get mobilityTimelineTitle => 'Chronologie';
+
+  @override
+  String get mobilityRideNoActionsAvailable =>
+      'Aucune action disponible pour cette course pour le moment';
+
+  @override
+  String get rideStatusDriverAssigned => 'Assignée';
+
+  @override
+  String get rideStatusDriverEnRoute => 'Chauffeur en route';
+
+  @override
+  String get rideStatusDriverArrived => 'Chauffeur arrivé';
+
+  @override
+  String get rideStatusInProgress => 'En cours';
+
+  @override
+  String get rideStatusCompleted => 'Terminée';
+
+  @override
+  String get rideStatusCancelled => 'Annulée';
+
+  @override
+  String get rideActionMarkEnRoute => 'Se mettre en route';
+
+  @override
+  String get rideActionMarkArrived => 'Signaler l\'arrivée';
+
+  @override
+  String get rideActionStart => 'Démarrer la course';
+
+  @override
+  String get rideActionComplete => 'Terminer la course';
+
+  @override
+  String get rideActionCancel => 'Annuler la course';
+
+  @override
+  String get mobilityIncidentTypeRide => 'Course';
+
+  @override
+  String get mobilityIncidentTypeDriver => 'Chauffeur';
+
+  @override
+  String get mobilityIncidentTypeCustomerComplaint => 'Réclamation client';
+
+  @override
+  String get mobilityIncidentStatusInProgress => 'En cours';
+
+  @override
+  String get mobilityIncidentStatusDismissed => 'Rejeté';
 
   @override
   String get settingsTitle => 'Profil';

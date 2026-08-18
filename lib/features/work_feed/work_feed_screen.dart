@@ -6,103 +6,139 @@ import '../../core/errors/app_failure.dart';
 import '../../core/errors/error_view.dart';
 import '../../core/i18n/generated/app_localizations.dart';
 import '../../core/theme/app_spacing.dart';
-import '../../core/theme/app_theme.dart';
+import '../delivery/delivery_mission_detail_screen.dart';
+import '../delivery/delivery_work_card.dart';
 import '../driver_context/driver_context_repository.dart';
+import '../mobility/mobility_offer_detail_screen.dart';
+import '../mobility/mobility_ride_screen.dart';
+import '../mobility/mobility_work_card.dart';
 import 'work_feed_repository.dart';
 
-/// Foundation-only work feed: proves DELIVERY and RIDE work items can be
-/// fetched and rendered from the same `/v1/driver/work-feed` boundary
-/// without merging them into a UniversalOrder/UniversalMission - each item
-/// still carries its own `underlyingResource.resourceType`. The full
-/// mission workflow (accept/start/complete/POD/OTP/QR) is DRIVER-APP-03
-/// scope, not this screen.
-class WorkFeedScreen extends ConsumerWidget {
+enum _WorkFeedFilter { all, delivery, rides, active, pending }
+
+/// The unified operational Work screen: real Delivery and Mobility items
+/// from `/v1/driver/work-feed`, rendered with typed, visually distinct
+/// cards and routed to the correct domain-specific detail screen on tap -
+/// never merged into a single generic "order" shape (mandate §3/§12/§13).
+/// Filters operate on the already-loaded page only; no server filtering
+/// parameter is invented (§16).
+class WorkFeedScreen extends ConsumerStatefulWidget {
   const WorkFeedScreen({super.key, required this.scope});
 
   final DriverScope scope;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context);
-    final asyncFeed = ref.watch(workFeedProvider(scope));
-
-    return Scaffold(
-      appBar: AppBar(title: Text(l10n.workFeedTitle)),
-      body: asyncFeed.when(
-        loading: () => const LoadingView(),
-        error: (error, _) => ErrorView(
-          failure: error is AppFailure ? error : const AppFailure(AppFailureType.unknown),
-          onRetry: () => ref.invalidate(workFeedProvider(scope)),
-        ),
-        data: (list) {
-          if (list.items.isEmpty) {
-            return EmptyView(
-              icon: Icons.inbox_outlined,
-              title: l10n.workFeedEmpty,
-              body: l10n.workFeedEmptyBody,
-            );
-          }
-          return RefreshIndicator(
-            onRefresh: () async => ref.invalidate(workFeedProvider(scope)),
-            child: ListView.separated(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              itemCount: list.items.length,
-              separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.md),
-              itemBuilder: (context, index) => _WorkFeedTile(item: list.items[index]),
-            ),
-          );
-        },
-      ),
-    );
-  }
+  ConsumerState<WorkFeedScreen> createState() => _WorkFeedScreenState();
 }
 
-class _WorkFeedTile extends StatelessWidget {
-  const _WorkFeedTile({required this.item});
+class _WorkFeedScreenState extends ConsumerState<WorkFeedScreen> {
+  _WorkFeedFilter _filter = _WorkFeedFilter.all;
 
-  final DriverWorkFeedItemDto item;
+  List<DriverWorkFeedItemDto> _applyFilter(List<DriverWorkFeedItemDto> items) {
+    switch (_filter) {
+      case _WorkFeedFilter.all:
+        return items;
+      case _WorkFeedFilter.delivery:
+        return items.where((i) => i.workType == DriverWorkFeedItemDtoWorkType.delivery).toList();
+      case _WorkFeedFilter.rides:
+        return items.where((i) => i.workType == DriverWorkFeedItemDtoWorkType.ride).toList();
+      case _WorkFeedFilter.active:
+        return items.where((i) => i.sourceDomain != 'MOBILITY_OFFER' && i.status != 'DELIVERED' && i.status != 'CANCELLED' && i.status != 'COMPLETED').toList();
+      case _WorkFeedFilter.pending:
+        return items.where((i) => i.sourceDomain == 'MOBILITY_OFFER' || i.status == 'ASSIGNED' || i.status == 'READY_FOR_DISPATCH').toList();
+    }
+  }
+
+  void _open(DriverWorkFeedItemDto item) {
+    final resource = item.underlyingResource;
+    switch (resource.resourceType) {
+      case 'DeliveryShipment':
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => DeliveryMissionDetailScreen(missionId: resource.resourceId, feedItem: item)),
+        );
+      case 'MobilityRideOffer':
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => MobilityOfferLookupScreen(offerId: resource.resourceId, scope: widget.scope)),
+        );
+      case 'MobilityRide':
+        Navigator.of(context).push(
+          MaterialPageRoute(builder: (_) => MobilityRideScreen(rideId: resource.resourceId)),
+        );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final colors = context.nokiColors;
-    final isDelivery = item.workType == DriverWorkFeedItemDtoWorkType.delivery;
+    final asyncFeed = ref.watch(workFeedProvider(widget.scope));
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Icon(
-              isDelivery ? Icons.local_shipping_outlined : Icons.directions_car_filled_outlined,
-              color: colors.textSecondary,
-            ),
-            const SizedBox(width: AppSpacing.md),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+    return Scaffold(
+      appBar: AppBar(title: Text(l10n.workFeedTitle)),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.sm),
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: Row(
                 children: [
-                  Text(
-                    isDelivery ? l10n.workFeedTypeDelivery : l10n.workFeedTypeRide,
-                    style: Theme.of(context).textTheme.labelSmall?.copyWith(color: colors.textMuted),
-                  ),
-                  const SizedBox(height: AppSpacing.xs),
-                  Text(item.status, style: Theme.of(context).textTheme.titleMedium),
-                  if (item.dropoff?.addressLine1 != null) ...[
-                    const SizedBox(height: AppSpacing.xs),
-                    Text(item.dropoff!.addressLine1!, style: Theme.of(context).textTheme.bodyMedium),
-                  ],
-                  if (item.amount != null) ...[
-                    const SizedBox(height: AppSpacing.xs),
-                    Text('${item.amount!.amount} ${item.amount!.currencyCode}'),
+                  for (final filter in _WorkFeedFilter.values) ...[
+                    ChoiceChip(
+                      label: Text(_filterLabel(l10n, filter)),
+                      selected: _filter == filter,
+                      onSelected: (_) => setState(() => _filter = filter),
+                    ),
+                    const SizedBox(width: AppSpacing.sm),
                   ],
                 ],
               ),
             ),
-          ],
-        ),
+          ),
+          Expanded(
+            child: asyncFeed.when(
+              loading: () => const LoadingView(),
+              error: (error, _) => ErrorView(
+                failure: error is AppFailure ? error : const AppFailure(AppFailureType.unknown),
+                onRetry: () => ref.invalidate(workFeedProvider(widget.scope)),
+              ),
+              data: (list) {
+                final filtered = _applyFilter(list.items);
+                if (filtered.isEmpty) {
+                  return EmptyView(
+                    icon: Icons.inbox_outlined,
+                    title: l10n.workFeedEmpty,
+                    body: l10n.workFeedEmptyBody,
+                  );
+                }
+                return RefreshIndicator(
+                  onRefresh: () async => ref.invalidate(workFeedProvider(widget.scope)),
+                  child: ListView.separated(
+                    padding: const EdgeInsets.all(AppSpacing.lg),
+                    itemCount: filtered.length,
+                    separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.md),
+                    itemBuilder: (context, index) {
+                      final item = filtered[index];
+                      return item.workType == DriverWorkFeedItemDtoWorkType.delivery
+                          ? DeliveryWorkCard(item: item, onTap: () => _open(item))
+                          : MobilityWorkCard(item: item, onTap: () => _open(item));
+                    },
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
+  }
+
+  String _filterLabel(AppLocalizations l10n, _WorkFeedFilter filter) {
+    return switch (filter) {
+      _WorkFeedFilter.all => l10n.workFeedFilterAll,
+      _WorkFeedFilter.delivery => l10n.workFeedFilterDelivery,
+      _WorkFeedFilter.rides => l10n.workFeedFilterRides,
+      _WorkFeedFilter.active => l10n.workFeedFilterActive,
+      _WorkFeedFilter.pending => l10n.workFeedFilterPending,
+    };
   }
 }

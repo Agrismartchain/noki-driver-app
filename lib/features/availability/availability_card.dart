@@ -82,6 +82,10 @@ class _AvailabilityCardState extends ConsumerState<AvailabilityCard> {
                     l10n.availabilityActiveRides(availability.activeMobilityRideCount.toInt()),
                     style: Theme.of(context).textTheme.bodyMedium,
                   ),
+                  Text(
+                    l10n.availabilityPendingOffers(availability.activeMobilityOfferCount.toInt()),
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
                 ],
               ),
             ),

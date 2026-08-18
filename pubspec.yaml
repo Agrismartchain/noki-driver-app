@@ -41,6 +41,10 @@ dependencies:
   # session/token storage - see lib/core/storage/secure_session_storage.dart.
   shared_preferences: ^2.3.4
 
+  # Platform intents only (tel:/geo:/maps URL) for the Call and Navigate
+  # actions on Delivery/Mobility detail screens - no embedded map/routing SDK.
+  url_launcher: ^6.3.1
+
   intl: any
 
 dev_dependencies:

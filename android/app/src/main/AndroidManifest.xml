@@ -46,5 +46,17 @@
             <action android:name="android.intent.action.PROCESS_TEXT"/>
             <data android:mimeType="text/plain"/>
         </intent>
+        <!-- Package visibility for url_launcher: Call action (tel:) on
+             Delivery detail and Navigate action (geo:) to the device's
+             installed map app - see mandate DRIVER-APP-02 §22/§23. No map
+             SDK is embedded; this only lets the OS resolve an external app. -->
+        <intent>
+            <action android:name="android.intent.action.DIAL"/>
+            <data android:scheme="tel"/>
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW"/>
+            <data android:scheme="geo"/>
+        </intent>
     </queries>
 </manifest>

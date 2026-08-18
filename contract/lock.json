@@ -15,6 +15,22 @@
     "DriverController_vehicles",
     "DriverController_availability",
     "DriverController_updateAvailability",
-    "DriverController_workFeed"
+    "DriverController_workFeed",
+    "DriverController_deliveryMissionIncidents",
+    "DriverController_mobilityOffers",
+    "DriverController_currentMobilityRide",
+    "DriverController_mobilityRideById",
+    "DriverController_mobilityIncidents",
+    "DriverController_createMobilityIncident",
+    "DeliveryController_listOwnMissions",
+    "DeliveryController_getOwnMission",
+    "DeliveryController_requestHandoffOtp",
+    "DeliveryController_verifyHandoffOtp",
+    "DeliveryController_completeOwnMission",
+    "DeliveryController_createOwnMissionIncident",
+    "DeliveryController_scanOwnMissionQr",
+    "MobilityDriverController_acceptOffer",
+    "MobilityDriverController_transitionRide",
+    "MobilityDriverController_submitLocation"
   ]
 }

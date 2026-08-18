@@ -36,6 +36,51 @@ abstract class DriverApiClient {
     int page = 1,
     int pageSize = 25,
   });
+
+  // --- Delivery (own-scoped) ---------------------------------------------
+
+  Future<DriverMissionListResponseDto> listOwnMissions({
+    required String organizationId,
+    required String countryCode,
+    String? status,
+    int page = 1,
+    int pageSize = 25,
+  });
+  Future<DriverMissionResponseDto> getOwnMission(String missionId);
+  Future<DeliveryHandoffOtpChallengeResponseDto> requestHandoffOtp(String missionId);
+  Future<DeliveryHandoffOtpVerificationResponseDto> verifyHandoffOtp(String missionId, VerifyDeliveryHandoffOtpDto body);
+  Future<DriverMissionCompletionResponseDto> completeMission(
+    String missionId,
+    CompleteDriverMissionDto body, {
+    required String idempotencyKey,
+  });
+  Future<DeliveryIncidentResponseDto> createMissionIncident(String missionId, CreateDeliveryIncidentDto body);
+  Future<List<DeliveryIncidentResponseDto>> deliveryMissionIncidents(String missionId);
+  Future<DriverMissionResponseDto> scanMissionQr(ScanDeliveryQrDto body);
+
+  // --- Mobility (own-scoped) ----------------------------------------------
+
+  Future<DriverMobilityOfferListResponseDto> mobilityOffers({
+    required String organizationId,
+    required String countryCode,
+    int page = 1,
+    int pageSize = 25,
+  });
+  Future<MobilityRideDetailDto?> currentMobilityRide({
+    required String organizationId,
+    required String countryCode,
+  });
+  Future<MobilityRideDetailDto> mobilityRideById(String rideId);
+  Future<DriverMobilityIncidentListResponseDto> mobilityIncidents({
+    required String organizationId,
+    required String countryCode,
+    int page = 1,
+    int pageSize = 25,
+  });
+  Future<MobilityIncidentDto> createMobilityIncident(CreateOwnMobilityIncidentRequestDto body);
+  Future<MobilityRideDetailDto> acceptMobilityOffer(String offerId);
+  Future<MobilityRideDetailDto> transitionMobilityRide(String rideId, TransitionMobilityRideDto body);
+  Future<MobilityDriverDto> submitMobilityLocation(SubmitMobilityLocationDto body);
 }
 
 class DioDriverApiClient implements DriverApiClient {
@@ -150,5 +195,173 @@ class DioDriverApiClient implements DriverApiClient {
           },
         );
         return DriverWorkFeedListResponseDto.fromJson(response.data as Map<String, dynamic>);
+      });
+
+  // --- Delivery (own-scoped) ---------------------------------------------
+
+  @override
+  Future<DriverMissionListResponseDto> listOwnMissions({
+    required String organizationId,
+    required String countryCode,
+    String? status,
+    int page = 1,
+    int pageSize = 25,
+  }) =>
+      _guarded(() async {
+        final response = await _dio.get(
+          '/v1/delivery/missions',
+          queryParameters: {
+            'organizationId': organizationId,
+            'countryCode': countryCode,
+            'status': ?status,
+            'page': page,
+            'pageSize': pageSize,
+          },
+        );
+        return DriverMissionListResponseDto.fromJson(response.data as Map<String, dynamic>);
+      });
+
+  @override
+  Future<DriverMissionResponseDto> getOwnMission(String missionId) => _guarded(() async {
+        final response = await _dio.get('/v1/delivery/missions/$missionId');
+        return DriverMissionResponseDto.fromJson(response.data as Map<String, dynamic>);
+      });
+
+  @override
+  Future<DeliveryHandoffOtpChallengeResponseDto> requestHandoffOtp(String missionId) => _guarded(() async {
+        final response = await _dio.post('/v1/delivery/missions/$missionId/handoff-otp/request');
+        return DeliveryHandoffOtpChallengeResponseDto.fromJson(response.data as Map<String, dynamic>);
+      });
+
+  @override
+  Future<DeliveryHandoffOtpVerificationResponseDto> verifyHandoffOtp(String missionId, VerifyDeliveryHandoffOtpDto body) =>
+      _guarded(() async {
+        final response = await _dio.post('/v1/delivery/missions/$missionId/handoff-otp/verify', data: body.toJson());
+        return DeliveryHandoffOtpVerificationResponseDto.fromJson(response.data as Map<String, dynamic>);
+      });
+
+  @override
+  Future<DriverMissionCompletionResponseDto> completeMission(
+    String missionId,
+    CompleteDriverMissionDto body, {
+    required String idempotencyKey,
+  }) =>
+      _guarded(() async {
+        final response = await _dio.post(
+          '/v1/delivery/missions/$missionId/complete',
+          data: body.toJson(),
+          options: Options(headers: {'Idempotency-Key': idempotencyKey}),
+        );
+        return DriverMissionCompletionResponseDto.fromJson(response.data as Map<String, dynamic>);
+      });
+
+  @override
+  Future<DeliveryIncidentResponseDto> createMissionIncident(String missionId, CreateDeliveryIncidentDto body) => _guarded(() async {
+        final response = await _dio.post('/v1/delivery/missions/$missionId/incidents', data: body.toJson());
+        return DeliveryIncidentResponseDto.fromJson(response.data as Map<String, dynamic>);
+      });
+
+  @override
+  Future<List<DeliveryIncidentResponseDto>> deliveryMissionIncidents(String missionId) => _guarded(() async {
+        final response = await _dio.get('/v1/driver/delivery/missions/$missionId/incidents');
+        return (response.data as List<dynamic>)
+            .map((e) => DeliveryIncidentResponseDto.fromJson(e as Map<String, dynamic>))
+            .toList();
+      });
+
+  @override
+  Future<DriverMissionResponseDto> scanMissionQr(ScanDeliveryQrDto body) => _guarded(() async {
+        final response = await _dio.post('/v1/delivery/missions/scan-qr', data: body.toJson());
+        return DriverMissionResponseDto.fromJson(response.data as Map<String, dynamic>);
+      });
+
+  // --- Mobility (own-scoped) ----------------------------------------------
+
+  @override
+  Future<DriverMobilityOfferListResponseDto> mobilityOffers({
+    required String organizationId,
+    required String countryCode,
+    int page = 1,
+    int pageSize = 25,
+  }) =>
+      _guarded(() async {
+        final response = await _dio.get(
+          '/v1/driver/mobility/offers',
+          queryParameters: {
+            'organizationId': organizationId,
+            'countryCode': countryCode,
+            'page': page,
+            'pageSize': pageSize,
+          },
+        );
+        return DriverMobilityOfferListResponseDto.fromJson(response.data as Map<String, dynamic>);
+      });
+
+  @override
+  Future<MobilityRideDetailDto?> currentMobilityRide({
+    required String organizationId,
+    required String countryCode,
+  }) async {
+    try {
+      final response = await _dio.get(
+        '/v1/driver/mobility/rides/current',
+        queryParameters: {'organizationId': organizationId, 'countryCode': countryCode},
+      );
+      return MobilityRideDetailDto.fromJson(response.data as Map<String, dynamic>);
+    } on DioException catch (e) {
+      // No active ride is a normal, honest empty state, not a failure.
+      if (e.response?.statusCode == 404) return null;
+      throw AppFailure.fromDioException(e);
+    }
+  }
+
+  @override
+  Future<MobilityRideDetailDto> mobilityRideById(String rideId) => _guarded(() async {
+        final response = await _dio.get('/v1/driver/mobility/rides/$rideId');
+        return MobilityRideDetailDto.fromJson(response.data as Map<String, dynamic>);
+      });
+
+  @override
+  Future<DriverMobilityIncidentListResponseDto> mobilityIncidents({
+    required String organizationId,
+    required String countryCode,
+    int page = 1,
+    int pageSize = 25,
+  }) =>
+      _guarded(() async {
+        final response = await _dio.get(
+          '/v1/driver/mobility/incidents',
+          queryParameters: {
+            'organizationId': organizationId,
+            'countryCode': countryCode,
+            'page': page,
+            'pageSize': pageSize,
+          },
+        );
+        return DriverMobilityIncidentListResponseDto.fromJson(response.data as Map<String, dynamic>);
+      });
+
+  @override
+  Future<MobilityIncidentDto> createMobilityIncident(CreateOwnMobilityIncidentRequestDto body) => _guarded(() async {
+        final response = await _dio.post('/v1/driver/mobility/incidents', data: body.toJson());
+        return MobilityIncidentDto.fromJson(response.data as Map<String, dynamic>);
+      });
+
+  @override
+  Future<MobilityRideDetailDto> acceptMobilityOffer(String offerId) => _guarded(() async {
+        final response = await _dio.post('/v1/mobility/driver/offers/$offerId/accept');
+        return MobilityRideDetailDto.fromJson(response.data as Map<String, dynamic>);
+      });
+
+  @override
+  Future<MobilityRideDetailDto> transitionMobilityRide(String rideId, TransitionMobilityRideDto body) => _guarded(() async {
+        final response = await _dio.post('/v1/mobility/driver/rides/$rideId/transition', data: body.toJson());
+        return MobilityRideDetailDto.fromJson(response.data as Map<String, dynamic>);
+      });
+
+  @override
+  Future<MobilityDriverDto> submitMobilityLocation(SubmitMobilityLocationDto body) => _guarded(() async {
+        final response = await _dio.post('/v1/mobility/driver/location', data: body.toJson());
+        return MobilityDriverDto.fromJson(response.data as Map<String, dynamic>);
       });
 }

@@ -67,7 +67,16 @@ for (const [pathKey, pathItem] of Object.entries(spec.paths)) {
     if (!includedOperationIds.has(op.operationId)) continue;
 
     const requestSchema = op.requestBody?.content?.['application/json']?.schema ?? null;
-    const responseSchema = op.responses?.['200']?.content?.['application/json']?.schema ?? null;
+    // Successful responses are documented under whichever 2xx status the
+    // handler actually returns (NestJS defaults POST to 201, GET/PATCH to
+    // 200). Prefer 200 for backward-compat determinism, then fall back to
+    // the first other 2xx entry so operations like a 201 "created" response
+    // still get their response DTO generated.
+    const successStatus =
+      op.responses?.['200'] ? '200' : Object.keys(op.responses ?? {}).find((code) => /^2\d\d$/.test(code));
+    const responseSchema = successStatus
+      ? (op.responses?.[successStatus]?.content?.['application/json']?.schema ?? null)
+      : null;
     const params = (op.parameters ?? []).map((p) => ({
       name: p.name,
       in: p.in,
