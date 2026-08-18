@@ -6,6 +6,7 @@ import '../../core/api/generated/driver_models.generated.dart';
 import '../../core/auth/auth_session_gateway.dart';
 import '../../core/errors/app_failure.dart';
 import '../../core/logging/app_logger.dart';
+import '../../core/routing/app_router.dart';
 import '../../core/storage/secure_session_storage.dart';
 import '../../core/storage/storage_providers.dart';
 import 'auth_state.dart';
@@ -29,6 +30,21 @@ class AuthController extends Notifier<AuthState> implements AuthSessionGateway {
   AuthState build() {
     _apiClient = ref.watch(driverApiClientProvider);
     _storage = ref.watch(secureSessionStorageProvider);
+    // Forwards status changes to go_router's refresh signal via `listenSelf`
+    // (a Notifier observing its own state) plus a `ref.read` of an unrelated,
+    // dependency-free provider - never a `ref.watch`/`ref.listen` on
+    // `authControllerProvider` from another provider's build, and never
+    // anything reading Riverpod from inside `redirect` or from a descendant
+    // widget's first build pass. Both were tried and reproducibly caused
+    // real, distinct failures on real Android (a UI-thread hang, then a
+    // `CircularDependencyError`) - see DRIVER-APP-01R2, RD-1.
+    final routerRefreshListenable = ref.read(routerRefreshListenableProvider);
+    listenSelf((previous, next) {
+      if (previous?.status != next.status) {
+        routerRefreshListenable.status = next.status;
+        routerRefreshListenable.refresh();
+      }
+    });
     Future.microtask(_bootstrap);
     return const AuthState.initial();
   }

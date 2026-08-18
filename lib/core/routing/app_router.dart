@@ -4,33 +4,45 @@ import 'package:go_router/go_router.dart';
 
 import '../../app/root_gate.dart';
 import '../../features/auth/access_denied_screen.dart';
-import '../../features/auth/auth_providers.dart';
 import '../../features/auth/auth_state.dart';
 import '../../features/auth/login_screen.dart';
 
-/// Bridges Riverpod's [authControllerProvider] to go_router's
-/// `refreshListenable`, so a status change (e.g. session expiring mid-use)
-/// re-evaluates [redirect] without any manual navigation calls scattered
-/// through the app.
-class _AuthRouterRefresh extends ChangeNotifier {
-  _AuthRouterRefresh(Ref ref) {
-    ref.listen<AuthState>(authControllerProvider, (previous, next) {
-      if (previous?.status != next.status) notifyListeners();
-    });
-  }
+/// A plain, Riverpod-independent [Listenable] go_router's `redirect`
+/// re-evaluates against. Deliberately *not* constructed by calling
+/// `ref.listen`/`ref.watch(authControllerProvider...)` from within this (or
+/// any other) provider's build - see [routerRefreshListenableProvider].
+///
+/// [status] mirrors [AuthState.status] as a plain field, kept up to date by
+/// `AuthController`'s own `listenSelf` (see `auth_controller.dart`).
+/// [redirect] below reads [status] directly instead of
+/// `ref.read(authControllerProvider)`. go_router calls `redirect`
+/// synchronously the first time its internal `Router` widget mounts - nested
+/// inside the same widget-build pass that is still resolving
+/// `appRouterProvider`/`authControllerProvider` via `NokiDriverApp.build()`.
+/// Reading a Riverpod provider from there trips Riverpod's re-entrant-read
+/// guard (`CircularDependencyError`), even though the provider itself isn't
+/// actually cyclic - reproduced deterministically both on real Android and
+/// in a local widget-test harness pumping the real, non-overridden provider
+/// graph (see DRIVER-APP-01R2). A plain field read has no such restriction.
+class RouterRefreshListenable extends ChangeNotifier {
+  AuthStatus status = AuthStatus.bootstrapping;
+
+  void refresh() => notifyListeners();
 }
 
+final routerRefreshListenableProvider = Provider<RouterRefreshListenable>((ref) => RouterRefreshListenable());
+
 final appRouterProvider = Provider<GoRouter>((ref) {
-  final refreshListenable = _AuthRouterRefresh(ref);
+  final refreshListenable = ref.watch(routerRefreshListenableProvider);
 
   return GoRouter(
     initialLocation: '/',
     refreshListenable: refreshListenable,
     redirect: (context, state) {
-      final authState = ref.read(authControllerProvider);
+      final status = refreshListenable.status;
       final path = state.matchedLocation;
 
-      switch (authState.status) {
+      switch (status) {
         case AuthStatus.bootstrapping:
           return path == '/' ? null : '/';
         case AuthStatus.unauthenticated:
