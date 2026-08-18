@@ -61,10 +61,19 @@ class _VehicleTile extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final colors = context.nokiColors;
 
+    // Icon + make/model on their own line (ellipsized - never wraps the
+    // status), then plate + status badge in a Wrap on a second line. A Wrap
+    // can never throw a RenderFlex overflow: if the plate and a long status
+    // label (e.g. PENDING_VALIDATION -> "En attente de validation") don't
+    // fit side by side at a given width, the badge simply drops to its own
+    // line instead of clipping or forcing the row to overflow. Verified at
+    // 320/360/390/430dp, FR/AR-RTL, light/dark - see
+    // test/features/vehicles/vehicles_responsive_test.dart.
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(AppSpacing.lg),
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Icon(
               vehicle.type == DriverVehicleDtoType.motorcycle
@@ -77,13 +86,28 @@ class _VehicleTile extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('${vehicle.make} ${vehicle.model}', style: Theme.of(context).textTheme.titleMedium),
+                  Text(
+                    '${vehicle.make} ${vehicle.model}',
+                    style: Theme.of(context).textTheme.titleMedium,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                   const SizedBox(height: AppSpacing.xs),
-                  Text('${l10n.vehiclePlateLabel}: ${vehicle.plate}', style: Theme.of(context).textTheme.bodyMedium),
+                  Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: AppSpacing.sm,
+                    runSpacing: AppSpacing.xs,
+                    children: [
+                      Text(
+                        '${l10n.vehiclePlateLabel}: ${vehicle.plate}',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                      _VehicleStatusBadge(status: vehicle.status),
+                    ],
+                  ),
                 ],
               ),
             ),
-            _VehicleStatusBadge(status: vehicle.status),
           ],
         ),
       ),

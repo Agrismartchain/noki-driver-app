@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/i18n/generated/app_localizations.dart';
 import '../../core/i18n/locale_controller.dart';
 import '../../core/theme/app_spacing.dart';
+import '../../core/theme/app_theme.dart';
 import '../../core/theme/theme_controller.dart';
 import '../auth/auth_providers.dart';
 
@@ -15,6 +16,7 @@ class SettingsScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final locale = ref.watch(localeProvider) ?? defaultLocale;
     final themeMode = ref.watch(themeModeProvider);
+    final colors = context.nokiColors;
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.settingsTitle)),
@@ -45,7 +47,16 @@ class SettingsScreen extends ConsumerWidget {
             onSelectionChanged: (selection) => ref.read(themeModeProvider.notifier).setThemeMode(selection.first),
           ),
           const SizedBox(height: AppSpacing.xxxl),
+          // Deliberately neutral, not primary-yellow or destructive-red:
+          // signing out is a real but non-critical, non-destructive action
+          // and must not visually compete with primary CTAs or the selected
+          // availability state (both use the NOKI accent yellow). See
+          // DRIVER-APP-01R V-2.
           OutlinedButton.icon(
+            style: OutlinedButton.styleFrom(
+              foregroundColor: colors.textSecondary,
+              side: BorderSide(color: colors.border),
+            ),
             icon: const Icon(Icons.logout),
             label: Text(l10n.settingsLogout),
             onPressed: () => _confirmLogout(context, ref),
