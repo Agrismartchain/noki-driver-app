@@ -173,5 +173,25 @@
   "errorUnknown": "Une erreur est survenue.",
   "actionRetry": "Réessayer",
 
-  "offlineBannerMessage": "Vous êtes hors ligne. Certaines informations peuvent ne pas être à jour."
+  "offlineBannerMessage": "Vous êtes hors ligne. Certaines informations peuvent ne pas être à jour.",
+
+  "missionMapTitle": "Carte",
+  "missionMapBackToDetails": "Détails",
+  "missionMapNextActionOtp": "Demandez le code de remise pour terminer cette livraison",
+  "mobilityMapTitle": "Carte",
+
+  "homeContinueDelivery": "Continuer la livraison en cours",
+  "homeContinueRide": "Continuer la course en cours",
+  "homeTrackingIdle": "Pas de suivi - hors ligne",
+  "homeTrackingPermissionNeeded": "Autorisation de localisation requise pour le suivi",
+
+  "deliveryHistoryTitle": "Historique des livraisons",
+  "deliveryHistoryEmpty": "Aucune livraison terminée pour le moment",
+
+  "locationPermissionRationale": "NOKI Chauffeur a besoin de votre position pour l'afficher sur la carte pendant une livraison ou une course en cours.",
+  "locationGrantAction": "Autoriser la localisation",
+  "locationDeniedForever": "L'accès à la position a été définitivement refusé. Activez-le dans les Réglages pour utiliser la carte.",
+  "locationServiceDisabled": "Les services de localisation sont désactivés sur cet appareil. Activez-les pour utiliser la carte.",
+  "locationOpenSettings": "Ouvrir les réglages",
+  "locationErrorGeneric": "Impossible de lire l'état de l'autorisation de localisation."
 }

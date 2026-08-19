@@ -182,5 +182,25 @@
   "errorUnknown": "Something went wrong.",
   "actionRetry": "Retry",
 
-  "offlineBannerMessage": "You're offline. Some information may be out of date."
+  "offlineBannerMessage": "You're offline. Some information may be out of date.",
+
+  "missionMapTitle": "Map",
+  "missionMapBackToDetails": "Details",
+  "missionMapNextActionOtp": "Request the handoff code to complete this delivery",
+  "mobilityMapTitle": "Map",
+
+  "homeContinueDelivery": "Continue active delivery",
+  "homeContinueRide": "Continue active ride",
+  "homeTrackingIdle": "Not tracking - offline",
+  "homeTrackingPermissionNeeded": "Location permission needed for tracking",
+
+  "deliveryHistoryTitle": "Delivery history",
+  "deliveryHistoryEmpty": "No completed deliveries yet",
+
+  "locationPermissionRationale": "NOKI Driver needs your location to show it on the map during an active delivery or ride.",
+  "locationGrantAction": "Allow location access",
+  "locationDeniedForever": "Location access was permanently denied. Enable it in Settings to use the map.",
+  "locationServiceDisabled": "Location services are turned off on this device. Enable them to use the map.",
+  "locationOpenSettings": "Open settings",
+  "locationErrorGeneric": "Could not read the location permission state."
 }

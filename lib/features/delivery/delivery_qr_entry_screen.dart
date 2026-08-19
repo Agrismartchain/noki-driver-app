@@ -6,6 +6,7 @@ import '../../core/errors/failure_localizer.dart';
 import '../../core/i18n/generated/app_localizations.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_theme.dart';
+import '../driver_context/driver_context_repository.dart';
 import 'delivery_mission_detail_screen.dart';
 import 'delivery_repository.dart';
 
@@ -17,7 +18,9 @@ import 'delivery_repository.dart';
 /// to them out of band, submitted to the same endpoint a real scanner would
 /// call.
 class DeliveryQrEntryScreen extends ConsumerStatefulWidget {
-  const DeliveryQrEntryScreen({super.key});
+  const DeliveryQrEntryScreen({super.key, required this.scope});
+
+  final DriverScope scope;
 
   @override
   ConsumerState<DeliveryQrEntryScreen> createState() => _DeliveryQrEntryScreenState();
@@ -45,7 +48,7 @@ class _DeliveryQrEntryScreenState extends ConsumerState<DeliveryQrEntryScreen> {
       final mission = await ref.read(deliveryRepositoryProvider).scanQr(token);
       if (!mounted) return;
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => DeliveryMissionDetailScreen(missionId: mission.id)),
+        MaterialPageRoute(builder: (_) => DeliveryMissionDetailScreen(missionId: mission.id, scope: widget.scope)),
       );
     } on AppFailure catch (failure) {
       if (mounted) setState(() => _failure = failure);

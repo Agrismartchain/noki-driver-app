@@ -45,6 +45,18 @@ dependencies:
   # actions on Delivery/Mobility detail screens - no embedded map/routing SDK.
   url_launcher: ^6.3.1
 
+  # Embedded map (DRIVER-APP-03): OpenStreetMap tiles via flutter_map - no
+  # API key/billing account required (unlike google_maps_flutter/mapbox),
+  # MIT-licensed, actively maintained. latlong2 is its LatLng dependency.
+  flutter_map: ^7.0.2
+  latlong2: ^0.9.1
+
+  # Device GPS position + built-in permission check/request API. Chosen over
+  # a separate permission_handler package because geolocator already covers
+  # the one permission family this app needs (location), avoiding two
+  # overlapping permission plugins for the same capability.
+  geolocator: ^13.0.2
+
   intl: any
 
 dev_dependencies:

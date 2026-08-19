@@ -9,7 +9,9 @@ import '../../core/errors/failure_localizer.dart';
 import '../../core/i18n/generated/app_localizations.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_theme.dart';
+import '../driver_context/driver_context_repository.dart';
 import 'mobility_repository.dart';
+import 'mobility_ride_map_screen.dart';
 import 'mobility_status_presentation.dart';
 
 /// Current/active ride presentation and transitions. Only the transitions
@@ -17,9 +19,10 @@ import 'mobility_status_presentation.dart';
 /// ever rendered as buttons, and every tap awaits the server's response
 /// before the ride is refreshed - no optimistic status flip (mandate §15).
 class MobilityRideScreen extends ConsumerStatefulWidget {
-  const MobilityRideScreen({super.key, required this.rideId});
+  const MobilityRideScreen({super.key, required this.rideId, required this.scope});
 
   final String rideId;
+  final DriverScope scope;
 
   @override
   ConsumerState<MobilityRideScreen> createState() => _MobilityRideScreenState();
@@ -55,7 +58,18 @@ class _MobilityRideScreenState extends ConsumerState<MobilityRideScreen> {
     final asyncRide = ref.watch(rideByIdProvider(widget.rideId));
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.mobilityRideDetailTitle)),
+      appBar: AppBar(
+        title: Text(l10n.mobilityRideDetailTitle),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.map_outlined),
+            tooltip: l10n.mobilityMapTitle,
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => MobilityRideMapScreen(rideId: widget.rideId, scope: widget.scope)),
+            ),
+          ),
+        ],
+      ),
       body: asyncRide.when(
         loading: () => const LoadingView(),
         error: (error, _) => ErrorView(

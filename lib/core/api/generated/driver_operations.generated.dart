@@ -35,6 +35,7 @@ const List<GeneratedApiOperation> generatedApiOperations = [
   GeneratedApiOperation(operationId: "DeliveryController_listOwnMissions", method: "GET", path: "/v1/delivery/missions"),
   GeneratedApiOperation(operationId: "DeliveryController_requestHandoffOtp", method: "POST", path: "/v1/delivery/missions/{id}/handoff-otp/request"),
   GeneratedApiOperation(operationId: "DeliveryController_scanOwnMissionQr", method: "POST", path: "/v1/delivery/missions/scan-qr"),
+  GeneratedApiOperation(operationId: "DeliveryController_submitOwnLocation", method: "POST", path: "/v1/delivery/location"),
   GeneratedApiOperation(operationId: "DeliveryController_verifyHandoffOtp", method: "POST", path: "/v1/delivery/missions/{id}/handoff-otp/verify"),
   GeneratedApiOperation(operationId: "DriverController_availability", method: "GET", path: "/v1/driver/availability"),
   GeneratedApiOperation(operationId: "DriverController_context", method: "GET", path: "/v1/driver/context"),

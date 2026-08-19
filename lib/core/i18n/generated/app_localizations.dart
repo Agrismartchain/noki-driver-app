@@ -1053,6 +1053,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You\'re offline. Some information may be out of date.'**
   String get offlineBannerMessage;
+
+  /// No description provided for @missionMapTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Map'**
+  String get missionMapTitle;
+
+  /// No description provided for @missionMapBackToDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Details'**
+  String get missionMapBackToDetails;
+
+  /// No description provided for @missionMapNextActionOtp.
+  ///
+  /// In en, this message translates to:
+  /// **'Request the handoff code to complete this delivery'**
+  String get missionMapNextActionOtp;
+
+  /// No description provided for @mobilityMapTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Map'**
+  String get mobilityMapTitle;
+
+  /// No description provided for @homeContinueDelivery.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue active delivery'**
+  String get homeContinueDelivery;
+
+  /// No description provided for @homeContinueRide.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue active ride'**
+  String get homeContinueRide;
+
+  /// No description provided for @homeTrackingIdle.
+  ///
+  /// In en, this message translates to:
+  /// **'Not tracking - offline'**
+  String get homeTrackingIdle;
+
+  /// No description provided for @homeTrackingPermissionNeeded.
+  ///
+  /// In en, this message translates to:
+  /// **'Location permission needed for tracking'**
+  String get homeTrackingPermissionNeeded;
+
+  /// No description provided for @deliveryHistoryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery history'**
+  String get deliveryHistoryTitle;
+
+  /// No description provided for @deliveryHistoryEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No completed deliveries yet'**
+  String get deliveryHistoryEmpty;
+
+  /// No description provided for @locationPermissionRationale.
+  ///
+  /// In en, this message translates to:
+  /// **'NOKI Driver needs your location to show it on the map during an active delivery or ride.'**
+  String get locationPermissionRationale;
+
+  /// No description provided for @locationGrantAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow location access'**
+  String get locationGrantAction;
+
+  /// No description provided for @locationDeniedForever.
+  ///
+  /// In en, this message translates to:
+  /// **'Location access was permanently denied. Enable it in Settings to use the map.'**
+  String get locationDeniedForever;
+
+  /// No description provided for @locationServiceDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Location services are turned off on this device. Enable them to use the map.'**
+  String get locationServiceDisabled;
+
+  /// No description provided for @locationOpenSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Open settings'**
+  String get locationOpenSettings;
+
+  /// No description provided for @locationErrorGeneric.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not read the location permission state.'**
+  String get locationErrorGeneric;
 }
 
 class _AppLocalizationsDelegate

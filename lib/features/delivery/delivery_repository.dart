@@ -73,3 +73,11 @@ final missionDetailProvider = FutureProvider.autoDispose.family<DriverMissionRes
 final missionIncidentsProvider = FutureProvider.autoDispose.family<List<DeliveryIncidentResponseDto>, String>(
   (ref, missionId) => ref.watch(deliveryRepositoryProvider).listIncidents(missionId),
 );
+
+/// Missions filtered by status - used by Home's "continue active delivery"
+/// card and by [DeliveryHistoryScreen] (`status: DELIVERED`). Keyed by a
+/// record (Dart 3 records have structural equality, so this works directly
+/// as a Riverpod `family` argument without a bespoke key class).
+final missionListByStatusProvider = FutureProvider.autoDispose.family<DriverMissionListResponseDto, (DriverScope, String)>(
+  (ref, args) => ref.watch(deliveryRepositoryProvider).listMissions(args.$1, status: args.$2),
+);

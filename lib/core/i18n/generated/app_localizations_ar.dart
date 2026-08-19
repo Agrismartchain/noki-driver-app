@@ -546,4 +546,55 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get offlineBannerMessage =>
       'أنت غير متصل بالإنترنت. قد تكون بعض المعلومات غير محدثة.';
+
+  @override
+  String get missionMapTitle => 'الخريطة';
+
+  @override
+  String get missionMapBackToDetails => 'التفاصيل';
+
+  @override
+  String get missionMapNextActionOtp => 'اطلب رمز التسليم لإنهاء هذه التوصيلة';
+
+  @override
+  String get mobilityMapTitle => 'الخريطة';
+
+  @override
+  String get homeContinueDelivery => 'متابعة التوصيلة النشطة';
+
+  @override
+  String get homeContinueRide => 'متابعة الرحلة النشطة';
+
+  @override
+  String get homeTrackingIdle => 'لا يوجد تتبع - غير متصل';
+
+  @override
+  String get homeTrackingPermissionNeeded => 'إذن الموقع مطلوب للتتبع';
+
+  @override
+  String get deliveryHistoryTitle => 'سجل التوصيلات';
+
+  @override
+  String get deliveryHistoryEmpty => 'لا توجد توصيلات مكتملة بعد';
+
+  @override
+  String get locationPermissionRationale =>
+      'يحتاج نوكي للسائقين إلى موقعك لعرضه على الخريطة أثناء توصيلة أو رحلة نشطة.';
+
+  @override
+  String get locationGrantAction => 'السماح بالوصول إلى الموقع';
+
+  @override
+  String get locationDeniedForever =>
+      'تم رفض الوصول إلى الموقع نهائيًا. فعّله من الإعدادات لاستخدام الخريطة.';
+
+  @override
+  String get locationServiceDisabled =>
+      'خدمات الموقع معطّلة على هذا الجهاز. فعّلها لاستخدام الخريطة.';
+
+  @override
+  String get locationOpenSettings => 'فتح الإعدادات';
+
+  @override
+  String get locationErrorGeneric => 'تعذّرت قراءة حالة إذن الموقع.';
 }

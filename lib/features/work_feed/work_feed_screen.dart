@@ -6,6 +6,7 @@ import '../../core/errors/app_failure.dart';
 import '../../core/errors/error_view.dart';
 import '../../core/i18n/generated/app_localizations.dart';
 import '../../core/theme/app_spacing.dart';
+import '../delivery/delivery_history_screen.dart';
 import '../delivery/delivery_mission_detail_screen.dart';
 import '../delivery/delivery_work_card.dart';
 import '../driver_context/driver_context_repository.dart';
@@ -54,7 +55,7 @@ class _WorkFeedScreenState extends ConsumerState<WorkFeedScreen> {
     switch (resource.resourceType) {
       case 'DeliveryShipment':
         Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => DeliveryMissionDetailScreen(missionId: resource.resourceId, feedItem: item)),
+          MaterialPageRoute(builder: (_) => DeliveryMissionDetailScreen(missionId: resource.resourceId, scope: widget.scope, feedItem: item)),
         );
       case 'MobilityRideOffer':
         Navigator.of(context).push(
@@ -62,7 +63,7 @@ class _WorkFeedScreenState extends ConsumerState<WorkFeedScreen> {
         );
       case 'MobilityRide':
         Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => MobilityRideScreen(rideId: resource.resourceId)),
+          MaterialPageRoute(builder: (_) => MobilityRideScreen(rideId: resource.resourceId, scope: widget.scope)),
         );
     }
   }
@@ -73,7 +74,18 @@ class _WorkFeedScreenState extends ConsumerState<WorkFeedScreen> {
     final asyncFeed = ref.watch(workFeedProvider(widget.scope));
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.workFeedTitle)),
+      appBar: AppBar(
+        title: Text(l10n.workFeedTitle),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.history),
+            tooltip: l10n.deliveryHistoryTitle,
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => DeliveryHistoryScreen(scope: widget.scope)),
+            ),
+          ),
+        ],
+      ),
       body: Column(
         children: [
           Padding(

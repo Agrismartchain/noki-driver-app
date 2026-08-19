@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/i18n/generated/app_localizations.dart';
+import '../core/location/gps_publisher.dart';
 import '../features/auth/auth_providers.dart';
 import '../features/driver_context/driver_context_repository.dart';
 import '../features/driver_context/home_screen.dart';
@@ -21,8 +22,37 @@ class HomeShell extends ConsumerStatefulWidget {
   ConsumerState<HomeShell> createState() => _HomeShellState();
 }
 
-class _HomeShellState extends ConsumerState<HomeShell> {
+class _HomeShellState extends ConsumerState<HomeShell> with WidgetsBindingObserver {
   int _index = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  // GPS publishing is foreground-only this phase (mandate §10/§35) - no
+  // duplicate stream survives a background/foreground cycle, and nothing is
+  // sent while the app isn't visible to the driver.
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    final publisher = ref.read(gpsPublisherControllerProvider);
+    switch (state) {
+      case AppLifecycleState.resumed:
+        publisher.resumeForForeground();
+      case AppLifecycleState.paused:
+      case AppLifecycleState.detached:
+      case AppLifecycleState.inactive:
+      case AppLifecycleState.hidden:
+        publisher.pauseForBackground();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

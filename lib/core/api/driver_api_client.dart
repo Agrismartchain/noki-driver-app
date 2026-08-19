@@ -57,6 +57,7 @@ abstract class DriverApiClient {
   Future<DeliveryIncidentResponseDto> createMissionIncident(String missionId, CreateDeliveryIncidentDto body);
   Future<List<DeliveryIncidentResponseDto>> deliveryMissionIncidents(String missionId);
   Future<DriverMissionResponseDto> scanMissionQr(ScanDeliveryQrDto body);
+  Future<SubmitDeliveryLocationResponseDto> submitDeliveryLocation(SubmitDeliveryLocationDto body);
 
   // --- Mobility (own-scoped) ----------------------------------------------
 
@@ -273,6 +274,12 @@ class DioDriverApiClient implements DriverApiClient {
   Future<DriverMissionResponseDto> scanMissionQr(ScanDeliveryQrDto body) => _guarded(() async {
         final response = await _dio.post('/v1/delivery/missions/scan-qr', data: body.toJson());
         return DriverMissionResponseDto.fromJson(response.data as Map<String, dynamic>);
+      });
+
+  @override
+  Future<SubmitDeliveryLocationResponseDto> submitDeliveryLocation(SubmitDeliveryLocationDto body) => _guarded(() async {
+        final response = await _dio.post('/v1/delivery/location', data: body.toJson());
+        return SubmitDeliveryLocationResponseDto.fromJson(response.data as Map<String, dynamic>);
       });
 
   // --- Mobility (own-scoped) ----------------------------------------------

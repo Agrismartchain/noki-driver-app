@@ -173,5 +173,25 @@
   "errorUnknown": "حدث خطأ ما.",
   "actionRetry": "إعادة المحاولة",
 
-  "offlineBannerMessage": "أنت غير متصل بالإنترنت. قد تكون بعض المعلومات غير محدثة."
+  "offlineBannerMessage": "أنت غير متصل بالإنترنت. قد تكون بعض المعلومات غير محدثة.",
+
+  "missionMapTitle": "الخريطة",
+  "missionMapBackToDetails": "التفاصيل",
+  "missionMapNextActionOtp": "اطلب رمز التسليم لإنهاء هذه التوصيلة",
+  "mobilityMapTitle": "الخريطة",
+
+  "homeContinueDelivery": "متابعة التوصيلة النشطة",
+  "homeContinueRide": "متابعة الرحلة النشطة",
+  "homeTrackingIdle": "لا يوجد تتبع - غير متصل",
+  "homeTrackingPermissionNeeded": "إذن الموقع مطلوب للتتبع",
+
+  "deliveryHistoryTitle": "سجل التوصيلات",
+  "deliveryHistoryEmpty": "لا توجد توصيلات مكتملة بعد",
+
+  "locationPermissionRationale": "يحتاج نوكي للسائقين إلى موقعك لعرضه على الخريطة أثناء توصيلة أو رحلة نشطة.",
+  "locationGrantAction": "السماح بالوصول إلى الموقع",
+  "locationDeniedForever": "تم رفض الوصول إلى الموقع نهائيًا. فعّله من الإعدادات لاستخدام الخريطة.",
+  "locationServiceDisabled": "خدمات الموقع معطّلة على هذا الجهاز. فعّلها لاستخدام الخريطة.",
+  "locationOpenSettings": "فتح الإعدادات",
+  "locationErrorGeneric": "تعذّرت قراءة حالة إذن الموقع."
 }

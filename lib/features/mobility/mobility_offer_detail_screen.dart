@@ -91,7 +91,7 @@ class _MobilityOfferDetailScreenState extends ConsumerState<MobilityOfferDetailS
       ref.invalidate(workFeedProvider(widget.scope));
       if (!mounted) return;
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => MobilityRideScreen(rideId: ride.id)),
+        MaterialPageRoute(builder: (_) => MobilityRideScreen(rideId: ride.id, scope: widget.scope)),
       );
     } on AppFailure catch (failure) {
       if (mounted) setState(() => _failure = failure);

@@ -6,9 +6,18 @@ import '../../core/connectivity/offline_banner.dart';
 import '../../core/errors/app_failure.dart';
 import '../../core/errors/error_view.dart';
 import '../../core/i18n/generated/app_localizations.dart';
+import '../../core/location/gps_publish_policy.dart';
+import '../../core/location/gps_publisher.dart';
+import '../../core/location/location_permission_state.dart';
+import '../../core/location/location_repository.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_theme.dart';
 import '../availability/availability_card.dart';
+import '../availability/availability_repository.dart';
+import '../delivery/delivery_mission_detail_screen.dart';
+import '../delivery/delivery_repository.dart';
+import '../mobility/mobility_repository.dart';
+import '../mobility/mobility_ride_screen.dart';
 import '../vehicles/vehicles_screen.dart';
 import '../work_feed/work_feed_repository.dart';
 import 'driver_context_repository.dart';
@@ -79,6 +88,10 @@ class _HomeContent extends ConsumerWidget {
           if (scope != null) AvailabilityCard(scope: scope),
           const SizedBox(height: AppSpacing.lg),
           if (scope != null) _WorkFeedSummaryCard(scope: scope, onOpenWork: onOpenWork),
+          if (scope != null) ...[
+            const SizedBox(height: AppSpacing.lg),
+            _ActiveWorkAndTrackingCard(scope: scope),
+          ],
         ],
       ),
     );
@@ -172,6 +185,159 @@ class _InfoRow extends StatelessWidget {
         Text(label, style: Theme.of(context).textTheme.labelSmall),
         Text(value, style: Theme.of(context).textTheme.bodyLarge),
       ],
+    );
+  }
+}
+
+/// One tap back into whatever active Delivery/Ride the driver already has
+/// (mandate §39), or, when idle, a compact tracking-status line (mandate
+/// §38 - deliberately not a full map on Home; the mission/ride screens are
+/// the right place for that). Also keeps [GpsPublisherController]'s idle
+/// tracking context in sync with the driver's current availability while
+/// Home is the active screen.
+class _ActiveWorkAndTrackingCard extends ConsumerWidget {
+  const _ActiveWorkAndTrackingCard({required this.scope});
+
+  final DriverScope scope;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final asyncAvailability = ref.watch(availabilityProvider(scope));
+
+    return asyncAvailability.when(
+      loading: () => const SizedBox.shrink(),
+      error: (_, _) => const SizedBox.shrink(),
+      data: (availability) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          ref.read(gpsPublisherControllerProvider).updateContext(
+                DriverTrackingContext(
+                  scope: scope,
+                  deliveryAvailable: availability.deliveryStatus == DriverAvailabilityResponseDtoDeliveryStatus.active,
+                  mobilityAvailable:
+                      availability.mobilityAvailabilityStatus == DriverAvailabilityResponseDtoMobilityAvailabilityStatus.available,
+                ),
+              );
+        });
+
+        if (availability.activeMobilityRideCount > 0) {
+          return _ContinueRideTile(scope: scope);
+        }
+        if (availability.activeDeliveryMissionCount > 0) {
+          return _ContinueDeliveryTile(scope: scope);
+        }
+        return const _TrackingStatusTile();
+      },
+    );
+  }
+}
+
+class _ContinueRideTile extends ConsumerWidget {
+  const _ContinueRideTile({required this.scope});
+
+  final DriverScope scope;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final asyncRide = ref.watch(currentRideProvider(scope));
+    return asyncRide.maybeWhen(
+      data: (ride) => ride == null
+          ? const SizedBox.shrink()
+          : _ContinueTile(
+              icon: Icons.local_taxi_outlined,
+              label: l10n.homeContinueRide,
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => MobilityRideScreen(rideId: ride.id, scope: scope)),
+              ),
+            ),
+      orElse: () => const SizedBox.shrink(),
+    );
+  }
+}
+
+class _ContinueDeliveryTile extends ConsumerWidget {
+  const _ContinueDeliveryTile({required this.scope});
+
+  final DriverScope scope;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final key = (scope, 'OUT_FOR_DELIVERY');
+    final asyncMissions = ref.watch(missionListByStatusProvider(key));
+    return asyncMissions.maybeWhen(
+      data: (list) => list.items.isEmpty
+          ? const SizedBox.shrink()
+          : _ContinueTile(
+              icon: Icons.local_shipping_outlined,
+              label: l10n.homeContinueDelivery,
+              onTap: () => Navigator.of(context).push(
+                MaterialPageRoute(builder: (_) => DeliveryMissionDetailScreen(missionId: list.items.first.id, scope: scope)),
+              ),
+            ),
+      orElse: () => const SizedBox.shrink(),
+    );
+  }
+}
+
+class _ContinueTile extends StatelessWidget {
+  const _ContinueTile({required this.icon, required this.label, required this.onTap});
+
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = context.nokiColors;
+    return Card(
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(AppRadius.md),
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.lg),
+          child: Row(
+            children: [
+              Icon(icon, color: colors.actionPrimary),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(child: Text(label, style: Theme.of(context).textTheme.titleMedium)),
+              Icon(Icons.chevron_right, color: colors.textMuted),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _TrackingStatusTile extends ConsumerWidget {
+  const _TrackingStatusTile();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final colors = context.nokiColors;
+    final asyncPermission = ref.watch(locationPermissionStateProvider);
+
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        child: Row(
+          children: [
+            Icon(Icons.gps_fixed, size: 18, color: colors.textMuted),
+            const SizedBox(width: AppSpacing.sm),
+            Expanded(
+              child: Text(
+                asyncPermission.maybeWhen(
+                  data: (state) => state == LocationPermissionState.granted ? l10n.homeTrackingIdle : l10n.homeTrackingPermissionNeeded,
+                  orElse: () => l10n.homeTrackingIdle,
+                ),
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(color: colors.textMuted),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

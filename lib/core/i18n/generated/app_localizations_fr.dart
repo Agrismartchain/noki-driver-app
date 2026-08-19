@@ -556,4 +556,58 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get offlineBannerMessage =>
       'Vous êtes hors ligne. Certaines informations peuvent ne pas être à jour.';
+
+  @override
+  String get missionMapTitle => 'Carte';
+
+  @override
+  String get missionMapBackToDetails => 'Détails';
+
+  @override
+  String get missionMapNextActionOtp =>
+      'Demandez le code de remise pour terminer cette livraison';
+
+  @override
+  String get mobilityMapTitle => 'Carte';
+
+  @override
+  String get homeContinueDelivery => 'Continuer la livraison en cours';
+
+  @override
+  String get homeContinueRide => 'Continuer la course en cours';
+
+  @override
+  String get homeTrackingIdle => 'Pas de suivi - hors ligne';
+
+  @override
+  String get homeTrackingPermissionNeeded =>
+      'Autorisation de localisation requise pour le suivi';
+
+  @override
+  String get deliveryHistoryTitle => 'Historique des livraisons';
+
+  @override
+  String get deliveryHistoryEmpty => 'Aucune livraison terminée pour le moment';
+
+  @override
+  String get locationPermissionRationale =>
+      'NOKI Chauffeur a besoin de votre position pour l\'afficher sur la carte pendant une livraison ou une course en cours.';
+
+  @override
+  String get locationGrantAction => 'Autoriser la localisation';
+
+  @override
+  String get locationDeniedForever =>
+      'L\'accès à la position a été définitivement refusé. Activez-le dans les Réglages pour utiliser la carte.';
+
+  @override
+  String get locationServiceDisabled =>
+      'Les services de localisation sont désactivés sur cet appareil. Activez-les pour utiliser la carte.';
+
+  @override
+  String get locationOpenSettings => 'Ouvrir les réglages';
+
+  @override
+  String get locationErrorGeneric =>
+      'Impossible de lire l\'état de l\'autorisation de localisation.';
 }

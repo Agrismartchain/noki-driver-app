@@ -553,4 +553,58 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get offlineBannerMessage =>
       'You\'re offline. Some information may be out of date.';
+
+  @override
+  String get missionMapTitle => 'Map';
+
+  @override
+  String get missionMapBackToDetails => 'Details';
+
+  @override
+  String get missionMapNextActionOtp =>
+      'Request the handoff code to complete this delivery';
+
+  @override
+  String get mobilityMapTitle => 'Map';
+
+  @override
+  String get homeContinueDelivery => 'Continue active delivery';
+
+  @override
+  String get homeContinueRide => 'Continue active ride';
+
+  @override
+  String get homeTrackingIdle => 'Not tracking - offline';
+
+  @override
+  String get homeTrackingPermissionNeeded =>
+      'Location permission needed for tracking';
+
+  @override
+  String get deliveryHistoryTitle => 'Delivery history';
+
+  @override
+  String get deliveryHistoryEmpty => 'No completed deliveries yet';
+
+  @override
+  String get locationPermissionRationale =>
+      'NOKI Driver needs your location to show it on the map during an active delivery or ride.';
+
+  @override
+  String get locationGrantAction => 'Allow location access';
+
+  @override
+  String get locationDeniedForever =>
+      'Location access was permanently denied. Enable it in Settings to use the map.';
+
+  @override
+  String get locationServiceDisabled =>
+      'Location services are turned off on this device. Enable them to use the map.';
+
+  @override
+  String get locationOpenSettings => 'Open settings';
+
+  @override
+  String get locationErrorGeneric =>
+      'Could not read the location permission state.';
 }

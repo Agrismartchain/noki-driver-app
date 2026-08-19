@@ -10,6 +10,8 @@ import '../../core/i18n/generated/app_localizations.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/idempotency_key.dart';
+import '../driver_context/driver_context_repository.dart';
+import 'delivery_mission_map_screen.dart';
 import 'delivery_repository.dart';
 import 'delivery_status_presentation.dart';
 
@@ -26,9 +28,10 @@ import 'delivery_status_presentation.dart';
 /// the Pickup/Financial sections can show it; if this screen is ever reached
 /// without one, those sections degrade honestly instead of guessing.
 class DeliveryMissionDetailScreen extends ConsumerStatefulWidget {
-  const DeliveryMissionDetailScreen({super.key, required this.missionId, this.feedItem});
+  const DeliveryMissionDetailScreen({super.key, required this.missionId, required this.scope, this.feedItem});
 
   final String missionId;
+  final DriverScope scope;
   final DriverWorkFeedItemDto? feedItem;
 
   @override
@@ -150,7 +153,20 @@ class _DeliveryMissionDetailScreenState extends ConsumerState<DeliveryMissionDet
     final asyncMission = ref.watch(missionDetailProvider(widget.missionId));
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.missionDetailTitle)),
+      appBar: AppBar(
+        title: Text(l10n.missionDetailTitle),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.map_outlined),
+            tooltip: l10n.missionMapTitle,
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => DeliveryMissionMapScreen(missionId: widget.missionId, scope: widget.scope, feedItem: widget.feedItem),
+              ),
+            ),
+          ),
+        ],
+      ),
       body: asyncMission.when(
         loading: () => const LoadingView(),
         error: (error, _) => ErrorView(

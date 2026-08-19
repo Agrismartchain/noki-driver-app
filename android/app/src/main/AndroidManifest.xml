@@ -1,9 +1,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Least-privilege permission set for DRIVER-APP-01: only network access
-         is needed to talk to the NOKI API. GPS/camera/background-location
+    <!-- Least-privilege permission set. GPS/camera/background-location
          permissions are added in the lots that implement the features that
          need them (see README "Limitations of DRIVER-APP-01"). -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Foreground-only location (mandate DRIVER-APP-03 §6/§49) - no
+         ACCESS_BACKGROUND_LOCATION, since background tracking is explicitly
+         deferred this phase (BACKGROUND_GPS=DEFERRED, see final report). -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <application
         android:label="NOKI Driver"
         android:name="${applicationName}"

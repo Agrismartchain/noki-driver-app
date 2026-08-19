@@ -1757,6 +1757,42 @@ class DeliveryIncidentResponseDto {
   }
 }
 
+class DeliveryLocationPointInputDto {
+  const DeliveryLocationPointInputDto({
+    required this.latitude,
+    required this.longitude,
+    this.accuracyMeters,
+    required this.recordedAt,
+    this.shipmentId,
+  });
+
+  final num latitude;
+  final num longitude;
+  final num? accuracyMeters;
+  final String recordedAt;
+  final String? shipmentId;
+
+  factory DeliveryLocationPointInputDto.fromJson(Map<String, dynamic> json) {
+    return DeliveryLocationPointInputDto(
+      latitude: (json["latitude"] as num?)!,
+      longitude: (json["longitude"] as num?)!,
+      accuracyMeters: (json["accuracyMeters"] as num?),
+      recordedAt: json["recordedAt"] as String,
+      shipmentId: json["shipmentId"] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "latitude": latitude,
+      "longitude": longitude,
+      "accuracyMeters": accuracyMeters,
+      "recordedAt": recordedAt,
+      "shipmentId": shipmentId,
+    };
+  }
+}
+
 class DriverAvailabilityResponseDto {
   const DriverAvailabilityResponseDto({
     required this.organizationId,
@@ -3177,6 +3213,58 @@ class ScanDeliveryQrDto {
   Map<String, dynamic> toJson() {
     return {
       "token": token,
+    };
+  }
+}
+
+class SubmitDeliveryLocationDto {
+  const SubmitDeliveryLocationDto({
+    required this.organizationId,
+    required this.countryCode,
+    required this.points,
+  });
+
+  final String organizationId;
+  final String countryCode;
+  final List<DeliveryLocationPointInputDto> points;
+
+  factory SubmitDeliveryLocationDto.fromJson(Map<String, dynamic> json) {
+    return SubmitDeliveryLocationDto(
+      organizationId: json["organizationId"] as String,
+      countryCode: json["countryCode"] as String,
+      points: (json["points"] as List<dynamic>).map((e) => DeliveryLocationPointInputDto.fromJson(e as Map<String, dynamic>)).toList(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "organizationId": organizationId,
+      "countryCode": countryCode,
+      "points": points.map((e) => e.toJson()).toList(),
+    };
+  }
+}
+
+class SubmitDeliveryLocationResponseDto {
+  const SubmitDeliveryLocationResponseDto({
+    required this.accepted,
+    required this.lastLocationAt,
+  });
+
+  final num accepted;
+  final String lastLocationAt;
+
+  factory SubmitDeliveryLocationResponseDto.fromJson(Map<String, dynamic> json) {
+    return SubmitDeliveryLocationResponseDto(
+      accepted: (json["accepted"] as num?)!,
+      lastLocationAt: json["lastLocationAt"] as String,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "accepted": accepted,
+      "lastLocationAt": lastLocationAt,
     };
   }
 }
