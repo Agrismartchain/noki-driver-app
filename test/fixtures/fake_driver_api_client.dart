@@ -93,6 +93,9 @@ class FakeDriverApiClient implements DriverApiClient {
   MobilityDriverDto? submitMobilityLocationResponse;
   AppFailure? submitMobilityLocationFailure;
 
+  SubmitDeliveryLocationResponseDto? submitDeliveryLocationResponse;
+  AppFailure? submitDeliveryLocationFailure;
+
   int loginCallCount = 0;
   int refreshCallCount = 0;
 
@@ -294,5 +297,11 @@ class FakeDriverApiClient implements DriverApiClient {
   Future<MobilityDriverDto> submitMobilityLocation(SubmitMobilityLocationDto body) async {
     if (submitMobilityLocationFailure != null) throw submitMobilityLocationFailure!;
     return submitMobilityLocationResponse!;
+  }
+
+  @override
+  Future<SubmitDeliveryLocationResponseDto> submitDeliveryLocation(SubmitDeliveryLocationDto body) async {
+    if (submitDeliveryLocationFailure != null) throw submitDeliveryLocationFailure!;
+    return submitDeliveryLocationResponse!;
   }
 }

@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:noki_driver_app/core/api/api_providers.dart';
 import 'package:noki_driver_app/core/api/generated/driver_models.generated.dart';
+import 'package:noki_driver_app/features/driver_context/driver_context_repository.dart';
 import 'package:noki_driver_app/features/mobility/mobility_ride_screen.dart';
 
 import '../../fixtures/fake_driver_api_client.dart';
 import '../../fixtures/sample_responses.dart';
 import '../../fixtures/test_harness.dart';
+
+const _scope = DriverScope(organizationId: 'org-1', countryCode: 'MA');
 
 void main() {
   testWidgets('a DRIVER_ASSIGNED ride only offers "mark en route" and "cancel", never "complete"', (tester) async {
@@ -14,7 +17,7 @@ void main() {
 
     await pumpWithProviders(
       tester,
-      const MobilityRideScreen(rideId: 'ride-1'),
+      const MobilityRideScreen(rideId: 'ride-1', scope: _scope),
       overrides: [driverApiClientProvider.overrideWithValue(client)],
     );
 
@@ -30,7 +33,7 @@ void main() {
 
     await pumpWithProviders(
       tester,
-      const MobilityRideScreen(rideId: 'ride-1'),
+      const MobilityRideScreen(rideId: 'ride-1', scope: _scope),
       overrides: [driverApiClientProvider.overrideWithValue(client)],
     );
 
@@ -45,7 +48,7 @@ void main() {
 
     await pumpWithProviders(
       tester,
-      const MobilityRideScreen(rideId: 'ride-1'),
+      const MobilityRideScreen(rideId: 'ride-1', scope: _scope),
       overrides: [driverApiClientProvider.overrideWithValue(client)],
     );
 
@@ -60,7 +63,7 @@ void main() {
 
     await pumpWithProviders(
       tester,
-      const MobilityRideScreen(rideId: 'ride-1'),
+      const MobilityRideScreen(rideId: 'ride-1', scope: _scope),
       overrides: [driverApiClientProvider.overrideWithValue(client)],
     );
 

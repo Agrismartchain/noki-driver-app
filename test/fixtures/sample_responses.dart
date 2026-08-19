@@ -72,20 +72,24 @@ Map<String, dynamic> sampleVehicleList() => {
       'pageSize': 25,
     };
 
-Map<String, dynamic> sampleAvailability({String mobilityStatus = 'OFFLINE'}) => {
+Map<String, dynamic> sampleAvailability({
+  String mobilityStatus = 'OFFLINE',
+  int activeDeliveryMissionCount = 2,
+  int activeMobilityRideCount = 1,
+}) => {
       'organizationId': 'org-1',
       'countryId': 'country-1',
       'countryCode': 'MA',
       'deliveryProfileId': 'delivery-profile-1',
       'deliveryStatus': 'ACTIVE',
-      'activeDeliveryMissionCount': 2,
+      'activeDeliveryMissionCount': activeDeliveryMissionCount,
       'mobilityProfileId': 'mobility-profile-1',
       'mobilityAvailabilityStatus': mobilityStatus,
       'mobilityOnboardingStatus': 'APPROVED',
       'mobilityOperationalStatus': 'ACTIVE',
       'serviceCapabilities': ['TAXI'],
       'activeMobilityOfferCount': 0,
-      'activeMobilityRideCount': 1,
+      'activeMobilityRideCount': activeMobilityRideCount,
     };
 
 Map<String, dynamic> sampleWorkFeedDeliveryItem() => {

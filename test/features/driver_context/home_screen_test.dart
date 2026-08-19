@@ -53,4 +53,37 @@ void main() {
     expect(find.text('Something went wrong on our side. Try again shortly.'), findsOneWidget);
     expect(find.text('Retry'), findsOneWidget);
   });
+
+  testWidgets('an active ride surfaces a one-tap "continue" card instead of the idle tracking line', (tester) async {
+    final client = FakeDriverApiClient()
+      ..driverContextResponse = DriverContextResponseDto.fromJson(sampleDriverContext())
+      ..availabilityResponse = DriverAvailabilityResponseDto.fromJson(sampleAvailability())
+      ..workFeedResponse = DriverWorkFeedListResponseDto.fromJson(sampleWorkFeedList())
+      ..currentMobilityRideResponse = MobilityRideDetailDto.fromJson(sampleMobilityRide());
+
+    await pumpWithProviders(
+      tester,
+      const HomeScreen(),
+      overrides: [driverApiClientProvider.overrideWithValue(client)],
+    );
+
+    expect(find.text('Continue active ride'), findsOneWidget);
+    expect(find.text('Not tracking - offline'), findsNothing);
+  });
+
+  testWidgets('no active work and no availability shows the idle tracking line, not a continue card', (tester) async {
+    final client = FakeDriverApiClient()
+      ..driverContextResponse = DriverContextResponseDto.fromJson(sampleDriverContext())
+      ..availabilityResponse = DriverAvailabilityResponseDto.fromJson(sampleAvailability(activeDeliveryMissionCount: 0, activeMobilityRideCount: 0))
+      ..workFeedResponse = DriverWorkFeedListResponseDto.fromJson(sampleWorkFeedList());
+
+    await pumpWithProviders(
+      tester,
+      const HomeScreen(),
+      overrides: [driverApiClientProvider.overrideWithValue(client)],
+    );
+
+    expect(find.text('Continue active ride'), findsNothing);
+    expect(find.text('Continue active delivery'), findsNothing);
+  });
 }

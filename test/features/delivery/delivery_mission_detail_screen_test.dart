@@ -7,10 +7,13 @@ import 'package:noki_driver_app/core/errors/app_failure.dart';
 import 'package:noki_driver_app/core/theme/app_colors.dart';
 import 'package:noki_driver_app/core/theme/app_theme.dart';
 import 'package:noki_driver_app/features/delivery/delivery_mission_detail_screen.dart';
+import 'package:noki_driver_app/features/driver_context/driver_context_repository.dart';
 
 import '../../fixtures/fake_driver_api_client.dart';
 import '../../fixtures/sample_responses.dart';
 import '../../fixtures/test_harness.dart';
+
+const _scope = DriverScope(organizationId: 'org-1', countryCode: 'MA');
 
 void main() {
   // This screen is a long scrollable list of section cards; the default
@@ -35,7 +38,7 @@ void main() {
 
     await pumpTall(
       tester,
-      const DeliveryMissionDetailScreen(missionId: 'shipment-1'),
+      const DeliveryMissionDetailScreen(missionId: 'shipment-1', scope: _scope),
       overrides: [driverApiClientProvider.overrideWithValue(client)],
     );
 
@@ -57,7 +60,7 @@ void main() {
 
     await pumpTall(
       tester,
-      DeliveryMissionDetailScreen(missionId: 'shipment-1', feedItem: feedItem),
+      DeliveryMissionDetailScreen(missionId: 'shipment-1', scope: _scope, feedItem: feedItem),
       overrides: [driverApiClientProvider.overrideWithValue(client)],
     );
 
@@ -72,7 +75,7 @@ void main() {
 
     await pumpTall(
       tester,
-      const DeliveryMissionDetailScreen(missionId: 'shipment-1'),
+      const DeliveryMissionDetailScreen(missionId: 'shipment-1', scope: _scope),
       overrides: [driverApiClientProvider.overrideWithValue(client)],
     );
 
@@ -87,7 +90,7 @@ void main() {
 
     await pumpTall(
       tester,
-      const DeliveryMissionDetailScreen(missionId: 'shipment-1'),
+      const DeliveryMissionDetailScreen(missionId: 'shipment-1', scope: _scope),
       overrides: [driverApiClientProvider.overrideWithValue(client)],
       locale: const Locale('ar'),
     );
@@ -103,7 +106,7 @@ void main() {
 
     await pumpTall(
       tester,
-      const DeliveryMissionDetailScreen(missionId: 'shipment-1'),
+      const DeliveryMissionDetailScreen(missionId: 'shipment-1', scope: _scope),
       overrides: [driverApiClientProvider.overrideWithValue(client)],
       theme: buildNokiTheme(NokiColors.dark, Brightness.dark),
     );
@@ -116,7 +119,7 @@ void main() {
 
     await pumpTall(
       tester,
-      const DeliveryMissionDetailScreen(missionId: 'missing'),
+      const DeliveryMissionDetailScreen(missionId: 'missing', scope: _scope),
       overrides: [driverApiClientProvider.overrideWithValue(client)],
     );
 
