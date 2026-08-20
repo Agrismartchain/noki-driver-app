@@ -34,7 +34,9 @@ class MobilityWorkCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Icon(
-                item.serviceType == DriverWorkFeedItemDtoServiceType.taxiMoto ? Icons.moped_outlined : Icons.local_taxi_outlined,
+                item.serviceType == DriverWorkFeedItemDtoServiceType.taxiMoto
+                    ? Icons.moped_outlined
+                    : Icons.local_taxi_outlined,
                 color: colors.actionPrimary,
               ),
               const SizedBox(width: AppSpacing.md),
@@ -44,7 +46,8 @@ class MobilityWorkCard extends StatelessWidget {
                   children: [
                     Text(
                       '${workFeedServiceTypeLabel(l10n, item.serviceType)} · ${isOffer ? l10n.mobilityOfferLabel : l10n.mobilityRideLabel}',
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(color: colors.textMuted),
+                      style: Theme.of(context).textTheme.labelSmall
+                          ?.copyWith(color: colors.textMuted),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -53,11 +56,22 @@ class MobilityWorkCard extends StatelessWidget {
                     // backend's `label` on Mobility work items is always a
                     // generic 'Pickup'/'Dropoff' placeholder, never the
                     // actual address.
-                    if (item.pickup?.addressLine1 != null || item.pickup?.label != null)
-                      _RouteLine(icon: Icons.trip_origin, label: item.pickup!.addressLine1 ?? item.pickup!.label!, color: colors.textMuted),
-                    if (item.dropoff?.addressLine1 != null || item.dropoff?.label != null) ...[
+                    if (item.pickup?.addressLine1 != null ||
+                        item.pickup?.label != null)
+                      _RouteLine(
+                        icon: Icons.trip_origin,
+                        label: item.pickup!.addressLine1 ?? item.pickup!.label!,
+                        color: colors.textMuted,
+                      ),
+                    if (item.dropoff?.addressLine1 != null ||
+                        item.dropoff?.label != null) ...[
                       const SizedBox(height: AppSpacing.xs),
-                      _RouteLine(icon: Icons.place_outlined, label: item.dropoff!.addressLine1 ?? item.dropoff!.label!, color: colors.textPrimary),
+                      _RouteLine(
+                        icon: Icons.place_outlined,
+                        label:
+                            item.dropoff!.addressLine1 ?? item.dropoff!.label!,
+                        color: colors.textPrimary,
+                      ),
                     ],
                     if (item.amount != null) ...[
                       const SizedBox(height: AppSpacing.sm),
@@ -79,7 +93,11 @@ class MobilityWorkCard extends StatelessWidget {
 }
 
 class _RouteLine extends StatelessWidget {
-  const _RouteLine({required this.icon, required this.label, required this.color});
+  const _RouteLine({
+    required this.icon,
+    required this.label,
+    required this.color,
+  });
 
   final IconData icon;
   final String label;
@@ -95,7 +113,8 @@ class _RouteLine extends StatelessWidget {
         Expanded(
           child: Text(
             label,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: color),
+            style: Theme.of(context).textTheme.bodyMedium
+                ?.copyWith(color: color),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),

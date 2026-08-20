@@ -48,13 +48,19 @@ class DeliveryWorkCard extends StatelessWidget {
                       children: [
                         Text(
                           l10n.workFeedTypeDelivery,
-                          style: Theme.of(context).textTheme.labelSmall?.copyWith(color: colors.textMuted),
+                          style: Theme.of(context).textTheme.labelSmall
+                              ?.copyWith(color: colors.textMuted),
                         ),
-                        _StatusPill(status: DriverMissionResponseDtoStatus.fromJson(item.status)),
+                        _StatusPill(
+                          status: DriverMissionResponseDtoStatus.fromJson(
+                            item.status,
+                          ),
+                        ),
                       ],
                     ),
                     const SizedBox(height: AppSpacing.sm),
-                    if (item.pickup?.addressLine1 != null || item.pickup?.label != null)
+                    if (item.pickup?.addressLine1 != null ||
+                        item.pickup?.label != null)
                       _RouteLine(
                         icon: Icons.trip_origin,
                         // addressLine1 is the real address when present; the
@@ -65,21 +71,31 @@ class DeliveryWorkCard extends StatelessWidget {
                         label: item.pickup!.addressLine1 ?? item.pickup!.label!,
                         color: colors.textMuted,
                       ),
-                    if (item.dropoff?.addressLine1 != null || item.dropoff?.label != null) ...[
+                    if (item.dropoff?.addressLine1 != null ||
+                        item.dropoff?.label != null) ...[
                       const SizedBox(height: AppSpacing.xs),
                       _RouteLine(
                         icon: Icons.place_outlined,
-                        label: item.dropoff!.addressLine1 ?? item.dropoff!.label!,
+                        label:
+                            item.dropoff!.addressLine1 ?? item.dropoff!.label!,
                         color: colors.textPrimary,
                       ),
                     ],
                     if (item.amount != null) ...[
                       const SizedBox(height: AppSpacing.sm),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
-                        decoration: BoxDecoration(color: colors.surfaceSelected, borderRadius: BorderRadius.circular(AppRadius.sm)),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.sm,
+                          vertical: AppSpacing.xs,
+                        ),
+                        decoration: BoxDecoration(
+                          color: colors.surfaceSelected,
+                          borderRadius: BorderRadius.circular(AppRadius.sm),
+                        ),
                         child: Text(
-                          l10n.deliveryCodBadge('${item.amount!.amount} ${item.amount!.currencyCode}'),
+                          l10n.deliveryCodBadge(
+                            '${item.amount!.amount} ${item.amount!.currencyCode}',
+                          ),
                           style: Theme.of(context).textTheme.labelSmall,
                         ),
                       ),
@@ -97,7 +113,11 @@ class DeliveryWorkCard extends StatelessWidget {
 }
 
 class _RouteLine extends StatelessWidget {
-  const _RouteLine({required this.icon, required this.label, required this.color});
+  const _RouteLine({
+    required this.icon,
+    required this.label,
+    required this.color,
+  });
 
   final IconData icon;
   final String label;
@@ -113,7 +133,8 @@ class _RouteLine extends StatelessWidget {
         Expanded(
           child: Text(
             label,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: color),
+            style: Theme.of(context).textTheme.bodyMedium
+                ?.copyWith(color: color),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
           ),
@@ -132,11 +153,25 @@ class _StatusPill extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final colors = context.nokiColors;
-    final (label, background, foreground) = missionStatusPresentation(l10n, colors, status);
+    final (label, background, foreground) = missionStatusPresentation(
+      l10n,
+      colors,
+      status,
+    );
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
-      decoration: BoxDecoration(color: background, borderRadius: BorderRadius.circular(AppRadius.full)),
-      child: Text(label, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: foreground)),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm,
+        vertical: AppSpacing.xs,
+      ),
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadius.circular(AppRadius.full),
+      ),
+      child: Text(
+        label,
+        style: Theme.of(context).textTheme.labelSmall
+            ?.copyWith(color: foreground),
+      ),
     );
   }
 }

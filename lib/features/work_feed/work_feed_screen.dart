@@ -41,13 +41,32 @@ class _WorkFeedScreenState extends ConsumerState<WorkFeedScreen> {
       case _WorkFeedFilter.all:
         return items;
       case _WorkFeedFilter.delivery:
-        return items.where((i) => i.workType == DriverWorkFeedItemDtoWorkType.delivery).toList();
+        return items
+            .where((i) => i.workType == DriverWorkFeedItemDtoWorkType.delivery)
+            .toList();
       case _WorkFeedFilter.rides:
-        return items.where((i) => i.workType == DriverWorkFeedItemDtoWorkType.ride).toList();
+        return items
+            .where((i) => i.workType == DriverWorkFeedItemDtoWorkType.ride)
+            .toList();
       case _WorkFeedFilter.active:
-        return items.where((i) => i.sourceDomain != 'MOBILITY_OFFER' && i.status != 'DELIVERED' && i.status != 'CANCELLED' && i.status != 'COMPLETED').toList();
+        return items
+            .where(
+              (i) =>
+                  i.sourceDomain != 'MOBILITY_OFFER' &&
+                  i.status != 'DELIVERED' &&
+                  i.status != 'CANCELLED' &&
+                  i.status != 'COMPLETED',
+            )
+            .toList();
       case _WorkFeedFilter.pending:
-        return items.where((i) => i.sourceDomain == 'MOBILITY_OFFER' || i.status == 'ASSIGNED' || i.status == 'READY_FOR_DISPATCH').toList();
+        return items
+            .where(
+              (i) =>
+                  i.sourceDomain == 'MOBILITY_OFFER' ||
+                  i.status == 'ASSIGNED' ||
+                  i.status == 'READY_FOR_DISPATCH',
+            )
+            .toList();
     }
   }
 
@@ -56,15 +75,31 @@ class _WorkFeedScreenState extends ConsumerState<WorkFeedScreen> {
     switch (resource.resourceType) {
       case 'DeliveryShipment':
         Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => DeliveryMissionDetailScreen(missionId: resource.resourceId, scope: widget.scope, feedItem: item)),
+          MaterialPageRoute(
+            builder: (_) => DeliveryMissionDetailScreen(
+              missionId: resource.resourceId,
+              scope: widget.scope,
+              feedItem: item,
+            ),
+          ),
         );
       case 'MobilityRideOffer':
         Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => MobilityOfferDetailScreen.fromWorkFeedItem(item: item, scope: widget.scope)),
+          MaterialPageRoute(
+            builder: (_) => MobilityOfferDetailScreen.fromWorkFeedItem(
+              item: item,
+              scope: widget.scope,
+            ),
+          ),
         );
       case 'MobilityRide':
         Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => MobilityRideScreen(rideId: resource.resourceId, scope: widget.scope)),
+          MaterialPageRoute(
+            builder: (_) => MobilityRideScreen(
+              rideId: resource.resourceId,
+              scope: widget.scope,
+            ),
+          ),
         );
     }
   }
@@ -82,14 +117,18 @@ class _WorkFeedScreenState extends ConsumerState<WorkFeedScreen> {
             icon: const Icon(Icons.qr_code_scanner_outlined),
             tooltip: l10n.qrScanTitle,
             onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => DeliveryQrScanScreen(scope: widget.scope)),
+              MaterialPageRoute(
+                builder: (_) => DeliveryQrScanScreen(scope: widget.scope),
+              ),
             ),
           ),
           IconButton(
             icon: const Icon(Icons.history),
             tooltip: l10n.deliveryHistoryTitle,
             onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => DeliveryHistoryScreen(scope: widget.scope)),
+              MaterialPageRoute(
+                builder: (_) => DeliveryHistoryScreen(scope: widget.scope),
+              ),
             ),
           ),
         ],
@@ -97,7 +136,10 @@ class _WorkFeedScreenState extends ConsumerState<WorkFeedScreen> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.sm),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.lg,
+              vertical: AppSpacing.sm,
+            ),
             child: SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: Row(
@@ -118,7 +160,9 @@ class _WorkFeedScreenState extends ConsumerState<WorkFeedScreen> {
             child: asyncFeed.when(
               loading: () => const LoadingView(),
               error: (error, _) => ErrorView(
-                failure: error is AppFailure ? error : const AppFailure(AppFailureType.unknown),
+                failure: error is AppFailure
+                    ? error
+                    : const AppFailure(AppFailureType.unknown),
                 onRetry: () => ref.invalidate(workFeedProvider(widget.scope)),
               ),
               data: (list) {
@@ -131,16 +175,25 @@ class _WorkFeedScreenState extends ConsumerState<WorkFeedScreen> {
                   );
                 }
                 return RefreshIndicator(
-                  onRefresh: () async => ref.invalidate(workFeedProvider(widget.scope)),
+                  onRefresh: () async =>
+                      ref.invalidate(workFeedProvider(widget.scope)),
                   child: ListView.separated(
                     padding: const EdgeInsets.all(AppSpacing.lg),
                     itemCount: filtered.length,
-                    separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.md),
+                    separatorBuilder: (_, _) =>
+                        const SizedBox(height: AppSpacing.md),
                     itemBuilder: (context, index) {
                       final item = filtered[index];
-                      return item.workType == DriverWorkFeedItemDtoWorkType.delivery
-                          ? DeliveryWorkCard(item: item, onTap: () => _open(item))
-                          : MobilityWorkCard(item: item, onTap: () => _open(item));
+                      return item.workType ==
+                              DriverWorkFeedItemDtoWorkType.delivery
+                          ? DeliveryWorkCard(
+                              item: item,
+                              onTap: () => _open(item),
+                            )
+                          : MobilityWorkCard(
+                              item: item,
+                              onTap: () => _open(item),
+                            );
                     },
                   ),
                 );
