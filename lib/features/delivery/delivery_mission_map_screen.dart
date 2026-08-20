@@ -1,16 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/api/generated/driver_models.generated.dart';
+import '../../core/location/location_permission_state.dart';
 import '../../core/location/gps_publish_policy.dart';
 import '../../core/location/gps_publisher.dart';
 import '../../core/location/live_position_provider.dart';
 import '../../core/location/location_permission_gate.dart';
+import '../../core/location/location_repository.dart';
 import '../../core/i18n/generated/app_localizations.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/ui/noki_finance.dart';
+import '../../core/ui/noki_ui.dart';
 import '../driver_context/driver_context_repository.dart';
+import '../map/map_chrome.dart';
 import '../map/map_point.dart';
 import '../map/map_view.dart';
 import 'delivery_repository.dart';
@@ -77,6 +83,10 @@ class _DeliveryMissionMapScreenState
     super.dispose();
   }
 
+  Future<void> _call(String phone) async {
+    await launchUrl(Uri(scheme: 'tel', path: phone));
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -86,7 +96,12 @@ class _DeliveryMissionMapScreenState
     final dropoff = widget.feedItem?.dropoff;
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.missionMapTitle)),
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        title: Text(l10n.missionMapTitle),
+        backgroundColor: Colors.transparent,
+        surfaceTintColor: Colors.transparent,
+      ),
       body: LocationPermissionGate(
         // `livePositionProvider` is only watched once permission is
         // already confirmed granted (i.e. inside this builder), not at the
@@ -97,6 +112,8 @@ class _DeliveryMissionMapScreenState
         // driver grants access. Caught live on-device (mandate §57).
         builder: (context) {
           final asyncPosition = ref.watch(livePositionProvider);
+          final safeTop =
+              MediaQuery.paddingOf(context).top + kToolbarHeight + 8;
           return Stack(
             children: [
               NokiMapView(
@@ -120,9 +137,34 @@ class _DeliveryMissionMapScreenState
               Positioned(
                 left: AppSpacing.lg,
                 right: AppSpacing.lg,
+                top: safeTop,
+                child: Wrap(
+                  spacing: AppSpacing.sm,
+                  runSpacing: AppSpacing.sm,
+                  children: [
+                    NokiMapStatusChip(
+                      label: l10n.workFeedTypeDelivery,
+                      icon: Icons.local_shipping_outlined,
+                      backgroundColor: context.nokiColors.actionPrimary,
+                      foregroundColor: context.nokiColors.actionPrimaryInk,
+                    ),
+                    _GpsChip(asyncPosition: asyncPosition),
+                  ],
+                ),
+              ),
+              Positioned(
+                left: AppSpacing.lg,
+                right: AppSpacing.lg,
                 bottom: AppSpacing.lg,
                 child: asyncMission.maybeWhen(
-                  data: (mission) => _BottomSheet(mission: mission),
+                  data: (mission) => _BottomSheet(
+                    mission: mission,
+                    feedItem: widget.feedItem,
+                    onOpenDetails: () => Navigator.of(context).pop(),
+                    onCall: mission.customerPhone == null
+                        ? null
+                        : () => _call(mission.customerPhone!),
+                  ),
                   orElse: () => const SizedBox.shrink(),
                 ),
               ),
@@ -135,9 +177,17 @@ class _DeliveryMissionMapScreenState
 }
 
 class _BottomSheet extends StatelessWidget {
-  const _BottomSheet({required this.mission});
+  const _BottomSheet({
+    required this.mission,
+    required this.feedItem,
+    required this.onOpenDetails,
+    this.onCall,
+  });
 
   final DriverMissionResponseDto mission;
+  final DriverWorkFeedItemDto? feedItem;
+  final VoidCallback onOpenDetails;
+  final VoidCallback? onCall;
 
   @override
   Widget build(BuildContext context) {
@@ -148,44 +198,175 @@ class _BottomSheet extends StatelessWidget {
       colors,
       mission.status,
     );
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Row(
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: AppSpacing.sm,
-                vertical: AppSpacing.xs,
+    final amount = feedItem?.amount;
+    final amountValue = amount?.amount ?? mission.codExpectedAmount;
+    final amountCurrency = amount?.currencyCode;
+    final pickupLabel =
+        feedItem?.pickup?.addressLine1 ?? feedItem?.pickup?.label;
+
+    return NokiMapBottomPanel(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    NokiBadge(
+                      label: label,
+                      tone: NokiBadgeTone.neutral,
+                      icon: Icons.adjust_rounded,
+                    ),
+                    const SizedBox(height: AppSpacing.sm),
+                    Text(
+                      mission.addressLine1,
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(
+                      mission.customerFullName,
+                      style: Theme.of(context).textTheme.bodyLarge
+                          ?.copyWith(color: colors.textSecondary),
+                    ),
+                  ],
+                ),
               ),
-              decoration: BoxDecoration(
-                color: background,
-                borderRadius: BorderRadius.circular(AppRadius.full),
-              ),
-              child: Text(
-                label,
-                style: Theme.of(context).textTheme.labelSmall
-                    ?.copyWith(color: foreground),
-              ),
+              if (onCall != null) ...[
+                const SizedBox(width: AppSpacing.md),
+                NokiMapControlButton(
+                  icon: Icons.call_outlined,
+                  tooltip: l10n.missionCallAction,
+                  onPressed: onCall!,
+                ),
+              ],
+            ],
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          if (pickupLabel != null)
+            _RouteRow(
+              icon: Icons.trip_origin,
+              label: l10n.missionSectionPickup,
+              value: pickupLabel,
+              color: colors.textMuted,
             ),
-            const SizedBox(width: AppSpacing.md),
-            Expanded(
-              child: Text(
+          if (pickupLabel != null) const SizedBox(height: AppSpacing.sm),
+          _RouteRow(
+            icon: Icons.place_outlined,
+            label: l10n.missionSectionDropoff,
+            value: mission.addressLine1,
+            color: colors.textPrimary,
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          NokiFinanceCallout(
+            label: l10n.financeAmountToCollectLabel,
+            amount: amountValue,
+            currencyCode: amountCurrency,
+            tone: NokiFinanceTone.collect,
+            preferFcfa: true,
+            caption: l10n.financeAmountToCollectHint,
+            icon: Icons.payments_outlined,
+          ),
+          const SizedBox(height: AppSpacing.md),
+          NokiFinanceNotice(message: l10n.financeCodSafetyNotice),
+          const SizedBox(height: AppSpacing.md),
+          NokiOperationalBanner(
+            icon: Icons.bolt_rounded,
+            message:
                 mission.status == DriverMissionResponseDtoStatus.outForDelivery
-                    ? l10n.missionMapNextActionOtp
-                    : l10n.missionCompleteRequiresOutForDelivery,
-                style: Theme.of(context).textTheme.bodySmall
-                    ?.copyWith(color: context.nokiColors.textMuted),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
+                ? l10n.missionMapNextActionOtp
+                : l10n.missionCompleteRequiresOutForDelivery,
+            tone: NokiBadgeTone.info,
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          SizedBox(
+            width: double.infinity,
+            child: ElevatedButton(
+              onPressed: onOpenDetails,
               child: Text(l10n.missionMapBackToDetails),
             ),
-          ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _RouteRow extends StatelessWidget {
+  const _RouteRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+    required this.color,
+  });
+
+  final IconData icon;
+  final String label;
+  final String value;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(icon, size: 18, color: color),
+        const SizedBox(width: AppSpacing.sm),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: Theme.of(context).textTheme.labelSmall
+                    ?.copyWith(color: color),
+              ),
+              const SizedBox(height: AppSpacing.xs),
+              Text(value, style: Theme.of(context).textTheme.bodyLarge),
+            ],
+          ),
         ),
+      ],
+    );
+  }
+}
+
+class _GpsChip extends ConsumerWidget {
+  const _GpsChip({required this.asyncPosition});
+
+  final AsyncValue<Object?> asyncPosition;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final permission = ref.watch(locationPermissionStateProvider);
+    final colors = context.nokiColors;
+
+    if (permission.valueOrNull == LocationPermissionState.serviceDisabled) {
+      return NokiMapStatusChip(
+        label: l10n.mapGpsDisabled,
+        icon: Icons.location_off_outlined,
+        backgroundColor: colors.warningSurface,
+        foregroundColor: colors.warning,
+      );
+    }
+
+    return asyncPosition.when(
+      data: (_) => NokiMapStatusChip(
+        label: l10n.mapGpsLive,
+        icon: Icons.my_location_rounded,
+      ),
+      error: (_, _) => NokiMapStatusChip(
+        label: l10n.mapGpsUnavailable,
+        icon: Icons.gps_off_rounded,
+        backgroundColor: colors.dangerSurface,
+        foregroundColor: colors.danger,
+      ),
+      loading: () => NokiMapStatusChip(
+        label: l10n.mapGpsLocating,
+        icon: Icons.gps_fixed_outlined,
       ),
     );
   }

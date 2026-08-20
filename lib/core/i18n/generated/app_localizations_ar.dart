@@ -213,6 +213,24 @@ class AppLocalizationsAr extends AppLocalizations {
   }
 
   @override
+  String get financeAmountToCollectLabel => 'المبلغ المطلوب تحصيله';
+
+  @override
+  String get financeAmountToCollectHint =>
+      'قم بتحصيل هذا المبلغ من العميل قبل إنهاء التوصيلة.';
+
+  @override
+  String get financeCodSafetyNotice =>
+      'هذا المبلغ يعود إلى نوكي حتى تتم تسويته. لا يُعد من أرباح السائق.';
+
+  @override
+  String get financeEstimatedFareLabel => 'الأجرة التقديرية';
+
+  @override
+  String get financeEstimatedFareHint =>
+      'يُعرض كسياق تشغيلي للرحلة وليس كدفعة نهائية للسائق.';
+
+  @override
   String get missionDetailTitle => 'المهمة';
 
   @override
@@ -616,4 +634,16 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get locationErrorGeneric => 'تعذّرت قراءة حالة إذن الموقع.';
+
+  @override
+  String get mapGpsLive => 'نظام GPS نشط';
+
+  @override
+  String get mapGpsLocating => 'جارٍ تحديد موقع السائق';
+
+  @override
+  String get mapGpsUnavailable => 'الموقع غير متاح';
+
+  @override
+  String get mapGpsDisabled => 'تم تعطيل GPS';
 }

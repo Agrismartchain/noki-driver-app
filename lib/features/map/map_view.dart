@@ -3,6 +3,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../../core/theme/app_theme.dart';
+import 'map_chrome.dart';
 import 'map_markers.dart';
 import 'map_point.dart';
 
@@ -102,37 +103,10 @@ class _NokiMapViewState extends State<NokiMapView> {
             initialZoom: points.isEmpty ? 2 : 15,
           ),
           children: [
-            // Dark mode: OSM raster tiles can't be re-themed, so they're
-            // dimmed/desaturated slightly for legibility against dark UI
-            // chrome (mandate §53) rather than left jarringly bright.
-            if (isDark)
-              ColorFiltered(
-                colorFilter: const ColorFilter.matrix(<double>[
-                  0.55,
-                  0,
-                  0,
-                  0,
-                  20,
-                  0,
-                  0.55,
-                  0,
-                  0,
-                  20,
-                  0,
-                  0,
-                  0.55,
-                  0,
-                  20,
-                  0,
-                  0,
-                  0,
-                  1,
-                  0,
-                ]),
-                child: _tileLayer(),
-              )
-            else
-              _tileLayer(),
+            ColorFiltered(
+              colorFilter: isDark ? _darkMapFilter : _lightMapFilter,
+              child: _tileLayer(),
+            ),
             MarkerLayer(
               markers: [
                 if (widget.pickup != null) pickupMarker(widget.pickup!, colors),
@@ -144,18 +118,37 @@ class _NokiMapViewState extends State<NokiMapView> {
             ),
           ],
         ),
+        Positioned.fill(
+          child: IgnorePointer(
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    colors.chromeSurface.withValues(
+                      alpha: isDark ? 0.24 : 0.08,
+                    ),
+                    Colors.transparent,
+                    colors.background.withValues(alpha: 0.06),
+                    colors.background.withValues(alpha: 0.24),
+                  ],
+                  stops: const [0, 0.18, 0.72, 1],
+                ),
+              ),
+            ),
+          ),
+        ),
         Positioned(
           right: 12,
-          bottom: 12,
-          child: FloatingActionButton.small(
-            heroTag: null,
-            backgroundColor: colors.surface,
-            foregroundColor: colors.textPrimary,
+          bottom: 20,
+          child: NokiMapControlButton(
+            icon: Icons.my_location_rounded,
+            tooltip: 'Recenter map',
             onPressed: () {
               _fitted = false;
               _fit();
             },
-            child: const Icon(Icons.my_location),
           ),
         ),
       ],
@@ -175,3 +168,49 @@ class _NokiMapViewState extends State<NokiMapView> {
     super.dispose();
   }
 }
+
+const _lightMapFilter = ColorFilter.matrix(<double>[
+  0.5,
+  0.5,
+  0.5,
+  0,
+  12,
+  0.5,
+  0.5,
+  0.5,
+  0,
+  12,
+  0.5,
+  0.5,
+  0.5,
+  0,
+  12,
+  0,
+  0,
+  0,
+  1,
+  0,
+]);
+
+const _darkMapFilter = ColorFilter.matrix(<double>[
+  0.36,
+  0.36,
+  0.36,
+  0,
+  18,
+  0.36,
+  0.36,
+  0.36,
+  0,
+  18,
+  0.36,
+  0.36,
+  0.36,
+  0,
+  18,
+  0,
+  0,
+  0,
+  1,
+  0,
+]);

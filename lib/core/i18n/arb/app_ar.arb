@@ -61,6 +61,11 @@
   "workFeedFilterActive": "نشطة",
   "workFeedFilterPending": "معلّقة",
   "deliveryCodBadge": "الدفع عند الاستلام: {amount}",
+  "financeAmountToCollectLabel": "المبلغ المطلوب تحصيله",
+  "financeAmountToCollectHint": "قم بتحصيل هذا المبلغ من العميل قبل إنهاء التوصيلة.",
+  "financeCodSafetyNotice": "هذا المبلغ يعود إلى نوكي حتى تتم تسويته. لا يُعد من أرباح السائق.",
+  "financeEstimatedFareLabel": "الأجرة التقديرية",
+  "financeEstimatedFareHint": "يُعرض كسياق تشغيلي للرحلة وليس كدفعة نهائية للسائق.",
 
   "missionDetailTitle": "المهمة",
   "missionSectionPickup": "الاستلام",
@@ -199,5 +204,9 @@
   "locationDeniedForever": "تم رفض الوصول إلى الموقع نهائيًا. فعّله من الإعدادات لاستخدام الخريطة.",
   "locationServiceDisabled": "خدمات الموقع معطّلة على هذا الجهاز. فعّلها لاستخدام الخريطة.",
   "locationOpenSettings": "فتح الإعدادات",
-  "locationErrorGeneric": "تعذّرت قراءة حالة إذن الموقع."
+  "locationErrorGeneric": "تعذّرت قراءة حالة إذن الموقع.",
+  "mapGpsLive": "نظام GPS نشط",
+  "mapGpsLocating": "جارٍ تحديد موقع السائق",
+  "mapGpsUnavailable": "الموقع غير متاح",
+  "mapGpsDisabled": "تم تعطيل GPS"
 }

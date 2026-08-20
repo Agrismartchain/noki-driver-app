@@ -61,6 +61,11 @@
   "workFeedFilterActive": "En cours",
   "workFeedFilterPending": "En attente",
   "deliveryCodBadge": "Encaissement : {amount}",
+  "financeAmountToCollectLabel": "À encaisser",
+  "financeAmountToCollectHint": "Encaissez ce montant auprès du client avant de terminer la livraison.",
+  "financeCodSafetyNotice": "Cette somme appartient à NOKI jusqu'à sa réconciliation. Elle ne correspond pas à vos gains.",
+  "financeEstimatedFareLabel": "Tarif estimé",
+  "financeEstimatedFareHint": "Affiché comme contexte opérationnel de course, pas comme gain chauffeur validé.",
 
   "missionDetailTitle": "Mission",
   "missionSectionPickup": "Enlèvement",
@@ -199,5 +204,9 @@
   "locationDeniedForever": "L'accès à la position a été définitivement refusé. Activez-le dans les Réglages pour utiliser la carte.",
   "locationServiceDisabled": "Les services de localisation sont désactivés sur cet appareil. Activez-les pour utiliser la carte.",
   "locationOpenSettings": "Ouvrir les réglages",
-  "locationErrorGeneric": "Impossible de lire l'état de l'autorisation de localisation."
+  "locationErrorGeneric": "Impossible de lire l'état de l'autorisation de localisation.",
+  "mapGpsLive": "GPS actif",
+  "mapGpsLocating": "Localisation en cours",
+  "mapGpsUnavailable": "Position indisponible",
+  "mapGpsDisabled": "GPS désactivé"
 }

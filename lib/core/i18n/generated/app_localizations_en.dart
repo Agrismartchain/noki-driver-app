@@ -215,6 +215,24 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String get financeAmountToCollectLabel => 'Amount to collect';
+
+  @override
+  String get financeAmountToCollectHint =>
+      'Collect this amount from the customer before completing the delivery.';
+
+  @override
+  String get financeCodSafetyNotice =>
+      'This cash belongs to NOKI until it is reconciled. It is not driver earnings.';
+
+  @override
+  String get financeEstimatedFareLabel => 'Estimated fare';
+
+  @override
+  String get financeEstimatedFareHint =>
+      'Shown as operational ride context, not a settled driver payout.';
+
+  @override
   String get missionDetailTitle => 'Mission';
 
   @override
@@ -626,4 +644,16 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get locationErrorGeneric =>
       'Could not read the location permission state.';
+
+  @override
+  String get mapGpsLive => 'GPS live';
+
+  @override
+  String get mapGpsLocating => 'Locating driver';
+
+  @override
+  String get mapGpsUnavailable => 'Location unavailable';
+
+  @override
+  String get mapGpsDisabled => 'GPS disabled';
 }

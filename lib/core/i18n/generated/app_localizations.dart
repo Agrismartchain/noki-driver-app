@@ -424,6 +424,36 @@ abstract class AppLocalizations {
   /// **'COD: {amount}'**
   String deliveryCodBadge(String amount);
 
+  /// No description provided for @financeAmountToCollectLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount to collect'**
+  String get financeAmountToCollectLabel;
+
+  /// No description provided for @financeAmountToCollectHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Collect this amount from the customer before completing the delivery.'**
+  String get financeAmountToCollectHint;
+
+  /// No description provided for @financeCodSafetyNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'This cash belongs to NOKI until it is reconciled. It is not driver earnings.'**
+  String get financeCodSafetyNotice;
+
+  /// No description provided for @financeEstimatedFareLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated fare'**
+  String get financeEstimatedFareLabel;
+
+  /// No description provided for @financeEstimatedFareHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Shown as operational ride context, not a settled driver payout.'**
+  String get financeEstimatedFareHint;
+
   /// No description provided for @missionDetailTitle.
   ///
   /// In en, this message translates to:
@@ -1185,6 +1215,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not read the location permission state.'**
   String get locationErrorGeneric;
+
+  /// No description provided for @mapGpsLive.
+  ///
+  /// In en, this message translates to:
+  /// **'GPS live'**
+  String get mapGpsLive;
+
+  /// No description provided for @mapGpsLocating.
+  ///
+  /// In en, this message translates to:
+  /// **'Locating driver'**
+  String get mapGpsLocating;
+
+  /// No description provided for @mapGpsUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Location unavailable'**
+  String get mapGpsUnavailable;
+
+  /// No description provided for @mapGpsDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'GPS disabled'**
+  String get mapGpsDisabled;
 }
 
 class _AppLocalizationsDelegate

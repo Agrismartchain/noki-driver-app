@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../i18n/generated/app_localizations.dart';
 import '../theme/app_spacing.dart';
 import '../theme/app_theme.dart';
+import '../ui/noki_state_views.dart';
+import '../ui/noki_ui.dart';
 import 'location_permission_state.dart';
 import 'location_repository.dart';
 
@@ -17,10 +19,12 @@ class LocationPermissionGate extends ConsumerStatefulWidget {
   final WidgetBuilder builder;
 
   @override
-  ConsumerState<LocationPermissionGate> createState() => _LocationPermissionGateState();
+  ConsumerState<LocationPermissionGate> createState() =>
+      _LocationPermissionGateState();
 }
 
-class _LocationPermissionGateState extends ConsumerState<LocationPermissionGate> {
+class _LocationPermissionGateState
+    extends ConsumerState<LocationPermissionGate> {
   bool _requesting = false;
 
   Future<void> _request() async {
@@ -34,7 +38,10 @@ class _LocationPermissionGateState extends ConsumerState<LocationPermissionGate>
   Widget build(BuildContext context) {
     final asyncState = ref.watch(locationPermissionStateProvider);
     return asyncState.when(
-      loading: () => const Center(child: CircularProgressIndicator()),
+      loading: () => const NokiScreenBackground(
+        showMapGrid: true,
+        child: NokiLoadingState(),
+      ),
       error: (_, _) => _StateMessage(
         icon: Icons.location_disabled_outlined,
         message: AppLocalizations.of(context).locationErrorGeneric,
@@ -50,14 +57,16 @@ class _LocationPermissionGateState extends ConsumerState<LocationPermissionGate>
               icon: Icons.location_off_outlined,
               message: AppLocalizations.of(context).locationServiceDisabled,
               actionLabel: AppLocalizations.of(context).locationOpenSettings,
-              onAction: () => ref.read(locationRepositoryProvider).openAppSettings(),
+              onAction: () =>
+                  ref.read(locationRepositoryProvider).openAppSettings(),
             );
           case LocationPermissionState.deniedForever:
             return _StateMessage(
               icon: Icons.location_off_outlined,
               message: AppLocalizations.of(context).locationDeniedForever,
               actionLabel: AppLocalizations.of(context).locationOpenSettings,
-              onAction: () => ref.read(locationRepositoryProvider).openAppSettings(),
+              onAction: () =>
+                  ref.read(locationRepositoryProvider).openAppSettings(),
             );
           case LocationPermissionState.deniedOnce:
             return _StateMessage(
@@ -74,7 +83,13 @@ class _LocationPermissionGateState extends ConsumerState<LocationPermissionGate>
 }
 
 class _StateMessage extends StatelessWidget {
-  const _StateMessage({required this.icon, required this.message, required this.actionLabel, required this.onAction, this.loading = false});
+  const _StateMessage({
+    required this.icon,
+    required this.message,
+    required this.actionLabel,
+    required this.onAction,
+    this.loading = false,
+  });
 
   final IconData icon;
   final String message;
@@ -85,23 +100,46 @@ class _StateMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.nokiColors;
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.xl),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, size: 40, color: colors.textMuted),
-            const SizedBox(height: AppSpacing.md),
-            Text(message, textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodyMedium),
-            const SizedBox(height: AppSpacing.lg),
-            ElevatedButton(
-              onPressed: onAction,
-              child: loading
-                  ? SizedBox(height: 16, width: 16, child: CircularProgressIndicator(strokeWidth: 2, color: colors.actionPrimaryInk))
-                  : Text(actionLabel),
+    return NokiScreenBackground(
+      showMapGrid: true,
+      child: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(AppSpacing.xl),
+          child: NokiSurfaceCard(
+            padding: const EdgeInsets.all(AppSpacing.xl),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                NokiBadge(
+                  label: 'GPS',
+                  tone: NokiBadgeTone.offline,
+                  icon: icon,
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                Icon(icon, size: 44, color: colors.textMuted),
+                const SizedBox(height: AppSpacing.md),
+                Text(
+                  message,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                const SizedBox(height: AppSpacing.lg),
+                ElevatedButton(
+                  onPressed: onAction,
+                  child: loading
+                      ? SizedBox(
+                          height: 16,
+                          width: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: colors.actionPrimaryInk,
+                          ),
+                        )
+                      : Text(actionLabel),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

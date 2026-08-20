@@ -68,6 +68,11 @@
   "workFeedFilterPending": "Pending",
   "deliveryCodBadge": "COD: {amount}",
   "@deliveryCodBadge": {"placeholders": {"amount": {"type": "String"}}},
+  "financeAmountToCollectLabel": "Amount to collect",
+  "financeAmountToCollectHint": "Collect this amount from the customer before completing the delivery.",
+  "financeCodSafetyNotice": "This cash belongs to NOKI until it is reconciled. It is not driver earnings.",
+  "financeEstimatedFareLabel": "Estimated fare",
+  "financeEstimatedFareHint": "Shown as operational ride context, not a settled driver payout.",
 
   "missionDetailTitle": "Mission",
   "missionSectionPickup": "Pickup",
@@ -208,5 +213,9 @@
   "locationDeniedForever": "Location access was permanently denied. Enable it in Settings to use the map.",
   "locationServiceDisabled": "Location services are turned off on this device. Enable them to use the map.",
   "locationOpenSettings": "Open settings",
-  "locationErrorGeneric": "Could not read the location permission state."
+  "locationErrorGeneric": "Could not read the location permission state.",
+  "mapGpsLive": "GPS live",
+  "mapGpsLocating": "Locating driver",
+  "mapGpsUnavailable": "Location unavailable",
+  "mapGpsDisabled": "GPS disabled"
 }

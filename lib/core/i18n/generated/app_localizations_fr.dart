@@ -216,6 +216,24 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
+  String get financeAmountToCollectLabel => 'À encaisser';
+
+  @override
+  String get financeAmountToCollectHint =>
+      'Encaissez ce montant auprès du client avant de terminer la livraison.';
+
+  @override
+  String get financeCodSafetyNotice =>
+      'Cette somme appartient à NOKI jusqu\'à sa réconciliation. Elle ne correspond pas à vos gains.';
+
+  @override
+  String get financeEstimatedFareLabel => 'Tarif estimé';
+
+  @override
+  String get financeEstimatedFareHint =>
+      'Affiché comme contexte opérationnel de course, pas comme gain chauffeur validé.';
+
+  @override
   String get missionDetailTitle => 'Mission';
 
   @override
@@ -631,4 +649,16 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get locationErrorGeneric =>
       'Impossible de lire l\'état de l\'autorisation de localisation.';
+
+  @override
+  String get mapGpsLive => 'GPS actif';
+
+  @override
+  String get mapGpsLocating => 'Localisation en cours';
+
+  @override
+  String get mapGpsUnavailable => 'Position indisponible';
+
+  @override
+  String get mapGpsDisabled => 'GPS désactivé';
 }
