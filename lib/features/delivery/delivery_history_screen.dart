@@ -32,12 +32,17 @@ class DeliveryHistoryScreen extends ConsumerWidget {
       body: asyncMissions.when(
         loading: () => const LoadingView(),
         error: (error, _) => ErrorView(
-          failure: error is AppFailure ? error : const AppFailure(AppFailureType.unknown),
+          failure: error is AppFailure
+              ? error
+              : const AppFailure(AppFailureType.unknown),
           onRetry: () => ref.invalidate(missionListByStatusProvider(key)),
         ),
         data: (list) {
           if (list.items.isEmpty) {
-            return EmptyView(icon: Icons.history, title: l10n.deliveryHistoryEmpty);
+            return EmptyView(
+              icon: Icons.history,
+              title: l10n.deliveryHistoryEmpty,
+            );
           }
           return ListView.separated(
             padding: const EdgeInsets.all(AppSpacing.lg),
@@ -48,7 +53,12 @@ class DeliveryHistoryScreen extends ConsumerWidget {
               return _HistoryTile(
                 mission: mission,
                 onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute(builder: (_) => DeliveryMissionDetailScreen(missionId: mission.id, scope: scope)),
+                  MaterialPageRoute(
+                    builder: (_) => DeliveryMissionDetailScreen(
+                      missionId: mission.id,
+                      scope: scope,
+                    ),
+                  ),
                 ),
               );
             },
@@ -82,9 +92,16 @@ class _HistoryTile extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(mission.customerFullName, style: Theme.of(context).textTheme.bodyMedium),
+                    Text(
+                      mission.customerFullName,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
                     if (mission.deliveredAt != null)
-                      Text(mission.deliveredAt!, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: colors.textMuted)),
+                      Text(
+                        mission.deliveredAt!,
+                        style: Theme.of(context).textTheme.bodySmall
+                            ?.copyWith(color: colors.textMuted),
+                      ),
                   ],
                 ),
               ),

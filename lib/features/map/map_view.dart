@@ -13,7 +13,13 @@ import 'map_point.dart';
 /// No route polyline is drawn: the backend provides no routing geometry, and
 /// mandate §16 forbids labelling a straight line as a "route" - markers only.
 class NokiMapView extends StatefulWidget {
-  const NokiMapView({super.key, this.driverPosition, this.pickup, this.dropoff, this.tileProvider});
+  const NokiMapView({
+    super.key,
+    this.driverPosition,
+    this.pickup,
+    this.dropoff,
+    this.tileProvider,
+  });
 
   final MapPoint? driverPosition;
   final MapPoint? pickup;
@@ -33,10 +39,10 @@ class _NokiMapViewState extends State<NokiMapView> {
   bool _fitted = false;
 
   List<MapPoint> get _points => [
-        if (widget.driverPosition != null) widget.driverPosition!,
-        if (widget.pickup != null) widget.pickup!,
-        if (widget.dropoff != null) widget.dropoff!,
-      ];
+    if (widget.driverPosition != null) widget.driverPosition!,
+    if (widget.pickup != null) widget.pickup!,
+    if (widget.dropoff != null) widget.dropoff!,
+  ];
 
   @override
   void initState() {
@@ -62,12 +68,17 @@ class _NokiMapViewState extends State<NokiMapView> {
     if (points.isEmpty || !mounted) return;
     _fitted = true;
     if (points.length == 1) {
-      _controller.move(LatLng(points.first.latitude, points.first.longitude), 15);
+      _controller.move(
+        LatLng(points.first.latitude, points.first.longitude),
+        15,
+      );
       return;
     }
     _controller.fitCamera(
       CameraFit.bounds(
-        bounds: LatLngBounds.fromPoints(points.map((p) => LatLng(p.latitude, p.longitude)).toList()),
+        bounds: LatLngBounds.fromPoints(
+          points.map((p) => LatLng(p.latitude, p.longitude)).toList(),
+        ),
         padding: const EdgeInsets.all(56),
       ),
     );
@@ -86,7 +97,10 @@ class _NokiMapViewState extends State<NokiMapView> {
       children: [
         FlutterMap(
           mapController: _controller,
-          options: MapOptions(initialCenter: initialCenter, initialZoom: points.isEmpty ? 2 : 15),
+          options: MapOptions(
+            initialCenter: initialCenter,
+            initialZoom: points.isEmpty ? 2 : 15,
+          ),
           children: [
             // Dark mode: OSM raster tiles can't be re-themed, so they're
             // dimmed/desaturated slightly for legibility against dark UI
@@ -94,10 +108,26 @@ class _NokiMapViewState extends State<NokiMapView> {
             if (isDark)
               ColorFiltered(
                 colorFilter: const ColorFilter.matrix(<double>[
-                  0.55, 0, 0, 0, 20,
-                  0, 0.55, 0, 0, 20,
-                  0, 0, 0.55, 0, 20,
-                  0, 0, 0, 1, 0,
+                  0.55,
+                  0,
+                  0,
+                  0,
+                  20,
+                  0,
+                  0.55,
+                  0,
+                  0,
+                  20,
+                  0,
+                  0,
+                  0.55,
+                  0,
+                  20,
+                  0,
+                  0,
+                  0,
+                  1,
+                  0,
                 ]),
                 child: _tileLayer(),
               )
@@ -106,8 +136,10 @@ class _NokiMapViewState extends State<NokiMapView> {
             MarkerLayer(
               markers: [
                 if (widget.pickup != null) pickupMarker(widget.pickup!, colors),
-                if (widget.dropoff != null) dropoffMarker(widget.dropoff!, colors),
-                if (widget.driverPosition != null) driverMarker(widget.driverPosition!, colors),
+                if (widget.dropoff != null)
+                  dropoffMarker(widget.dropoff!, colors),
+                if (widget.driverPosition != null)
+                  driverMarker(widget.driverPosition!, colors),
               ],
             ),
           ],
@@ -131,11 +163,11 @@ class _NokiMapViewState extends State<NokiMapView> {
   }
 
   Widget _tileLayer() => TileLayer(
-        urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-        userAgentPackageName: 'com.noki.driver_app',
-        maxZoom: 19,
-        tileProvider: widget.tileProvider,
-      );
+    urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+    userAgentPackageName: 'com.noki.driver_app',
+    maxZoom: 19,
+    tileProvider: widget.tileProvider,
+  );
 
   @override
   void dispose() {

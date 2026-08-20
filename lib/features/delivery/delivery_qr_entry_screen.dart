@@ -21,7 +21,8 @@ class DeliveryQrEntryScreen extends ConsumerStatefulWidget {
   final DriverScope scope;
 
   @override
-  ConsumerState<DeliveryQrEntryScreen> createState() => _DeliveryQrEntryScreenState();
+  ConsumerState<DeliveryQrEntryScreen> createState() =>
+      _DeliveryQrEntryScreenState();
 }
 
 class _DeliveryQrEntryScreenState extends ConsumerState<DeliveryQrEntryScreen> {
@@ -46,7 +47,12 @@ class _DeliveryQrEntryScreenState extends ConsumerState<DeliveryQrEntryScreen> {
       final mission = await ref.read(deliveryRepositoryProvider).scanQr(token);
       if (!mounted) return;
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => DeliveryMissionDetailScreen(missionId: mission.id, scope: widget.scope)),
+        MaterialPageRoute(
+          builder: (_) => DeliveryMissionDetailScreen(
+            missionId: mission.id,
+            scope: widget.scope,
+          ),
+        ),
       );
     } on AppFailure catch (failure) {
       if (mounted) setState(() => _failure = failure);
@@ -68,7 +74,9 @@ class _DeliveryQrEntryScreenState extends ConsumerState<DeliveryQrEntryScreen> {
             icon: const Icon(Icons.qr_code_scanner_outlined),
             tooltip: l10n.qrEntryUseCameraCta,
             onPressed: () => Navigator.of(context).pushReplacement(
-              MaterialPageRoute(builder: (_) => DeliveryQrScanScreen(scope: widget.scope)),
+              MaterialPageRoute(
+                builder: (_) => DeliveryQrScanScreen(scope: widget.scope),
+              ),
             ),
           ),
         ],
@@ -78,7 +86,11 @@ class _DeliveryQrEntryScreenState extends ConsumerState<DeliveryQrEntryScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(l10n.qrEntryHint, style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: colors.textMuted)),
+            Text(
+              l10n.qrEntryHint,
+              style: Theme.of(context).textTheme.bodyMedium
+                  ?.copyWith(color: colors.textMuted),
+            ),
             const SizedBox(height: AppSpacing.lg),
             TextField(
               controller: _tokenController,
@@ -91,12 +103,22 @@ class _DeliveryQrEntryScreenState extends ConsumerState<DeliveryQrEntryScreen> {
             ElevatedButton(
               onPressed: _submitting ? null : _submit,
               child: _submitting
-                  ? SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2, color: colors.actionPrimaryInk))
+                  ? SizedBox(
+                      height: 18,
+                      width: 18,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: colors.actionPrimaryInk,
+                      ),
+                    )
                   : Text(l10n.qrEntrySubmitCta),
             ),
             if (_failure != null) ...[
               const SizedBox(height: AppSpacing.md),
-              Text(localizeFailure(context, _failure!), style: TextStyle(color: colors.danger)),
+              Text(
+                localizeFailure(context, _failure!),
+                style: TextStyle(color: colors.danger),
+              ),
             ],
           ],
         ),

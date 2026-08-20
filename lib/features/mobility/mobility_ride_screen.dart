@@ -17,13 +17,16 @@ import 'mobility_repository.dart';
 import 'mobility_ride_map_screen.dart';
 import 'mobility_status_presentation.dart';
 
-
 /// Current/active ride presentation and transitions. Only the transitions
 /// [legalRideTransitions] says are legal from the ride's current status are
 /// ever rendered as buttons, and every tap awaits the server's response
 /// before the ride is refreshed - no optimistic status flip (mandate §15).
 class MobilityRideScreen extends ConsumerStatefulWidget {
-  const MobilityRideScreen({super.key, required this.rideId, required this.scope});
+  const MobilityRideScreen({
+    super.key,
+    required this.rideId,
+    required this.scope,
+  });
 
   final String rideId;
   final DriverScope scope;
@@ -43,7 +46,9 @@ class _MobilityRideScreenState extends ConsumerState<MobilityRideScreen> {
       _transitionFailure = null;
     });
     try {
-      await ref.read(mobilityRepositoryProvider).transitionRide(widget.rideId, target);
+      await ref
+          .read(mobilityRepositoryProvider)
+          .transitionRide(widget.rideId, target);
       ref.invalidate(rideByIdProvider(widget.rideId));
       // Targeted invalidation (mandate §15/§16/§23): the two providers
       // Home's "continue active ride" card reads, plus Work Feed's own
@@ -60,7 +65,9 @@ class _MobilityRideScreenState extends ConsumerState<MobilityRideScreen> {
   }
 
   Future<void> _navigate(num latitude, num longitude) async {
-    await launchUrl(Uri.parse('geo:$latitude,$longitude?q=$latitude,$longitude'));
+    await launchUrl(
+      Uri.parse('geo:$latitude,$longitude?q=$latitude,$longitude'),
+    );
   }
 
   @override
@@ -76,7 +83,12 @@ class _MobilityRideScreenState extends ConsumerState<MobilityRideScreen> {
             icon: const Icon(Icons.map_outlined),
             tooltip: l10n.mobilityMapTitle,
             onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => MobilityRideMapScreen(rideId: widget.rideId, scope: widget.scope)),
+              MaterialPageRoute(
+                builder: (_) => MobilityRideMapScreen(
+                  rideId: widget.rideId,
+                  scope: widget.scope,
+                ),
+              ),
             ),
           ),
         ],
@@ -84,7 +96,9 @@ class _MobilityRideScreenState extends ConsumerState<MobilityRideScreen> {
       body: asyncRide.when(
         loading: () => const LoadingView(),
         error: (error, _) => ErrorView(
-          failure: error is AppFailure ? error : const AppFailure(AppFailureType.unknown),
+          failure: error is AppFailure
+              ? error
+              : const AppFailure(AppFailureType.unknown),
           onRetry: () => ref.invalidate(rideByIdProvider(widget.rideId)),
         ),
         data: _buildContent,
@@ -105,7 +119,9 @@ class _MobilityRideScreenState extends ConsumerState<MobilityRideScreen> {
           Row(
             children: [
               Icon(
-                ride.serviceType == MobilityRideDetailDtoServiceType.taxiMoto ? Icons.moped_outlined : Icons.local_taxi_outlined,
+                ride.serviceType == MobilityRideDetailDtoServiceType.taxiMoto
+                    ? Icons.moped_outlined
+                    : Icons.local_taxi_outlined,
                 color: colors.actionPrimary,
                 size: 28,
               ),
@@ -114,8 +130,15 @@ class _MobilityRideScreenState extends ConsumerState<MobilityRideScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(rideServiceTypeLabel(l10n, ride.serviceType), style: Theme.of(context).textTheme.titleLarge),
-                    Text(ride.reference, style: Theme.of(context).textTheme.bodySmall?.copyWith(color: colors.textMuted)),
+                    Text(
+                      rideServiceTypeLabel(l10n, ride.serviceType),
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    Text(
+                      ride.reference,
+                      style: Theme.of(context).textTheme.bodySmall
+                          ?.copyWith(color: colors.textMuted),
+                    ),
                   ],
                 ),
               ),
@@ -133,18 +156,27 @@ class _MobilityRideScreenState extends ConsumerState<MobilityRideScreen> {
                     icon: Icons.trip_origin,
                     label: l10n.missionSectionPickup,
                     address: ride.pickupAddressSnapshot,
-                    onNavigate: () => _navigate(ride.pickupLatitude, ride.pickupLongitude),
+                    onNavigate: () =>
+                        _navigate(ride.pickupLatitude, ride.pickupLongitude),
                   ),
                   const SizedBox(height: AppSpacing.md),
                   _RoutePoint(
                     icon: Icons.place_outlined,
                     label: l10n.missionSectionDropoff,
                     address: ride.dropoffAddressSnapshot,
-                    onNavigate: () => _navigate(ride.dropoffLatitude, ride.dropoffLongitude),
+                    onNavigate: () =>
+                        _navigate(ride.dropoffLatitude, ride.dropoffLongitude),
                   ),
                   const SizedBox(height: AppSpacing.lg),
-                  Text(l10n.mobilityFareLabel, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: colors.textMuted)),
-                  Text('${ride.fareAmount} ${ride.currencyCode}', style: Theme.of(context).textTheme.headlineSmall),
+                  Text(
+                    l10n.mobilityFareLabel,
+                    style: Theme.of(context).textTheme.labelSmall
+                        ?.copyWith(color: colors.textMuted),
+                  ),
+                  Text(
+                    '${ride.fareAmount} ${ride.currencyCode}',
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
                 ],
               ),
             ),
@@ -157,13 +189,17 @@ class _MobilityRideScreenState extends ConsumerState<MobilityRideScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(l10n.mobilityTimelineTitle, style: Theme.of(context).textTheme.titleMedium),
+                    Text(
+                      l10n.mobilityTimelineTitle,
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
                     const SizedBox(height: AppSpacing.sm),
                     for (final entry in ride.timeline)
                       Padding(
                         padding: const EdgeInsets.only(bottom: AppSpacing.xs),
                         child: Text(
-                          entry.message ?? '${entry.fromStatus ?? '·'} -> ${entry.toStatus ?? '·'}',
+                          entry.message ??
+                              '${entry.fromStatus ?? '·'} -> ${entry.toStatus ?? '·'}',
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
                       ),
@@ -174,7 +210,10 @@ class _MobilityRideScreenState extends ConsumerState<MobilityRideScreen> {
           ],
           const SizedBox(height: AppSpacing.lg),
           if (transitions.isEmpty)
-            Text(l10n.mobilityRideNoActionsAvailable, style: TextStyle(color: colors.textMuted))
+            Text(
+              l10n.mobilityRideNoActionsAvailable,
+              style: TextStyle(color: colors.textMuted),
+            )
           else
             Wrap(
               spacing: AppSpacing.sm,
@@ -183,23 +222,41 @@ class _MobilityRideScreenState extends ConsumerState<MobilityRideScreen> {
                 for (final target in transitions)
                   target == TransitionMobilityRideDtoStatus.cancelled
                       ? OutlinedButton(
-                          onPressed: _pendingTransition != null ? null : () => _transition(target),
+                          onPressed: _pendingTransition != null
+                              ? null
+                              : () => _transition(target),
                           child: Text(rideTransitionActionLabel(l10n, target)),
                         )
                       : ElevatedButton(
-                          onPressed: _pendingTransition != null ? null : () => _transition(target),
+                          onPressed: _pendingTransition != null
+                              ? null
+                              : () => _transition(target),
                           child: _pendingTransition == target
-                              ? SizedBox(height: 16, width: 16, child: CircularProgressIndicator(strokeWidth: 2, color: colors.actionPrimaryInk))
+                              ? SizedBox(
+                                  height: 16,
+                                  width: 16,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    color: colors.actionPrimaryInk,
+                                  ),
+                                )
                               : Text(rideTransitionActionLabel(l10n, target)),
                         ),
               ],
             ),
           if (_transitionFailure != null) ...[
             const SizedBox(height: AppSpacing.md),
-            Text(localizeFailure(context, _transitionFailure!), style: TextStyle(color: colors.danger)),
+            Text(
+              localizeFailure(context, _transitionFailure!),
+              style: TextStyle(color: colors.danger),
+            ),
           ],
           const SizedBox(height: AppSpacing.lg),
-          MobilityIncidentsSection(scope: widget.scope, rideId: ride.id, rideReference: ride.reference),
+          MobilityIncidentsSection(
+            scope: widget.scope,
+            rideId: ride.id,
+            rideReference: ride.reference,
+          ),
         ],
       ),
     );
@@ -207,7 +264,12 @@ class _MobilityRideScreenState extends ConsumerState<MobilityRideScreen> {
 }
 
 class _RoutePoint extends StatelessWidget {
-  const _RoutePoint({required this.icon, required this.label, required this.address, this.onNavigate});
+  const _RoutePoint({
+    required this.icon,
+    required this.label,
+    required this.address,
+    this.onNavigate,
+  });
 
   final IconData icon;
   final String label;
@@ -227,7 +289,11 @@ class _RoutePoint extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: colors.textMuted)),
+              Text(
+                label,
+                style: Theme.of(context).textTheme.labelSmall
+                    ?.copyWith(color: colors.textMuted),
+              ),
               Text(address, style: Theme.of(context).textTheme.bodyMedium),
             ],
           ),
@@ -252,11 +318,25 @@ class _StatusBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final colors = context.nokiColors;
-    final (label, background, foreground) = rideStatusPresentation(l10n, colors, status);
+    final (label, background, foreground) = rideStatusPresentation(
+      l10n,
+      colors,
+      status,
+    );
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
-      decoration: BoxDecoration(color: background, borderRadius: BorderRadius.circular(AppRadius.full)),
-      child: Text(label, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: foreground)),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm,
+        vertical: AppSpacing.xs,
+      ),
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadius.circular(AppRadius.full),
+      ),
+      child: Text(
+        label,
+        style: Theme.of(context).textTheme.labelSmall
+            ?.copyWith(color: foreground),
+      ),
     );
   }
 }

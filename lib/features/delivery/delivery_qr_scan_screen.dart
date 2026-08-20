@@ -30,11 +30,14 @@ class DeliveryQrScanScreen extends ConsumerStatefulWidget {
   final DriverScope scope;
 
   @override
-  ConsumerState<DeliveryQrScanScreen> createState() => _DeliveryQrScanScreenState();
+  ConsumerState<DeliveryQrScanScreen> createState() =>
+      _DeliveryQrScanScreenState();
 }
 
 class _DeliveryQrScanScreenState extends ConsumerState<DeliveryQrScanScreen> {
-  final _controller = MobileScannerController(detectionSpeed: DetectionSpeed.noDuplicates);
+  final _controller = MobileScannerController(
+    detectionSpeed: DetectionSpeed.noDuplicates,
+  );
   bool _submitting = false;
   bool _handled = false;
   AppFailure? _failure;
@@ -47,7 +50,9 @@ class _DeliveryQrScanScreenState extends ConsumerState<DeliveryQrScanScreen> {
 
   Future<void> _onDetect(BarcodeCapture capture) async {
     if (_submitting || _handled) return;
-    final raw = capture.barcodes.isEmpty ? null : capture.barcodes.first.rawValue;
+    final raw = capture.barcodes.isEmpty
+        ? null
+        : capture.barcodes.first.rawValue;
     if (raw == null || raw.isEmpty) return;
 
     _handled = true;
@@ -59,7 +64,12 @@ class _DeliveryQrScanScreenState extends ConsumerState<DeliveryQrScanScreen> {
       final mission = await ref.read(deliveryRepositoryProvider).scanQr(raw);
       if (!mounted) return;
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => DeliveryMissionDetailScreen(missionId: mission.id, scope: widget.scope)),
+        MaterialPageRoute(
+          builder: (_) => DeliveryMissionDetailScreen(
+            missionId: mission.id,
+            scope: widget.scope,
+          ),
+        ),
       );
     } on AppFailure catch (failure) {
       // A rejected token (wrong mission, expired, wrong status) is not a
@@ -77,7 +87,9 @@ class _DeliveryQrScanScreenState extends ConsumerState<DeliveryQrScanScreen> {
 
   void _openManualEntry() {
     Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (_) => DeliveryQrEntryScreen(scope: widget.scope)),
+      MaterialPageRoute(
+        builder: (_) => DeliveryQrEntryScreen(scope: widget.scope),
+      ),
     );
   }
 
@@ -102,7 +114,8 @@ class _DeliveryQrScanScreenState extends ConsumerState<DeliveryQrScanScreen> {
           MobileScanner(
             controller: _controller,
             onDetect: _onDetect,
-            errorBuilder: (context, error) => _CameraErrorView(error: error, onManualEntry: _openManualEntry),
+            errorBuilder: (context, error) =>
+                _CameraErrorView(error: error, onManualEntry: _openManualEntry),
           ),
           Positioned(
             left: AppSpacing.lg,
@@ -118,14 +131,29 @@ class _DeliveryQrScanScreenState extends ConsumerState<DeliveryQrScanScreen> {
                     Row(
                       children: [
                         if (_submitting)
-                          SizedBox(height: 16, width: 16, child: CircularProgressIndicator(strokeWidth: 2, color: colors.actionPrimary)),
+                          SizedBox(
+                            height: 16,
+                            width: 16,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: colors.actionPrimary,
+                            ),
+                          ),
                         if (_submitting) const SizedBox(width: AppSpacing.sm),
-                        Expanded(child: Text(l10n.qrScanHint, style: Theme.of(context).textTheme.bodySmall)),
+                        Expanded(
+                          child: Text(
+                            l10n.qrScanHint,
+                            style: Theme.of(context).textTheme.bodySmall,
+                          ),
+                        ),
                       ],
                     ),
                     if (_failure != null) ...[
                       const SizedBox(height: AppSpacing.sm),
-                      Text(localizeFailure(context, _failure!), style: TextStyle(color: colors.danger)),
+                      Text(
+                        localizeFailure(context, _failure!),
+                        style: TextStyle(color: colors.danger),
+                      ),
                     ],
                   ],
                 ),
@@ -160,11 +188,22 @@ class _CameraErrorView extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.videocam_off_outlined, size: 40, color: colors.textMuted),
+              Icon(
+                Icons.videocam_off_outlined,
+                size: 40,
+                color: colors.textMuted,
+              ),
               const SizedBox(height: AppSpacing.md),
-              Text(message, textAlign: TextAlign.center, style: Theme.of(context).textTheme.bodyMedium),
+              Text(
+                message,
+                textAlign: TextAlign.center,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
               const SizedBox(height: AppSpacing.lg),
-              ElevatedButton(onPressed: onManualEntry, child: Text(l10n.qrScanManualEntryCta)),
+              ElevatedButton(
+                onPressed: onManualEntry,
+                child: Text(l10n.qrScanManualEntryCta),
+              ),
             ],
           ),
         ),

@@ -35,15 +35,19 @@ class MobilityOfferDetailViewModel {
     );
   }
 
-  factory MobilityOfferDetailViewModel.fromWorkFeedItem(DriverWorkFeedItemDto item) {
+  factory MobilityOfferDetailViewModel.fromWorkFeedItem(
+    DriverWorkFeedItemDto item,
+  ) {
     return MobilityOfferDetailViewModel(
       id: item.underlyingResource.resourceId,
       serviceType: item.serviceType == DriverWorkFeedItemDtoServiceType.taxiMoto
           ? DriverMobilityOfferDtoServiceType.taxiMoto
           : DriverMobilityOfferDtoServiceType.taxi,
       status: item.status,
-      pickupAddressSnapshot: item.pickup?.addressLine1 ?? item.pickup?.label ?? '',
-      dropoffAddressSnapshot: item.dropoff?.addressLine1 ?? item.dropoff?.label ?? '',
+      pickupAddressSnapshot:
+          item.pickup?.addressLine1 ?? item.pickup?.label ?? '',
+      dropoffAddressSnapshot:
+          item.dropoff?.addressLine1 ?? item.dropoff?.label ?? '',
       estimatedFare: item.amount == null
           ? null
           : DriverWorkMoneySummaryDto(
@@ -68,7 +72,11 @@ class MobilityOfferDetailViewModel {
 /// (expired/superseded/accepted elsewhere between the feed load and the
 /// tap), this shows a real empty state instead of a stale or fabricated one.
 class MobilityOfferLookupScreen extends ConsumerWidget {
-  const MobilityOfferLookupScreen({super.key, required this.offerId, required this.scope});
+  const MobilityOfferLookupScreen({
+    super.key,
+    required this.offerId,
+    required this.scope,
+  });
 
   final String offerId;
   final DriverScope scope;
@@ -79,11 +87,16 @@ class MobilityOfferLookupScreen extends ConsumerWidget {
     final asyncOffers = ref.watch(mobilityOffersProvider(scope));
 
     return asyncOffers.when(
-      loading: () => Scaffold(appBar: AppBar(title: Text(l10n.mobilityOfferDetailTitle)), body: const LoadingView()),
+      loading: () => Scaffold(
+        appBar: AppBar(title: Text(l10n.mobilityOfferDetailTitle)),
+        body: const LoadingView(),
+      ),
       error: (error, _) => Scaffold(
         appBar: AppBar(title: Text(l10n.mobilityOfferDetailTitle)),
         body: ErrorView(
-          failure: error is AppFailure ? error : const AppFailure(AppFailureType.unknown),
+          failure: error is AppFailure
+              ? error
+              : const AppFailure(AppFailureType.unknown),
           onRetry: () => ref.invalidate(mobilityOffersProvider(scope)),
         ),
       ),
@@ -98,7 +111,10 @@ class MobilityOfferLookupScreen extends ConsumerWidget {
         if (offer == null) {
           return Scaffold(
             appBar: AppBar(title: Text(l10n.mobilityOfferDetailTitle)),
-            body: EmptyView(icon: Icons.local_taxi_outlined, title: l10n.mobilityOfferNoLongerAvailable),
+            body: EmptyView(
+              icon: Icons.local_taxi_outlined,
+              title: l10n.mobilityOfferNoLongerAvailable,
+            ),
           );
         }
         return MobilityOfferDetailScreen(offer: offer, scope: scope);
@@ -112,8 +128,11 @@ class MobilityOfferLookupScreen extends ConsumerWidget {
 /// GET-by-id-offer endpoint to refresh from, so this screen does not read a
 /// provider for the offer itself (only the mutation is state-managed).
 class MobilityOfferDetailScreen extends ConsumerStatefulWidget {
-  MobilityOfferDetailScreen({super.key, required DriverMobilityOfferDto offer, required this.scope})
-      : offer = MobilityOfferDetailViewModel.fromOffer(offer);
+  MobilityOfferDetailScreen({
+    super.key,
+    required DriverMobilityOfferDto offer,
+    required this.scope,
+  }) : offer = MobilityOfferDetailViewModel.fromOffer(offer);
 
   MobilityOfferDetailScreen.fromWorkFeedItem({
     super.key,
@@ -125,10 +144,12 @@ class MobilityOfferDetailScreen extends ConsumerStatefulWidget {
   final DriverScope scope;
 
   @override
-  ConsumerState<MobilityOfferDetailScreen> createState() => _MobilityOfferDetailScreenState();
+  ConsumerState<MobilityOfferDetailScreen> createState() =>
+      _MobilityOfferDetailScreenState();
 }
 
-class _MobilityOfferDetailScreenState extends ConsumerState<MobilityOfferDetailScreen> {
+class _MobilityOfferDetailScreenState
+    extends ConsumerState<MobilityOfferDetailScreen> {
   bool _accepting = false;
   AppFailure? _failure;
 
@@ -139,13 +160,18 @@ class _MobilityOfferDetailScreenState extends ConsumerState<MobilityOfferDetailS
       _failure = null;
     });
     try {
-      final ride = await ref.read(mobilityRepositoryProvider).acceptOffer(widget.offer.id);
+      final ride = await ref
+          .read(mobilityRepositoryProvider)
+          .acceptOffer(widget.offer.id);
       ref.invalidate(mobilityOffersProvider(widget.scope));
       ref.invalidate(currentRideProvider(widget.scope));
       ref.invalidate(workFeedProvider(widget.scope));
       if (!mounted) return;
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => MobilityRideScreen(rideId: ride.id, scope: widget.scope)),
+        MaterialPageRoute(
+          builder: (_) =>
+              MobilityRideScreen(rideId: ride.id, scope: widget.scope),
+        ),
       );
     } on AppFailure catch (failure) {
       if (mounted) setState(() => _failure = failure);
@@ -168,12 +194,17 @@ class _MobilityOfferDetailScreenState extends ConsumerState<MobilityOfferDetailS
           Row(
             children: [
               Icon(
-                offer.serviceType == DriverMobilityOfferDtoServiceType.taxiMoto ? Icons.moped_outlined : Icons.local_taxi_outlined,
+                offer.serviceType == DriverMobilityOfferDtoServiceType.taxiMoto
+                    ? Icons.moped_outlined
+                    : Icons.local_taxi_outlined,
                 color: colors.actionPrimary,
                 size: 28,
               ),
               const SizedBox(width: AppSpacing.md),
-              Text(offerServiceTypeLabel(l10n, offer.serviceType), style: Theme.of(context).textTheme.titleLarge),
+              Text(
+                offerServiceTypeLabel(l10n, offer.serviceType),
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
             ],
           ),
           const SizedBox(height: AppSpacing.lg),
@@ -183,12 +214,24 @@ class _MobilityOfferDetailScreenState extends ConsumerState<MobilityOfferDetailS
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _RoutePoint(icon: Icons.trip_origin, label: l10n.missionSectionPickup, address: offer.pickupAddressSnapshot),
+                  _RoutePoint(
+                    icon: Icons.trip_origin,
+                    label: l10n.missionSectionPickup,
+                    address: offer.pickupAddressSnapshot,
+                  ),
                   const SizedBox(height: AppSpacing.md),
-                  _RoutePoint(icon: Icons.place_outlined, label: l10n.missionSectionDropoff, address: offer.dropoffAddressSnapshot),
+                  _RoutePoint(
+                    icon: Icons.place_outlined,
+                    label: l10n.missionSectionDropoff,
+                    address: offer.dropoffAddressSnapshot,
+                  ),
                   if (offer.estimatedFare != null) ...[
                     const SizedBox(height: AppSpacing.lg),
-                    Text(l10n.mobilityEstimatedFareLabel, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: colors.textMuted)),
+                    Text(
+                      l10n.mobilityEstimatedFareLabel,
+                      style: Theme.of(context).textTheme.labelSmall
+                          ?.copyWith(color: colors.textMuted),
+                    ),
                     Text(
                       '${offer.estimatedFare!.amount} ${offer.estimatedFare!.currencyCode}',
                       style: Theme.of(context).textTheme.headlineSmall,
@@ -202,12 +245,22 @@ class _MobilityOfferDetailScreenState extends ConsumerState<MobilityOfferDetailS
           ElevatedButton(
             onPressed: _accepting ? null : _accept,
             child: _accepting
-                ? SizedBox(height: 18, width: 18, child: CircularProgressIndicator(strokeWidth: 2, color: colors.actionPrimaryInk))
+                ? SizedBox(
+                    height: 18,
+                    width: 18,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: colors.actionPrimaryInk,
+                    ),
+                  )
                 : Text(l10n.mobilityAcceptOfferCta),
           ),
           if (_failure != null) ...[
             const SizedBox(height: AppSpacing.md),
-            Text(localizeFailure(context, _failure!), style: TextStyle(color: colors.danger)),
+            Text(
+              localizeFailure(context, _failure!),
+              style: TextStyle(color: colors.danger),
+            ),
           ],
         ],
       ),
@@ -216,7 +269,11 @@ class _MobilityOfferDetailScreenState extends ConsumerState<MobilityOfferDetailS
 }
 
 class _RoutePoint extends StatelessWidget {
-  const _RoutePoint({required this.icon, required this.label, required this.address});
+  const _RoutePoint({
+    required this.icon,
+    required this.label,
+    required this.address,
+  });
 
   final IconData icon;
   final String label;
@@ -234,7 +291,11 @@ class _RoutePoint extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(label, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: colors.textMuted)),
+              Text(
+                label,
+                style: Theme.of(context).textTheme.labelSmall
+                    ?.copyWith(color: colors.textMuted),
+              ),
               Text(address, style: Theme.of(context).textTheme.bodyMedium),
             ],
           ),

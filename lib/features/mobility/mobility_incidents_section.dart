@@ -26,20 +26,28 @@ import 'mobility_status_presentation.dart';
 /// wired to the API client but never reached by any screen - this widget is
 /// the first thing that actually calls them.
 class MobilityIncidentsSection extends ConsumerStatefulWidget {
-  const MobilityIncidentsSection({super.key, required this.scope, required this.rideId, required this.rideReference});
+  const MobilityIncidentsSection({
+    super.key,
+    required this.scope,
+    required this.rideId,
+    required this.rideReference,
+  });
 
   final DriverScope scope;
   final String rideId;
   final String rideReference;
 
   @override
-  ConsumerState<MobilityIncidentsSection> createState() => _MobilityIncidentsSectionState();
+  ConsumerState<MobilityIncidentsSection> createState() =>
+      _MobilityIncidentsSectionState();
 }
 
-class _MobilityIncidentsSectionState extends ConsumerState<MobilityIncidentsSection> {
+class _MobilityIncidentsSectionState
+    extends ConsumerState<MobilityIncidentsSection> {
   bool _submitting = false;
   AppFailure? _failure;
-  CreateOwnMobilityIncidentRequestDtoType _type = CreateOwnMobilityIncidentRequestDtoType.ride;
+  CreateOwnMobilityIncidentRequestDtoType _type =
+      CreateOwnMobilityIncidentRequestDtoType.ride;
   final _commentController = TextEditingController();
 
   @override
@@ -55,7 +63,9 @@ class _MobilityIncidentsSectionState extends ConsumerState<MobilityIncidentsSect
     });
     try {
       final comment = _commentController.text.trim();
-      await ref.read(mobilityRepositoryProvider).createIncident(
+      await ref
+          .read(mobilityRepositoryProvider)
+          .createIncident(
             widget.scope,
             rideId: widget.rideId,
             type: _type,
@@ -82,18 +92,34 @@ class _MobilityIncidentsSectionState extends ConsumerState<MobilityIncidentsSect
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l10n.missionSectionIncidents, style: Theme.of(context).textTheme.titleMedium),
+            Text(
+              l10n.missionSectionIncidents,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
             const SizedBox(height: AppSpacing.md),
             asyncIncidents.when(
-              loading: () => const Padding(padding: EdgeInsets.symmetric(vertical: AppSpacing.sm), child: LinearProgressIndicator()),
+              loading: () => const Padding(
+                padding: EdgeInsets.symmetric(vertical: AppSpacing.sm),
+                child: LinearProgressIndicator(),
+              ),
               error: (error, _) => Text(
-                error is AppFailure ? localizeFailure(context, error) : l10n.errorUnknown,
+                error is AppFailure
+                    ? localizeFailure(context, error)
+                    : l10n.errorUnknown,
                 style: TextStyle(color: colors.danger),
               ),
               data: (list) {
-                final rideIncidents = list.items.where((incident) => incident.rideReference == widget.rideReference).toList();
+                final rideIncidents = list.items
+                    .where(
+                      (incident) =>
+                          incident.rideReference == widget.rideReference,
+                    )
+                    .toList();
                 if (rideIncidents.isEmpty) {
-                  return Text(l10n.incidentsEmpty, style: TextStyle(color: colors.textMuted));
+                  return Text(
+                    l10n.incidentsEmpty,
+                    style: TextStyle(color: colors.textMuted),
+                  );
                 }
                 return Column(
                   children: [
@@ -117,17 +143,35 @@ class _MobilityIncidentsSectionState extends ConsumerState<MobilityIncidentsSect
               isExpanded: true,
               decoration: InputDecoration(labelText: l10n.incidentTypeLabel),
               items: [
-                DropdownMenuItem(value: CreateOwnMobilityIncidentRequestDtoType.ride, child: Text(l10n.mobilityIncidentTypeRide)),
-                DropdownMenuItem(value: CreateOwnMobilityIncidentRequestDtoType.driver, child: Text(l10n.mobilityIncidentTypeDriver)),
-                DropdownMenuItem(value: CreateOwnMobilityIncidentRequestDtoType.vehicle, child: Text(l10n.incidentTypeVehicleIssue)),
                 DropdownMenuItem(
-                  value: CreateOwnMobilityIncidentRequestDtoType.customerComplaint,
+                  value: CreateOwnMobilityIncidentRequestDtoType.ride,
+                  child: Text(l10n.mobilityIncidentTypeRide),
+                ),
+                DropdownMenuItem(
+                  value: CreateOwnMobilityIncidentRequestDtoType.driver,
+                  child: Text(l10n.mobilityIncidentTypeDriver),
+                ),
+                DropdownMenuItem(
+                  value: CreateOwnMobilityIncidentRequestDtoType.vehicle,
+                  child: Text(l10n.incidentTypeVehicleIssue),
+                ),
+                DropdownMenuItem(
+                  value:
+                      CreateOwnMobilityIncidentRequestDtoType.customerComplaint,
                   child: Text(l10n.mobilityIncidentTypeCustomerComplaint),
                 ),
-                DropdownMenuItem(value: CreateOwnMobilityIncidentRequestDtoType.safety, child: Text(l10n.incidentTypeSafety)),
-                DropdownMenuItem(value: CreateOwnMobilityIncidentRequestDtoType.other, child: Text(l10n.incidentTypeOther)),
+                DropdownMenuItem(
+                  value: CreateOwnMobilityIncidentRequestDtoType.safety,
+                  child: Text(l10n.incidentTypeSafety),
+                ),
+                DropdownMenuItem(
+                  value: CreateOwnMobilityIncidentRequestDtoType.other,
+                  child: Text(l10n.incidentTypeOther),
+                ),
               ],
-              onChanged: _submitting ? null : (value) => setState(() => _type = value ?? _type),
+              onChanged: _submitting
+                  ? null
+                  : (value) => setState(() => _type = value ?? _type),
             ),
             const SizedBox(height: AppSpacing.sm),
             TextField(
@@ -141,12 +185,19 @@ class _MobilityIncidentsSectionState extends ConsumerState<MobilityIncidentsSect
             OutlinedButton(
               onPressed: _submitting ? null : _submit,
               child: _submitting
-                  ? const SizedBox(height: 16, width: 16, child: CircularProgressIndicator(strokeWidth: 2))
+                  ? const SizedBox(
+                      height: 16,
+                      width: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
                   : Text(l10n.incidentSubmitCta),
             ),
             if (_failure != null) ...[
               const SizedBox(height: AppSpacing.sm),
-              Text(localizeFailure(context, _failure!), style: TextStyle(color: colors.danger)),
+              Text(
+                localizeFailure(context, _failure!),
+                style: TextStyle(color: colors.danger),
+              ),
             ],
           ],
         ),
@@ -164,10 +215,17 @@ class _IncidentTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final colors = context.nokiColors;
-    final (label, background, foreground) = mobilityIncidentStatusPresentation(l10n, colors, incident.status);
+    final (label, background, foreground) = mobilityIncidentStatusPresentation(
+      l10n,
+      colors,
+      incident.status,
+    );
     return Container(
       padding: const EdgeInsets.all(AppSpacing.sm),
-      decoration: BoxDecoration(color: colors.surfaceSubtle, borderRadius: BorderRadius.circular(AppRadius.sm)),
+      decoration: BoxDecoration(
+        color: colors.surfaceSubtle,
+        borderRadius: BorderRadius.circular(AppRadius.sm),
+      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -175,15 +233,32 @@ class _IncidentTile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(mobilityIncidentTypeLabel(l10n, incident.type), style: Theme.of(context).textTheme.bodyMedium),
-                if (incident.comment != null) Text(incident.comment!, style: Theme.of(context).textTheme.bodySmall),
+                Text(
+                  mobilityIncidentTypeLabel(l10n, incident.type),
+                  style: Theme.of(context).textTheme.bodyMedium,
+                ),
+                if (incident.comment != null)
+                  Text(
+                    incident.comment!,
+                    style: Theme.of(context).textTheme.bodySmall,
+                  ),
               ],
             ),
           ),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
-            decoration: BoxDecoration(color: background, borderRadius: BorderRadius.circular(AppRadius.full)),
-            child: Text(label, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: foreground)),
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.sm,
+              vertical: AppSpacing.xs,
+            ),
+            decoration: BoxDecoration(
+              color: background,
+              borderRadius: BorderRadius.circular(AppRadius.full),
+            ),
+            child: Text(
+              label,
+              style: Theme.of(context).textTheme.labelSmall
+                  ?.copyWith(color: foreground),
+            ),
           ),
         ],
       ),
