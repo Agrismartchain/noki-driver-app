@@ -14,6 +14,53 @@ import 'mobility_repository.dart';
 import 'mobility_ride_screen.dart';
 import 'mobility_status_presentation.dart';
 
+class MobilityOfferDetailViewModel {
+  const MobilityOfferDetailViewModel({
+    required this.id,
+    required this.serviceType,
+    required this.status,
+    required this.pickupAddressSnapshot,
+    required this.dropoffAddressSnapshot,
+    required this.estimatedFare,
+  });
+
+  factory MobilityOfferDetailViewModel.fromOffer(DriverMobilityOfferDto offer) {
+    return MobilityOfferDetailViewModel(
+      id: offer.id,
+      serviceType: offer.serviceType,
+      status: offer.status,
+      pickupAddressSnapshot: offer.pickupAddressSnapshot,
+      dropoffAddressSnapshot: offer.dropoffAddressSnapshot,
+      estimatedFare: offer.estimatedFare,
+    );
+  }
+
+  factory MobilityOfferDetailViewModel.fromWorkFeedItem(DriverWorkFeedItemDto item) {
+    return MobilityOfferDetailViewModel(
+      id: item.underlyingResource.resourceId,
+      serviceType: item.serviceType == DriverWorkFeedItemDtoServiceType.taxiMoto
+          ? DriverMobilityOfferDtoServiceType.taxiMoto
+          : DriverMobilityOfferDtoServiceType.taxi,
+      status: item.status,
+      pickupAddressSnapshot: item.pickup?.addressLine1 ?? item.pickup?.label ?? '',
+      dropoffAddressSnapshot: item.dropoff?.addressLine1 ?? item.dropoff?.label ?? '',
+      estimatedFare: item.amount == null
+          ? null
+          : DriverWorkMoneySummaryDto(
+              amount: item.amount!.amount,
+              currencyCode: item.amount!.currencyCode,
+            ),
+    );
+  }
+
+  final String id;
+  final DriverMobilityOfferDtoServiceType serviceType;
+  final String status;
+  final String pickupAddressSnapshot;
+  final String dropoffAddressSnapshot;
+  final DriverWorkMoneySummaryDto? estimatedFare;
+}
+
 /// Resolves an offer id (all the Work Feed card has -
 /// `underlyingResource.resourceId`) against the real offers list - there is
 /// no GET-by-id-offer endpoint, so this is the only honest way to reach an
@@ -65,9 +112,16 @@ class MobilityOfferLookupScreen extends ConsumerWidget {
 /// GET-by-id-offer endpoint to refresh from, so this screen does not read a
 /// provider for the offer itself (only the mutation is state-managed).
 class MobilityOfferDetailScreen extends ConsumerStatefulWidget {
-  const MobilityOfferDetailScreen({super.key, required this.offer, required this.scope});
+  MobilityOfferDetailScreen({super.key, required DriverMobilityOfferDto offer, required this.scope})
+      : offer = MobilityOfferDetailViewModel.fromOffer(offer);
 
-  final DriverMobilityOfferDto offer;
+  MobilityOfferDetailScreen.fromWorkFeedItem({
+    super.key,
+    required DriverWorkFeedItemDto item,
+    required this.scope,
+  }) : offer = MobilityOfferDetailViewModel.fromWorkFeedItem(item);
+
+  final MobilityOfferDetailViewModel offer;
   final DriverScope scope;
 
   @override

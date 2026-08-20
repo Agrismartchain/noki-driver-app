@@ -59,7 +59,7 @@ class _WorkFeedScreenState extends ConsumerState<WorkFeedScreen> {
         );
       case 'MobilityRideOffer':
         Navigator.of(context).push(
-          MaterialPageRoute(builder: (_) => MobilityOfferLookupScreen(offerId: resource.resourceId, scope: widget.scope)),
+          MaterialPageRoute(builder: (_) => MobilityOfferDetailScreen.fromWorkFeedItem(item: item, scope: widget.scope)),
         );
       case 'MobilityRide':
         Navigator.of(context).push(
