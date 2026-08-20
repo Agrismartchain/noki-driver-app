@@ -8,6 +8,7 @@ class AppSpacing {
   static const double sm = 8;
   static const double md = 12;
   static const double lg = 16;
+  static const double page = 20;
   static const double xl = 24;
   static const double xxl = 32;
   static const double xxxl = 48;
@@ -18,7 +19,23 @@ class AppRadius {
   const AppRadius._();
 
   static const double sm = 6;
-  static const double md = 10;
-  static const double lg = 14;
+  static const double md = 12;
+  static const double lg = 16;
+  static const double xl = 24;
   static const double full = 999;
+}
+
+class AppBorderWidth {
+  const AppBorderWidth._();
+
+  static const double sm = 1;
+  static const double md = 1.5;
+}
+
+class AppControlSize {
+  const AppControlSize._();
+
+  static const double minTouchTarget = 48;
+  static const double primaryButtonHeight = 56;
+  static const double navigationBarHeight = 74;
 }

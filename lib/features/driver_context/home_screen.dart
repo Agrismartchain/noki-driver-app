@@ -12,6 +12,7 @@ import '../../core/location/location_permission_state.dart';
 import '../../core/location/location_repository.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/ui/noki_ui.dart';
 import '../availability/availability_card.dart';
 import '../availability/availability_repository.dart';
 import '../delivery/delivery_mission_detail_screen.dart';
@@ -31,25 +32,30 @@ class HomeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context);
     final asyncContext = ref.watch(driverContextProvider);
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.appTitle)),
-      body: Column(
-        children: [
-          const OfflineBanner(),
-          Expanded(
-            child: asyncContext.when(
-              loading: () => const LoadingView(),
-              error: (error, _) => ErrorView(
-                failure: error is AppFailure ? error : const AppFailure(AppFailureType.unknown),
-                onRetry: () => ref.invalidate(driverContextProvider),
+      body: NokiScreenBackground(
+        showMapGrid: true,
+        child: Column(
+          children: [
+            const SizedBox(height: AppSpacing.sm),
+            const OfflineBanner(),
+            Expanded(
+              child: asyncContext.when(
+                loading: () => const LoadingView(),
+                error: (error, _) => ErrorView(
+                  failure: error is AppFailure
+                      ? error
+                      : const AppFailure(AppFailureType.unknown),
+                  onRetry: () => ref.invalidate(driverContextProvider),
+                ),
+                data: (context) =>
+                    _HomeContent(context: context, onOpenWork: onOpenWork),
               ),
-              data: (context) => _HomeContent(context: context, onOpenWork: onOpenWork),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -63,43 +69,82 @@ class _HomeContent extends ConsumerWidget {
 
   @override
   Widget build(BuildContext buildContext, WidgetRef ref) {
-    final l10n = AppLocalizations.of(buildContext);
     final scope = activeScopeFrom(context);
     final profile = context.profiles.isNotEmpty ? context.profiles.first : null;
+    final metrics = buildContext.nokiMetrics;
 
     return RefreshIndicator(
       onRefresh: () async {
         ref.invalidate(driverContextProvider);
         if (scope != null) ref.invalidate(workFeedProvider(scope));
       },
-      child: ListView(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        children: [
-          Text(l10n.homeGreeting(context.displayName), style: Theme.of(buildContext).textTheme.titleLarge),
-          const SizedBox(height: AppSpacing.lg),
-          if (profile != null && scope != null)
-            _ProfileSummaryCard(
-              profile: profile,
-              onOpenVehicles: () => Navigator.of(buildContext).push(
-                MaterialPageRoute(builder: (_) => VehiclesScreen(scope: scope)),
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        padding: EdgeInsets.fromLTRB(
+          metrics.pagePadding,
+          AppSpacing.sm,
+          metrics.pagePadding,
+          AppSpacing.xxxl,
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _HeroHeader(driverName: context.displayName),
+            const SizedBox(height: AppSpacing.xl),
+            if (profile != null && scope != null)
+              _ProfileSummaryCard(
+                profile: profile,
+                onOpenVehicles: () => Navigator.of(buildContext).push(
+                  MaterialPageRoute(
+                    builder: (_) => VehiclesScreen(scope: scope),
+                  ),
+                ),
               ),
-            ),
-          const SizedBox(height: AppSpacing.lg),
-          if (scope != null) AvailabilityCard(scope: scope),
-          const SizedBox(height: AppSpacing.lg),
-          if (scope != null) _WorkFeedSummaryCard(scope: scope, onOpenWork: onOpenWork),
-          if (scope != null) ...[
-            const SizedBox(height: AppSpacing.lg),
-            _ActiveWorkAndTrackingCard(scope: scope),
+            const SizedBox(height: AppSpacing.xl),
+            if (scope != null) AvailabilityCard(scope: scope),
+            const SizedBox(height: AppSpacing.xl),
+            if (scope != null) _ActiveWorkAndTrackingCard(scope: scope),
+            if (scope != null) ...[
+              const SizedBox(height: AppSpacing.xl),
+              _WorkFeedSummaryCard(scope: scope, onOpenWork: onOpenWork),
+            ],
           ],
-        ],
+        ),
       ),
     );
   }
 }
 
+class _HeroHeader extends StatelessWidget {
+  const _HeroHeader({required this.driverName});
+
+  final String driverName;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        NokiSectionHeader(
+          title: l10n.homeGreeting(driverName),
+          subtitle: l10n.appTitle,
+          trailing: const NokiMetricPill(
+            icon: Icons.bolt,
+            label: 'MASTER OS',
+            emphasis: true,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
 class _ProfileSummaryCard extends StatelessWidget {
-  const _ProfileSummaryCard({required this.profile, required this.onOpenVehicles});
+  const _ProfileSummaryCard({
+    required this.profile,
+    required this.onOpenVehicles,
+  });
 
   final DriverContextProfileDto profile;
   final VoidCallback onOpenVehicles;
@@ -110,37 +155,36 @@ class _ProfileSummaryCard extends StatelessWidget {
     final colors = context.nokiColors;
     final vehicle = profile.assignedVehicle;
 
-    return Card(
-      child: InkWell(
-        onTap: onOpenVehicles,
-        borderRadius: BorderRadius.circular(10),
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _InfoRow(label: l10n.homeCountryLabel, value: profile.countryCode),
-              const SizedBox(height: AppSpacing.sm),
-              _InfoRow(
-                label: l10n.homeCapabilitiesLabel,
-                value: _serviceCapabilitiesLabel(l10n, profile),
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(l10n.homeVehicleLabel, style: Theme.of(context).textTheme.labelSmall),
-                  Icon(Icons.chevron_right, size: 18, color: colors.textMuted),
-                ],
-              ),
-              const SizedBox(height: AppSpacing.xs),
-              if (vehicle == null)
-                Text(l10n.homeNoVehicle, style: TextStyle(color: colors.textMuted))
-              else
-                Text('${vehicle.make} ${vehicle.model} · ${vehicle.plate}'),
-            ],
+    return NokiSurfaceCard(
+      onTap: onOpenVehicles,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          NokiSectionHeader(
+            title: l10n.homeVehicleLabel,
+            subtitle: _serviceCapabilitiesLabel(l10n, profile),
+            trailing: Icon(
+              Icons.chevron_right,
+              size: 18,
+              color: colors.textMuted,
+            ),
           ),
-        ),
+          const SizedBox(height: AppSpacing.lg),
+          _InfoRow(label: l10n.homeCountryLabel, value: profile.countryCode),
+          const SizedBox(height: AppSpacing.sm),
+          _InfoRow(
+            label: l10n.homeCapabilitiesLabel,
+            value: _serviceCapabilitiesLabel(l10n, profile),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          if (vehicle == null)
+            Text(l10n.homeNoVehicle, style: TextStyle(color: colors.textMuted))
+          else
+            Text(
+              '${vehicle.make} ${vehicle.model} · ${vehicle.plate}',
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+        ],
       ),
     );
   }
@@ -155,7 +199,10 @@ class _ProfileSummaryCard extends StatelessWidget {
 /// read from the reliably-typed `deliveryStatus` field so it is never lost,
 /// and unrecognized service types are omitted rather than shown as raw
 /// "UNKNOWN" text (mandate §13).
-String _serviceCapabilitiesLabel(AppLocalizations l10n, DriverContextProfileDto profile) {
+String _serviceCapabilitiesLabel(
+  AppLocalizations l10n,
+  DriverContextProfileDto profile,
+) {
   final labels = <String>[];
   if (profile.deliveryStatus != null) labels.add(l10n.workFeedTypeDelivery);
   for (final type in profile.serviceTypes) {
@@ -181,9 +228,19 @@ class _InfoRow extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: Theme.of(context).textTheme.labelSmall),
-        Text(value, style: Theme.of(context).textTheme.bodyLarge),
+        Expanded(
+          child: Text(label, style: Theme.of(context).textTheme.labelSmall),
+        ),
+        const SizedBox(width: AppSpacing.md),
+        Flexible(
+          child: Text(
+            value,
+            textAlign: TextAlign.end,
+            style: Theme.of(context).textTheme.bodyLarge,
+          ),
+        ),
       ],
     );
   }
@@ -203,23 +260,30 @@ class _ActiveWorkAndTrackingCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final asyncAvailability = ref.watch(availabilityProvider(scope));
+    final currentRide = ref.watch(currentRideProvider(scope)).valueOrNull;
 
     return asyncAvailability.when(
       loading: () => const SizedBox.shrink(),
       error: (_, _) => const SizedBox.shrink(),
       data: (availability) {
         WidgetsBinding.instance.addPostFrameCallback((_) {
-          ref.read(gpsPublisherControllerProvider).updateContext(
+          ref
+              .read(gpsPublisherControllerProvider)
+              .updateContext(
                 DriverTrackingContext(
                   scope: scope,
-                  deliveryAvailable: availability.deliveryStatus == DriverAvailabilityResponseDtoDeliveryStatus.active,
+                  deliveryAvailable:
+                      availability.deliveryStatus ==
+                      DriverAvailabilityResponseDtoDeliveryStatus.active,
                   mobilityAvailable:
-                      availability.mobilityAvailabilityStatus == DriverAvailabilityResponseDtoMobilityAvailabilityStatus.available,
+                      availability.mobilityAvailabilityStatus ==
+                      DriverAvailabilityResponseDtoMobilityAvailabilityStatus
+                          .available,
                 ),
               );
         });
 
-        if (availability.activeMobilityRideCount > 0) {
+        if (currentRide != null || availability.activeMobilityRideCount > 0) {
           return _ContinueRideTile(scope: scope);
         }
         if (availability.activeDeliveryMissionCount > 0) {
@@ -240,17 +304,19 @@ class _ContinueRideTile extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context);
     final asyncRide = ref.watch(currentRideProvider(scope));
-    return asyncRide.maybeWhen(
-      data: (ride) => ride == null
-          ? const SizedBox.shrink()
-          : _ContinueTile(
-              icon: Icons.local_taxi_outlined,
-              label: l10n.homeContinueRide,
-              onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => MobilityRideScreen(rideId: ride.id, scope: scope)),
+    final ride = asyncRide.valueOrNull;
+
+    return _ContinueTile(
+      icon: Icons.local_taxi_outlined,
+      label: l10n.homeContinueRide,
+      onTap: ride == null
+          ? null
+          : () => Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) =>
+                    MobilityRideScreen(rideId: ride.id, scope: scope),
               ),
             ),
-      orElse: () => const SizedBox.shrink(),
     );
   }
 }
@@ -272,7 +338,12 @@ class _ContinueDeliveryTile extends ConsumerWidget {
               icon: Icons.local_shipping_outlined,
               label: l10n.homeContinueDelivery,
               onTap: () => Navigator.of(context).push(
-                MaterialPageRoute(builder: (_) => DeliveryMissionDetailScreen(missionId: list.items.first.id, scope: scope)),
+                MaterialPageRoute(
+                  builder: (_) => DeliveryMissionDetailScreen(
+                    missionId: list.items.first.id,
+                    scope: scope,
+                  ),
+                ),
               ),
             ),
       orElse: () => const SizedBox.shrink(),
@@ -281,31 +352,57 @@ class _ContinueDeliveryTile extends ConsumerWidget {
 }
 
 class _ContinueTile extends StatelessWidget {
-  const _ContinueTile({required this.icon, required this.label, required this.onTap});
+  const _ContinueTile({required this.icon, required this.label, this.onTap});
 
   final IconData icon;
   final String label;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
     final colors = context.nokiColors;
-    return Card(
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(AppRadius.md),
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          child: Row(
-            children: [
-              Icon(icon, color: colors.actionPrimary),
-              const SizedBox(width: AppSpacing.md),
-              Expanded(child: Text(label, style: Theme.of(context).textTheme.titleMedium)),
-              Icon(Icons.chevron_right, color: colors.textMuted),
-            ],
+    return NokiSurfaceCard(
+      tone: NokiSurfaceTone.selected,
+      onTap: onTap,
+      child: Row(
+        children: [
+          Icon(icon, color: colors.actionPrimaryInk),
+          const SizedBox(width: AppSpacing.md),
+          Expanded(
+            child: Text(label, style: Theme.of(context).textTheme.titleMedium),
+          ),
+          Icon(Icons.chevron_right, color: colors.textMuted),
+        ],
+      ),
+    );
+  }
+}
+
+class _StatRow extends StatelessWidget {
+  const _StatRow({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
+
+  final IconData icon;
+  final String label;
+  final String value;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        NokiMetricPill(icon: icon, label: label),
+        const Spacer(),
+        Flexible(
+          child: Text(
+            value,
+            textAlign: TextAlign.end,
+            style: Theme.of(context).textTheme.labelMedium,
           ),
         ),
-      ),
+      ],
     );
   }
 }
@@ -319,24 +416,25 @@ class _TrackingStatusTile extends ConsumerWidget {
     final colors = context.nokiColors;
     final asyncPermission = ref.watch(locationPermissionStateProvider);
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Row(
-          children: [
-            Icon(Icons.gps_fixed, size: 18, color: colors.textMuted),
-            const SizedBox(width: AppSpacing.sm),
-            Expanded(
-              child: Text(
-                asyncPermission.maybeWhen(
-                  data: (state) => state == LocationPermissionState.granted ? l10n.homeTrackingIdle : l10n.homeTrackingPermissionNeeded,
-                  orElse: () => l10n.homeTrackingIdle,
-                ),
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(color: colors.textMuted),
+    return NokiSurfaceCard(
+      tone: NokiSurfaceTone.subtle,
+      child: Row(
+        children: [
+          Icon(Icons.gps_fixed, size: 18, color: colors.textMuted),
+          const SizedBox(width: AppSpacing.sm),
+          Expanded(
+            child: Text(
+              asyncPermission.maybeWhen(
+                data: (state) => state == LocationPermissionState.granted
+                    ? l10n.homeTrackingIdle
+                    : l10n.homeTrackingPermissionNeeded,
+                orElse: () => l10n.homeTrackingIdle,
               ),
+              style: Theme.of(context).textTheme.bodySmall
+                  ?.copyWith(color: colors.textMuted),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -353,31 +451,29 @@ class _WorkFeedSummaryCard extends ConsumerWidget {
     final l10n = AppLocalizations.of(context);
     final asyncFeed = ref.watch(workFeedProvider(scope));
 
-    return Card(
-      child: InkWell(
-        onTap: onOpenWork,
-        borderRadius: BorderRadius.circular(10),
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(l10n.homeWorkFeedSummaryTitle, style: Theme.of(context).textTheme.titleMedium),
-                  if (onOpenWork != null) Icon(Icons.chevron_right, color: context.nokiColors.textMuted),
-                ],
-              ),
-              const SizedBox(height: AppSpacing.sm),
-              asyncFeed.when(
-                loading: () => const LinearProgressIndicator(),
-                error: (error, _) => Text(l10n.errorUnknown),
-                data: (feed) => Text(l10n.homeWorkFeedSummaryCount(feed.total.toInt())),
-              ),
-            ],
+    return NokiSurfaceCard(
+      onTap: onOpenWork,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          NokiSectionHeader(
+            title: l10n.homeWorkFeedSummaryTitle,
+            subtitle: l10n.navWork,
+            trailing: onOpenWork != null
+                ? Icon(Icons.chevron_right, color: context.nokiColors.textMuted)
+                : null,
           ),
-        ),
+          const SizedBox(height: AppSpacing.lg),
+          asyncFeed.when(
+            loading: () => const LinearProgressIndicator(),
+            error: (error, _) => Text(l10n.errorUnknown),
+            data: (feed) => _StatRow(
+              icon: Icons.inbox_outlined,
+              label: l10n.homeWorkFeedSummaryCount(feed.total.toInt()),
+              value: feed.items.isEmpty ? '--' : feed.items.first.status,
+            ),
+          ),
+        ],
       ),
     );
   }

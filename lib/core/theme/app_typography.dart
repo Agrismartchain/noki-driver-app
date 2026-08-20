@@ -16,21 +16,26 @@ class AppTypography {
   const AppTypography._();
 
   static const double sizeXs = 11;
-  static const double sizeSm = 13;
-  static const double sizeMd = 15;
-  static const double sizeLg = 17;
-  static const double sizeXl = 19;
-  static const double size2xl = 22;
-  static const double size3xl = 26;
+  static const double sizeSm = 12;
+  static const double sizeMd = 14;
+  static const double sizeLg = 16;
+  static const double sizeXl = 18;
+  static const double size2xl = 20;
+  static const double size3xl = 24;
+  static const double size4xl = 32;
 
   static const FontWeight weightRegular = FontWeight.w400;
   static const FontWeight weightMedium = FontWeight.w500;
   static const FontWeight weightSemibold = FontWeight.w600;
   static const FontWeight weightBold = FontWeight.w700;
+  static const FontWeight weightExtraBold = FontWeight.w800;
 
-  static const double lineHeightTight = 1.15;
+  static const double lineHeightDense = 1.0;
+  static const double lineHeightTight = 1.2;
   static const double lineHeightNormal = 1.45;
   static const double lineHeightRelaxed = 1.55;
 
   static const double letterSpacingWide = 0.15; // ~0.01em at sizeMd
+  static const double letterSpacingButton = 0.7;
+  static const double letterSpacingTight = -0.8;
 }

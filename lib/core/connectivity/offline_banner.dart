@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../i18n/generated/app_localizations.dart';
-import '../theme/app_spacing.dart';
-import '../theme/app_theme.dart';
+import '../ui/noki_ui.dart';
 import 'connectivity_status.dart';
 
 /// Thin banner shown above the current screen whenever the device reports
@@ -14,26 +13,17 @@ class OfflineBanner extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final status = ref.watch(networkStatusProvider).valueOrNull ?? NetworkStatus.unknown;
+    final status =
+        ref.watch(networkStatusProvider).valueOrNull ?? NetworkStatus.unknown;
     if (status != NetworkStatus.offline) return const SizedBox.shrink();
 
-    final colors = context.nokiColors;
     final l10n = AppLocalizations.of(context);
-    return Container(
-      width: double.infinity,
-      color: colors.warningSurface,
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.lg, vertical: AppSpacing.sm),
-      child: Row(
-        children: [
-          Icon(Icons.wifi_off, size: 16, color: colors.warning),
-          const SizedBox(width: AppSpacing.sm),
-          Expanded(
-            child: Text(
-              l10n.offlineBannerMessage,
-              style: Theme.of(context).textTheme.labelSmall?.copyWith(color: colors.warning),
-            ),
-          ),
-        ],
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 12),
+      child: NokiOperationalBanner(
+        icon: Icons.wifi_off,
+        message: l10n.offlineBannerMessage,
+        tone: NokiBadgeTone.offline,
       ),
     );
   }

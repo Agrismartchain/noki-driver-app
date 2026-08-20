@@ -25,7 +25,9 @@ class VehiclesScreen extends ConsumerWidget {
       body: asyncVehicles.when(
         loading: () => const LoadingView(),
         error: (error, _) => ErrorView(
-          failure: error is AppFailure ? error : const AppFailure(AppFailureType.unknown),
+          failure: error is AppFailure
+              ? error
+              : const AppFailure(AppFailureType.unknown),
           onRetry: () => ref.invalidate(vehiclesProvider(scope)),
         ),
         data: (list) {
@@ -42,7 +44,8 @@ class VehiclesScreen extends ConsumerWidget {
               padding: const EdgeInsets.all(AppSpacing.lg),
               itemCount: list.items.length,
               separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.md),
-              itemBuilder: (context, index) => _VehicleTile(vehicle: list.items[index]),
+              itemBuilder: (context, index) =>
+                  _VehicleTile(vehicle: list.items[index]),
             ),
           );
         },
@@ -126,21 +129,47 @@ class _VehicleStatusBadge extends StatelessWidget {
     final colors = context.nokiColors;
 
     final (label, background, foreground) = switch (status) {
-      DriverVehicleDtoStatus.active => (l10n.vehicleStatusActive, colors.successSurface, colors.success),
+      DriverVehicleDtoStatus.active => (
+        l10n.vehicleStatusActive,
+        colors.successSurface,
+        colors.success,
+      ),
       DriverVehicleDtoStatus.pendingValidation => (
-          l10n.vehicleStatusPendingValidation,
-          colors.warningSurface,
-          colors.warning,
-        ),
-      DriverVehicleDtoStatus.suspended => (l10n.vehicleStatusSuspended, colors.dangerSurface, colors.danger),
-      DriverVehicleDtoStatus.retired => (l10n.vehicleStatusRetired, colors.surfaceSubtle, colors.textMuted),
-      DriverVehicleDtoStatus.unknown => (l10n.errorUnknown, colors.surfaceSubtle, colors.textMuted),
+        l10n.vehicleStatusPendingValidation,
+        colors.warningSurface,
+        colors.warning,
+      ),
+      DriverVehicleDtoStatus.suspended => (
+        l10n.vehicleStatusSuspended,
+        colors.dangerSurface,
+        colors.danger,
+      ),
+      DriverVehicleDtoStatus.retired => (
+        l10n.vehicleStatusRetired,
+        colors.surfaceSubtle,
+        colors.textMuted,
+      ),
+      DriverVehicleDtoStatus.unknown => (
+        l10n.errorUnknown,
+        colors.surfaceSubtle,
+        colors.textMuted,
+      ),
     };
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm, vertical: AppSpacing.xs),
-      decoration: BoxDecoration(color: background, borderRadius: BorderRadius.circular(999)),
-      child: Text(label, style: Theme.of(context).textTheme.labelSmall?.copyWith(color: foreground)),
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.sm,
+        vertical: AppSpacing.xs,
+      ),
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Text(
+        label,
+        style: Theme.of(context).textTheme.labelSmall
+            ?.copyWith(color: foreground),
+      ),
     );
   }
 }

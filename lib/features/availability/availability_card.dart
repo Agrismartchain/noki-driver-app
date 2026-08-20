@@ -7,6 +7,7 @@ import '../../core/errors/failure_localizer.dart';
 import '../../core/i18n/generated/app_localizations.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/ui/noki_ui.dart';
 import '../driver_context/driver_context_repository.dart';
 import 'availability_repository.dart';
 
@@ -27,13 +28,17 @@ class _AvailabilityCardState extends ConsumerState<AvailabilityCard> {
   bool _updating = false;
   AppFailure? _updateFailure;
 
-  Future<void> _setStatus(UpdateDriverAvailabilityDtoAvailabilityStatus status) async {
+  Future<void> _setStatus(
+    UpdateDriverAvailabilityDtoAvailabilityStatus status,
+  ) async {
     setState(() {
       _updating = true;
       _updateFailure = null;
     });
     try {
-      await ref.read(availabilityRepositoryProvider).update(widget.scope, status);
+      await ref
+          .read(availabilityRepositoryProvider)
+          .update(widget.scope, status);
       ref.invalidate(availabilityProvider(widget.scope));
     } on AppFailure catch (failure) {
       setState(() => _updateFailure = failure);
@@ -48,13 +53,30 @@ class _AvailabilityCardState extends ConsumerState<AvailabilityCard> {
     final colors = context.nokiColors;
     final asyncAvailability = ref.watch(availabilityProvider(widget.scope));
 
-    return Card(
+    return NokiSurfaceCard(
+      tone: NokiSurfaceTone.inverse,
       child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.lg),
+        padding: EdgeInsets.zero,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(l10n.availabilityTitle, style: Theme.of(context).textTheme.titleMedium),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    l10n.availabilityTitle,
+                    style: Theme.of(context).textTheme.titleMedium
+                        ?.copyWith(color: colors.textInverse),
+                  ),
+                ),
+                const NokiBadge(
+                  label: 'LIVE',
+                  tone: NokiBadgeTone.primary,
+                  icon: Icons.flash_on,
+                ),
+              ],
+            ),
             const SizedBox(height: AppSpacing.md),
             asyncAvailability.when(
               loading: () => const Padding(
@@ -62,36 +84,71 @@ class _AvailabilityCardState extends ConsumerState<AvailabilityCard> {
                 child: LinearProgressIndicator(),
               ),
               error: (error, _) => Text(
-                error is AppFailure ? localizeFailure(context, error) : l10n.errorUnknown,
+                error is AppFailure
+                    ? localizeFailure(context, error)
+                    : l10n.errorUnknown,
                 style: TextStyle(color: colors.danger),
               ),
               data: (availability) => Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  NokiBadge(
+                    label: _summaryLabel(
+                      l10n,
+                      availability.mobilityAvailabilityStatus,
+                    ),
+                    tone: _summaryTone(availability.mobilityAvailabilityStatus),
+                    icon:
+                        availability.mobilityAvailabilityStatus ==
+                            DriverAvailabilityResponseDtoMobilityAvailabilityStatus
+                                .available
+                        ? Icons.radio_button_checked
+                        : availability.mobilityAvailabilityStatus ==
+                              DriverAvailabilityResponseDtoMobilityAvailabilityStatus
+                                  .busy
+                        ? Icons.timelapse
+                        : Icons.pause_circle,
+                  ),
+                  const SizedBox(height: AppSpacing.md),
                   _StatusSelector(
                     current: availability.mobilityAvailabilityStatus,
                     updating: _updating,
                     onSelect: _setStatus,
                   ),
                   const SizedBox(height: AppSpacing.md),
-                  Text(
-                    l10n.availabilityActiveMissions(availability.activeDeliveryMissionCount.toInt()),
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  Text(
-                    l10n.availabilityActiveRides(availability.activeMobilityRideCount.toInt()),
-                    style: Theme.of(context).textTheme.bodyMedium,
-                  ),
-                  Text(
-                    l10n.availabilityPendingOffers(availability.activeMobilityOfferCount.toInt()),
-                    style: Theme.of(context).textTheme.bodyMedium,
+                  Wrap(
+                    spacing: AppSpacing.sm,
+                    runSpacing: AppSpacing.sm,
+                    children: [
+                      NokiMetricPill(
+                        icon: Icons.local_shipping_outlined,
+                        label: l10n.availabilityActiveMissions(
+                          availability.activeDeliveryMissionCount.toInt(),
+                        ),
+                      ),
+                      NokiMetricPill(
+                        icon: Icons.local_taxi_outlined,
+                        label: l10n.availabilityActiveRides(
+                          availability.activeMobilityRideCount.toInt(),
+                        ),
+                      ),
+                      NokiMetricPill(
+                        icon: Icons.notifications_active_outlined,
+                        label: l10n.availabilityPendingOffers(
+                          availability.activeMobilityOfferCount.toInt(),
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
             ),
             if (_updateFailure != null) ...[
               const SizedBox(height: AppSpacing.sm),
-              Text(l10n.availabilityUpdateFailed, style: TextStyle(color: colors.danger)),
+              Text(
+                l10n.availabilityUpdateFailed,
+                style: TextStyle(color: colors.danger),
+              ),
             ],
           ],
         ),
@@ -101,11 +158,16 @@ class _AvailabilityCardState extends ConsumerState<AvailabilityCard> {
 }
 
 class _StatusSelector extends StatelessWidget {
-  const _StatusSelector({required this.current, required this.updating, required this.onSelect});
+  const _StatusSelector({
+    required this.current,
+    required this.updating,
+    required this.onSelect,
+  });
 
   final DriverAvailabilityResponseDtoMobilityAvailabilityStatus? current;
   final bool updating;
-  final void Function(UpdateDriverAvailabilityDtoAvailabilityStatus status) onSelect;
+  final void Function(UpdateDriverAvailabilityDtoAvailabilityStatus status)
+  onSelect;
 
   @override
   Widget build(BuildContext context) {
@@ -131,7 +193,11 @@ class _StatusSelector extends StatelessWidget {
     if (updating) {
       return const Padding(
         padding: EdgeInsets.symmetric(vertical: AppSpacing.sm),
-        child: SizedBox(height: 16, width: 16, child: CircularProgressIndicator(strokeWidth: 2)),
+        child: SizedBox(
+          height: 16,
+          width: 16,
+          child: CircularProgressIndicator(strokeWidth: 2),
+        ),
       );
     }
 
@@ -147,4 +213,29 @@ class _StatusSelector extends StatelessWidget {
       ],
     );
   }
+}
+
+String _summaryLabel(
+  AppLocalizations l10n,
+  DriverAvailabilityResponseDtoMobilityAvailabilityStatus? status,
+) {
+  return switch (status) {
+    DriverAvailabilityResponseDtoMobilityAvailabilityStatus.available =>
+      l10n.availabilityStatusAvailable,
+    DriverAvailabilityResponseDtoMobilityAvailabilityStatus.busy =>
+      l10n.availabilityStatusBusy,
+    _ => l10n.availabilityStatusOffline,
+  };
+}
+
+NokiBadgeTone _summaryTone(
+  DriverAvailabilityResponseDtoMobilityAvailabilityStatus? status,
+) {
+  return switch (status) {
+    DriverAvailabilityResponseDtoMobilityAvailabilityStatus.available =>
+      NokiBadgeTone.primary,
+    DriverAvailabilityResponseDtoMobilityAvailabilityStatus.busy =>
+      NokiBadgeTone.warning,
+    _ => NokiBadgeTone.offline,
+  };
 }
