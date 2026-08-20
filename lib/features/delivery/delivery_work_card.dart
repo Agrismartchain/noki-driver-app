@@ -4,6 +4,7 @@ import '../../core/api/generated/driver_models.generated.dart';
 import '../../core/i18n/generated/app_localizations.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/ui/noki_finance.dart';
 import 'delivery_status_presentation.dart';
 
 /// Work Feed card for a DELIVERY work item. Deliberately distinct from
@@ -83,21 +84,14 @@ class DeliveryWorkCard extends StatelessWidget {
                     ],
                     if (item.amount != null) ...[
                       const SizedBox(height: AppSpacing.sm),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: AppSpacing.sm,
-                          vertical: AppSpacing.xs,
-                        ),
-                        decoration: BoxDecoration(
-                          color: colors.surfaceSelected,
-                          borderRadius: BorderRadius.circular(AppRadius.sm),
-                        ),
-                        child: Text(
-                          l10n.deliveryCodBadge(
-                            '${item.amount!.amount} ${item.amount!.currencyCode}',
-                          ),
-                          style: Theme.of(context).textTheme.labelSmall,
-                        ),
+                      NokiFinanceCallout(
+                        label: l10n.financeAmountToCollectLabel,
+                        amount: item.amount!.amount,
+                        currencyCode: item.amount!.currencyCode,
+                        tone: NokiFinanceTone.collect,
+                        preferFcfa: true,
+                        caption: l10n.missionFinancialCodLabel,
+                        icon: Icons.payments_outlined,
                       ),
                     ],
                   ],

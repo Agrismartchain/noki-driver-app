@@ -4,6 +4,7 @@ import '../../core/api/generated/driver_models.generated.dart';
 import '../../core/i18n/generated/app_localizations.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/ui/noki_finance.dart';
 import 'mobility_status_presentation.dart';
 
 /// Work Feed card for a RIDE work item (either an open offer or an active
@@ -75,9 +76,14 @@ class MobilityWorkCard extends StatelessWidget {
                     ],
                     if (item.amount != null) ...[
                       const SizedBox(height: AppSpacing.sm),
-                      Text(
-                        '${item.amount!.amount} ${item.amount!.currencyCode}',
-                        style: Theme.of(context).textTheme.titleMedium,
+                      NokiFinanceCallout(
+                        label: l10n.financeEstimatedFareLabel,
+                        amount: item.amount!.amount,
+                        currencyCode: item.amount!.currencyCode,
+                        caption: isOffer
+                            ? l10n.mobilityOfferLabel
+                            : l10n.mobilityRideLabel,
+                        icon: Icons.payments_outlined,
                       ),
                     ],
                   ],

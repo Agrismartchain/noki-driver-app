@@ -9,6 +9,8 @@ import '../../core/errors/failure_localizer.dart';
 import '../../core/i18n/generated/app_localizations.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/ui/noki_finance.dart';
+import '../../core/ui/noki_ui.dart';
 import '../../core/utils/idempotency_key.dart';
 import '../availability/availability_repository.dart';
 import '../driver_context/driver_context_repository.dart';
@@ -345,32 +347,29 @@ class _DeliveryMissionDetailScreenState
 
   Widget _financialContent(DriverMissionResponseDto mission) {
     final l10n = AppLocalizations.of(context);
-    final colors = context.nokiColors;
     final codedAmount = widget.feedItem?.amount;
+    final amountValue = codedAmount?.amount ?? mission.codExpectedAmount;
+    final amountCurrency = codedAmount?.currencyCode;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          l10n.missionFinancialCodLabel,
-          style: Theme.of(context).textTheme.labelSmall
-              ?.copyWith(color: colors.textMuted),
+        NokiFinanceCallout(
+          label: l10n.financeAmountToCollectLabel,
+          amount: amountValue,
+          currencyCode: amountCurrency,
+          tone: NokiFinanceTone.collect,
+          preferFcfa: true,
+          caption: l10n.financeAmountToCollectHint,
+          icon: Icons.payments_outlined,
         ),
-        const SizedBox(height: AppSpacing.xs),
-        if (codedAmount != null)
-          Text(
-            '${codedAmount.amount} ${codedAmount.currencyCode}',
-            style: Theme.of(context).textTheme.headlineSmall,
-          )
-        else ...[
-          Text(
-            mission.codExpectedAmount,
-            style: Theme.of(context).textTheme.headlineSmall,
-          ),
-          const SizedBox(height: AppSpacing.xs),
-          Text(
-            l10n.missionFinancialNoCurrency,
-            style: Theme.of(context).textTheme.bodySmall
-                ?.copyWith(color: colors.textMuted),
+        const SizedBox(height: AppSpacing.md),
+        NokiFinanceNotice(message: l10n.financeCodSafetyNotice),
+        if (codedAmount == null) ...[
+          const SizedBox(height: AppSpacing.md),
+          NokiOperationalBanner(
+            icon: Icons.info_outline,
+            message: l10n.missionFinancialNoCurrency,
+            tone: NokiBadgeTone.info,
           ),
         ],
       ],
