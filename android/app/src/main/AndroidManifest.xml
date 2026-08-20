@@ -8,6 +8,12 @@
          deferred this phase (BACKGROUND_GPS=DEFERRED, see final report). -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!-- QR camera scanning (mandate DRIVER-APP-04 §19) - requested by
+         mobile_scanner only when DeliveryQrScanScreen actually starts the
+         camera, never at app launch. -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
     <application
         android:label="NOKI Driver"
         android:name="${applicationName}"

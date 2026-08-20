@@ -57,6 +57,13 @@ dependencies:
   # overlapping permission plugins for the same capability.
   geolocator: ^13.0.2
 
+  # QR camera scanning (DRIVER-APP-04) - MLKit-based, actively maintained;
+  # the modern replacement for the now-unmaintained qr_code_scanner. Camera
+  # permission is requested only when the scanner screen opens, never at
+  # startup. Manual token entry (DeliveryQrEntryScreen) remains as a
+  # fallback, not replaced.
+  mobile_scanner: ^7.0.1
+
   intl: any
 
 dev_dependencies:

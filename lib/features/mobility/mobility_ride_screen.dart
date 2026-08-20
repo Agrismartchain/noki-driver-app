@@ -9,10 +9,14 @@ import '../../core/errors/failure_localizer.dart';
 import '../../core/i18n/generated/app_localizations.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_theme.dart';
+import '../availability/availability_repository.dart';
 import '../driver_context/driver_context_repository.dart';
+import '../work_feed/work_feed_repository.dart';
+import 'mobility_incidents_section.dart';
 import 'mobility_repository.dart';
 import 'mobility_ride_map_screen.dart';
 import 'mobility_status_presentation.dart';
+
 
 /// Current/active ride presentation and transitions. Only the transitions
 /// [legalRideTransitions] says are legal from the ride's current status are
@@ -41,6 +45,13 @@ class _MobilityRideScreenState extends ConsumerState<MobilityRideScreen> {
     try {
       await ref.read(mobilityRepositoryProvider).transitionRide(widget.rideId, target);
       ref.invalidate(rideByIdProvider(widget.rideId));
+      // Targeted invalidation (mandate §15/§16/§23): the two providers
+      // Home's "continue active ride" card reads, plus Work Feed's own
+      // separate provider (found stale live on-device, same class of gap as
+      // Delivery completion - see delivery_mission_detail_screen.dart).
+      ref.invalidate(availabilityProvider(widget.scope));
+      ref.invalidate(currentRideProvider(widget.scope));
+      ref.invalidate(workFeedProvider(widget.scope));
     } on AppFailure catch (failure) {
       if (mounted) setState(() => _transitionFailure = failure);
     } finally {
@@ -187,6 +198,8 @@ class _MobilityRideScreenState extends ConsumerState<MobilityRideScreen> {
             const SizedBox(height: AppSpacing.md),
             Text(localizeFailure(context, _transitionFailure!), style: TextStyle(color: colors.danger)),
           ],
+          const SizedBox(height: AppSpacing.lg),
+          MobilityIncidentsSection(scope: widget.scope, rideId: ride.id, rideReference: ride.reference),
         ],
       ),
     );

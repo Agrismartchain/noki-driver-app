@@ -8,6 +8,7 @@ import '../../core/i18n/generated/app_localizations.dart';
 import '../../core/theme/app_spacing.dart';
 import '../delivery/delivery_history_screen.dart';
 import '../delivery/delivery_mission_detail_screen.dart';
+import '../delivery/delivery_qr_scan_screen.dart';
 import '../delivery/delivery_work_card.dart';
 import '../driver_context/driver_context_repository.dart';
 import '../mobility/mobility_offer_detail_screen.dart';
@@ -77,6 +78,13 @@ class _WorkFeedScreenState extends ConsumerState<WorkFeedScreen> {
       appBar: AppBar(
         title: Text(l10n.workFeedTitle),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.qr_code_scanner_outlined),
+            tooltip: l10n.qrScanTitle,
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => DeliveryQrScanScreen(scope: widget.scope)),
+            ),
+          ),
           IconButton(
             icon: const Icon(Icons.history),
             tooltip: l10n.deliveryHistoryTitle,

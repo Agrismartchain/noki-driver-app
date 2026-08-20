@@ -12,9 +12,11 @@ import '../../core/location/location_permission_gate.dart';
 import '../../core/i18n/generated/app_localizations.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_theme.dart';
+import '../availability/availability_repository.dart';
 import '../driver_context/driver_context_repository.dart';
 import '../map/map_point.dart';
 import '../map/map_view.dart';
+import '../work_feed/work_feed_repository.dart';
 import 'mobility_repository.dart';
 import 'mobility_status_presentation.dart';
 
@@ -80,6 +82,9 @@ class _MobilityRideMapScreenState extends ConsumerState<MobilityRideMapScreen> {
           .read(mobilityRepositoryProvider)
           .transitionRide(widget.rideId, target);
       ref.invalidate(rideByIdProvider(widget.rideId));
+      ref.invalidate(availabilityProvider(widget.scope));
+      ref.invalidate(currentRideProvider(widget.scope));
+      ref.invalidate(workFeedProvider(widget.scope));
     } on AppFailure catch (failure) {
       if (mounted) setState(() => _transitionFailure = failure);
     } finally {

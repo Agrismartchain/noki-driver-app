@@ -1383,7 +1383,7 @@ class AuthCapabilityCountryScopeResponseDto {
 
   Map<String, dynamic> toJson() {
     return {
-      "organizationCountryId": organizationCountryId,
+      "organizationCountryId": ?organizationCountryId,
       "countryCode": countryCode,
     };
   }
@@ -1448,7 +1448,7 @@ class AuthCapabilityRoleResponseDto {
     return {
       "roleId": roleId,
       "code": code,
-      "description": description,
+      "description": ?description,
     };
   }
 }
@@ -1514,9 +1514,9 @@ class CompleteDriverMissionDto {
   Map<String, dynamic> toJson() {
     return {
       "otpChallengeId": otpChallengeId,
-      "latitude": latitude,
-      "longitude": longitude,
-      "accuracyMeters": accuracyMeters,
+      "latitude": ?latitude,
+      "longitude": ?longitude,
+      "accuracyMeters": ?accuracyMeters,
     };
   }
 }
@@ -1573,10 +1573,10 @@ class CreateDeliveryIncidentDto {
   Map<String, dynamic> toJson() {
     return {
       "type": type.toJson(),
-      "comment": comment,
-      "latitude": latitude,
-      "longitude": longitude,
-      "accuracyMeters": accuracyMeters,
+      "comment": ?comment,
+      "latitude": ?latitude,
+      "longitude": ?longitude,
+      "accuracyMeters": ?accuracyMeters,
     };
   }
 }
@@ -1617,12 +1617,12 @@ class CreateOwnMobilityIncidentRequestDto {
 
   Map<String, dynamic> toJson() {
     return {
-      "rideId": rideId,
+      "rideId": ?rideId,
       "type": type.toJson(),
-      "comment": comment,
-      "latitude": latitude,
-      "longitude": longitude,
-      "accuracyMeters": accuracyMeters,
+      "comment": ?comment,
+      "latitude": ?latitude,
+      "longitude": ?longitude,
+      "accuracyMeters": ?accuracyMeters,
       "organizationId": organizationId,
       "countryCode": countryCode,
     };
@@ -1746,12 +1746,12 @@ class DeliveryIncidentResponseDto {
       "shipmentId": shipmentId,
       "type": type.toJson(),
       "status": status.toJson(),
-      "comment": comment,
-      "latitude": latitude,
-      "longitude": longitude,
-      "accuracyMeters": accuracyMeters,
-      "resolvedAt": resolvedAt,
-      "resolvedByActorId": resolvedByActorId,
+      "comment": ?comment,
+      "latitude": ?latitude,
+      "longitude": ?longitude,
+      "accuracyMeters": ?accuracyMeters,
+      "resolvedAt": ?resolvedAt,
+      "resolvedByActorId": ?resolvedByActorId,
       "createdAt": createdAt,
     };
   }
@@ -1786,9 +1786,9 @@ class DeliveryLocationPointInputDto {
     return {
       "latitude": latitude,
       "longitude": longitude,
-      "accuracyMeters": accuracyMeters,
+      "accuracyMeters": ?accuracyMeters,
       "recordedAt": recordedAt,
-      "shipmentId": shipmentId,
+      "shipmentId": ?shipmentId,
     };
   }
 }
@@ -1847,13 +1847,13 @@ class DriverAvailabilityResponseDto {
       "organizationId": organizationId,
       "countryId": countryId,
       "countryCode": countryCode,
-      "deliveryProfileId": deliveryProfileId,
-      "deliveryStatus": deliveryStatus?.toJson(),
+      "deliveryProfileId": ?deliveryProfileId,
+      "deliveryStatus": ?deliveryStatus?.toJson(),
       "activeDeliveryMissionCount": activeDeliveryMissionCount,
-      "mobilityProfileId": mobilityProfileId,
-      "mobilityAvailabilityStatus": mobilityAvailabilityStatus?.toJson(),
-      "mobilityOnboardingStatus": mobilityOnboardingStatus?.toJson(),
-      "mobilityOperationalStatus": mobilityOperationalStatus?.toJson(),
+      "mobilityProfileId": ?mobilityProfileId,
+      "mobilityAvailabilityStatus": ?mobilityAvailabilityStatus?.toJson(),
+      "mobilityOnboardingStatus": ?mobilityOnboardingStatus?.toJson(),
+      "mobilityOperationalStatus": ?mobilityOperationalStatus?.toJson(),
       "serviceCapabilities": serviceCapabilities.map((e) => e).toList(),
       "activeMobilityOfferCount": activeMobilityOfferCount,
       "activeMobilityRideCount": activeMobilityRideCount,
@@ -1913,14 +1913,14 @@ class DriverContextProfileDto {
       "organizationName": organizationName,
       "countryId": countryId,
       "countryCode": countryCode,
-      "deliveryProfileId": deliveryProfileId,
-      "deliveryStatus": deliveryStatus?.toJson(),
-      "mobilityProfileId": mobilityProfileId,
-      "mobilityOnboardingStatus": mobilityOnboardingStatus?.toJson(),
-      "mobilityOperationalStatus": mobilityOperationalStatus?.toJson(),
-      "mobilityAvailabilityStatus": mobilityAvailabilityStatus?.toJson(),
+      "deliveryProfileId": ?deliveryProfileId,
+      "deliveryStatus": ?deliveryStatus?.toJson(),
+      "mobilityProfileId": ?mobilityProfileId,
+      "mobilityOnboardingStatus": ?mobilityOnboardingStatus?.toJson(),
+      "mobilityOperationalStatus": ?mobilityOperationalStatus?.toJson(),
+      "mobilityAvailabilityStatus": ?mobilityAvailabilityStatus?.toJson(),
       "serviceTypes": serviceTypes.map((e) => e.toJson()).toList(),
-      "assignedVehicle": assignedVehicle?.toJson(),
+      "assignedVehicle": ?assignedVehicle?.toJson(),
     };
   }
 }
@@ -1957,7 +1957,7 @@ class DriverContextResponseDto {
     return {
       "actorId": actorId,
       "displayName": displayName,
-      "email": email,
+      "email": ?email,
       "effectivePermissionCodes": effectivePermissionCodes.map((e) => e).toList(),
       "capabilities": capabilities.map((e) => e).toList(),
       "profiles": profiles.map((e) => e.toJson()).toList(),
@@ -2062,9 +2062,9 @@ class DriverMissionCompletionResponseDto {
       "status": status.toJson(),
       "orderStatus": orderStatus.toJson(),
       "completedAt": completedAt,
-      "latitude": latitude,
-      "longitude": longitude,
-      "accuracyMeters": accuracyMeters,
+      "latitude": ?latitude,
+      "longitude": ?longitude,
+      "accuracyMeters": ?accuracyMeters,
     };
   }
 }
@@ -2225,19 +2225,19 @@ class DriverMissionResponseDto {
       "assignedDriverProfileId": assignedDriverProfileId,
       "status": status.toJson(),
       "customerFullName": customerFullName,
-      "customerPhone": customerPhone,
+      "customerPhone": ?customerPhone,
       "addressLine1": addressLine1,
-      "addressLine2": addressLine2,
-      "instructions": instructions,
-      "cityId": cityId,
-      "zoneId": zoneId,
-      "subZoneId": subZoneId,
+      "addressLine2": ?addressLine2,
+      "instructions": ?instructions,
+      "cityId": ?cityId,
+      "zoneId": ?zoneId,
+      "subZoneId": ?subZoneId,
       "codExpectedAmount": codExpectedAmount,
       "currencyId": currencyId,
-      "assignedAt": assignedAt,
-      "outForDeliveryAt": outForDeliveryAt,
-      "deliveredAt": deliveredAt,
-      "failedAt": failedAt,
+      "assignedAt": ?assignedAt,
+      "outForDeliveryAt": ?outForDeliveryAt,
+      "deliveredAt": ?deliveredAt,
+      "failedAt": ?failedAt,
       "lines": lines.map((e) => e.toJson()).toList(),
       "createdAt": createdAt,
       "updatedAt": updatedAt,
@@ -2352,13 +2352,13 @@ class DriverMobilityOfferDto {
       "status": status,
       "pickupAddressSnapshot": pickupAddressSnapshot,
       "dropoffAddressSnapshot": dropoffAddressSnapshot,
-      "pickupLatitude": pickupLatitude,
-      "pickupLongitude": pickupLongitude,
-      "dropoffLatitude": dropoffLatitude,
-      "dropoffLongitude": dropoffLongitude,
-      "estimatedFare": estimatedFare?.toJson(),
-      "estimatedRoadDistanceKm": estimatedRoadDistanceKm,
-      "geodesicDistanceKm": geodesicDistanceKm,
+      "pickupLatitude": ?pickupLatitude,
+      "pickupLongitude": ?pickupLongitude,
+      "dropoffLatitude": ?dropoffLatitude,
+      "dropoffLongitude": ?dropoffLongitude,
+      "estimatedFare": ?estimatedFare?.toJson(),
+      "estimatedRoadDistanceKm": ?estimatedRoadDistanceKm,
+      "geodesicDistanceKm": ?geodesicDistanceKm,
       "offeredAt": offeredAt,
       "expiresAt": expiresAt,
     };
@@ -2488,10 +2488,10 @@ class DriverVehicleDto {
       "organizationId": organizationId,
       "countryId": countryId,
       "countryCode": countryCode,
-      "year": year,
-      "color": color,
+      "year": ?year,
+      "color": ?color,
       "code": code,
-      "documentsAvailable": documentsAvailable,
+      "documentsAvailable": ?documentsAvailable,
       "updatedAt": updatedAt,
     };
   }
@@ -2585,12 +2585,12 @@ class DriverWorkFeedItemDto {
       "serviceType": serviceType.toJson(),
       "sourceDomain": sourceDomain,
       "status": status,
-      "priority": priority,
+      "priority": ?priority,
       "createdAt": createdAt,
       "updatedAt": updatedAt,
-      "pickup": pickup?.toJson(),
-      "dropoff": dropoff?.toJson(),
-      "amount": amount?.toJson(),
+      "pickup": ?pickup?.toJson(),
+      "dropoff": ?dropoff?.toJson(),
+      "amount": ?amount?.toJson(),
       "actions": actions.map((e) => e).toList(),
       "underlyingResource": underlyingResource.toJson(),
     };
@@ -2662,13 +2662,13 @@ class DriverWorkLocationSummaryDto {
 
   Map<String, dynamic> toJson() {
     return {
-      "label": label,
-      "addressLine1": addressLine1,
-      "addressLine2": addressLine2,
-      "cityId": cityId,
-      "zoneId": zoneId,
-      "latitude": latitude,
-      "longitude": longitude,
+      "label": ?label,
+      "addressLine1": ?addressLine1,
+      "addressLine2": ?addressLine2,
+      "cityId": ?cityId,
+      "zoneId": ?zoneId,
+      "latitude": ?latitude,
+      "longitude": ?longitude,
     };
   }
 }
@@ -2767,7 +2767,7 @@ class MeResponseDto {
     return {
       "actorId": actorId,
       "displayName": displayName,
-      "email": email,
+      "email": ?email,
       "memberships": memberships.map((e) => e.toJson()).toList(),
     };
   }
@@ -2869,16 +2869,16 @@ class MobilityDriverDto {
       "displayName": displayName,
       "organizationName": organizationName,
       "countryCode": countryCode,
-      "phoneMasked": phoneMasked,
+      "phoneMasked": ?phoneMasked,
       "onboardingStatus": onboardingStatus.toJson(),
       "operationalStatus": operationalStatus.toJson(),
       "availabilityStatus": availabilityStatus.toJson(),
       "allowedServiceTypes": allowedServiceTypes.map((e) => e.toJson()).toList(),
       "operatingZoneIds": operatingZoneIds.map((e) => e).toList(),
-      "ratingAverage": ratingAverage,
+      "ratingAverage": ?ratingAverage,
       "ratingCount": ratingCount,
-      "lastKnownLocation": lastKnownLocation?.toJson(),
-      "assignedVehicleLabel": assignedVehicleLabel,
+      "lastKnownLocation": ?lastKnownLocation?.toJson(),
+      "assignedVehicleLabel": ?assignedVehicleLabel,
       "ridesCount": ridesCount,
       "updatedAt": updatedAt,
     };
@@ -2917,10 +2917,10 @@ class MobilityGeoPointDto {
     return {
       "latitude": latitude,
       "longitude": longitude,
-      "accuracyMeters": accuracyMeters,
-      "headingDegrees": headingDegrees,
-      "speedKph": speedKph,
-      "recordedAt": recordedAt,
+      "accuracyMeters": ?accuracyMeters,
+      "headingDegrees": ?headingDegrees,
+      "speedKph": ?speedKph,
+      "recordedAt": ?recordedAt,
     };
   }
 }
@@ -2973,12 +2973,12 @@ class MobilityIncidentDto {
       "id": id,
       "type": type.toJson(),
       "status": status.toJson(),
-      "rideReference": rideReference,
-      "driverDisplayName": driverDisplayName,
-      "vehicleLabel": vehicleLabel,
-      "comment": comment,
-      "latitude": latitude,
-      "longitude": longitude,
+      "rideReference": ?rideReference,
+      "driverDisplayName": ?driverDisplayName,
+      "vehicleLabel": ?vehicleLabel,
+      "comment": ?comment,
+      "latitude": ?latitude,
+      "longitude": ?longitude,
       "createdAt": createdAt,
       "updatedAt": updatedAt,
     };
@@ -3079,13 +3079,13 @@ class MobilityRideDetailDto {
       "vehicleLabel": vehicleLabel,
       "fareAmount": fareAmount,
       "currencyCode": currencyCode,
-      "geodesicDistanceKm": geodesicDistanceKm,
-      "actualDistanceKm": actualDistanceKm,
+      "geodesicDistanceKm": ?geodesicDistanceKm,
+      "actualDistanceKm": ?actualDistanceKm,
       "paymentMethod": paymentMethod,
       "paymentStatus": paymentStatus,
       "assignedAt": assignedAt,
-      "startedAt": startedAt,
-      "completedAt": completedAt,
+      "startedAt": ?startedAt,
+      "completedAt": ?completedAt,
       "updatedAt": updatedAt,
       "pickupLatitude": pickupLatitude,
       "pickupLongitude": pickupLongitude,
@@ -3125,9 +3125,9 @@ class MobilityRideTimelineEntryDto {
   Map<String, dynamic> toJson() {
     return {
       "type": type,
-      "fromStatus": fromStatus,
-      "toStatus": toStatus,
-      "message": message,
+      "fromStatus": ?fromStatus,
+      "toStatus": ?toStatus,
+      "message": ?message,
       "createdAt": createdAt,
     };
   }
@@ -3168,10 +3168,10 @@ class MobilityTrackPointDto {
     return {
       "latitude": latitude,
       "longitude": longitude,
-      "accuracyMeters": accuracyMeters,
-      "headingDegrees": headingDegrees,
-      "speedKph": speedKph,
-      "recordedAt": recordedAt,
+      "accuracyMeters": ?accuracyMeters,
+      "headingDegrees": ?headingDegrees,
+      "speedKph": ?speedKph,
+      "recordedAt": ?recordedAt,
       "id": id,
     };
   }
@@ -3304,11 +3304,11 @@ class SubmitMobilityLocationDto {
     return {
       "latitude": latitude,
       "longitude": longitude,
-      "accuracyMeters": accuracyMeters,
-      "headingDegrees": headingDegrees,
-      "speedKph": speedKph,
-      "recordedAt": recordedAt,
-      "rideId": rideId,
+      "accuracyMeters": ?accuracyMeters,
+      "headingDegrees": ?headingDegrees,
+      "speedKph": ?speedKph,
+      "recordedAt": ?recordedAt,
+      "rideId": ?rideId,
     };
   }
 }
@@ -3332,7 +3332,7 @@ class TransitionMobilityRideDto {
   Map<String, dynamic> toJson() {
     return {
       "status": status.toJson(),
-      "reason": reason,
+      "reason": ?reason,
     };
   }
 }

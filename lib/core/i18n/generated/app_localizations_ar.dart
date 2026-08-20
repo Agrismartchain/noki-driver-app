@@ -369,17 +369,36 @@ class AppLocalizationsAr extends AppLocalizations {
   String get incidentsEmpty => 'لا توجد حوادث مُبلّغ عنها';
 
   @override
-  String get qrEntryTitle => 'مسح رمز QR';
+  String get qrEntryTitle => 'إدخال رمز QR';
 
   @override
-  String get qrEntryHint =>
-      'أدخل رمز QR الخاص بالتسليم يدويًا. ستتوفر ميزة المسح بالكاميرا في تحديث لاحق.';
+  String get qrEntryHint => 'أدخل رمز QR الخاص بالتسليم يدويًا.';
 
   @override
   String get qrEntryTokenLabel => 'رمز QR';
 
   @override
   String get qrEntrySubmitCta => 'إرسال';
+
+  @override
+  String get qrEntryUseCameraCta => 'المسح بالكاميرا';
+
+  @override
+  String get qrScanTitle => 'مسح رمز QR';
+
+  @override
+  String get qrScanHint => 'وجّه الكاميرا نحو رمز QR الخاص بالتوصيلة.';
+
+  @override
+  String get qrScanManualEntryCta => 'إدخال الرمز يدويًا';
+
+  @override
+  String get qrScanPermissionDenied =>
+      'تم رفض الوصول إلى الكاميرا. أدخل الرمز يدويًا بدلاً من ذلك.';
+
+  @override
+  String get qrScanCameraUnavailable =>
+      'المسح بالكاميرا غير متاح على هذا الجهاز. أدخل الرمز يدويًا بدلاً من ذلك.';
 
   @override
   String get serviceTypeTaxi => 'تاكسي';

@@ -260,7 +260,14 @@ function emitClass(schemaName) {
   lines.push('  Map<String, dynamic> toJson() {');
   lines.push('    return {');
   for (const f of fields) {
-    lines.push(`      ${JSON.stringify(f.propName)}: ${toJsonExpr(f, dartFieldName(f.propName))},`);
+    // Nullable fields use Dart's null-aware map-entry syntax ('key': ?value)
+    // so an absent optional value is OMITTED from the JSON body rather than
+    // sent as an explicit `null` - several backend DTOs reject an explicit
+    // null for an @IsOptional() field with a 400 (confirmed live: driver
+    // mission completion with latitude/longitude/accuracyMeters unset).
+    // Matches the same pattern already used by hand in driver_api_client.dart.
+    const prefix = f.nullable ? '?' : '';
+    lines.push(`      ${JSON.stringify(f.propName)}: ${prefix}${toJsonExpr(f, dartFieldName(f.propName))},`);
   }
   lines.push('    };');
   lines.push('  }');

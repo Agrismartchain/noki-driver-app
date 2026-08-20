@@ -10,7 +10,9 @@ import '../../core/i18n/generated/app_localizations.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/idempotency_key.dart';
+import '../availability/availability_repository.dart';
 import '../driver_context/driver_context_repository.dart';
+import '../work_feed/work_feed_repository.dart';
 import 'delivery_mission_map_screen.dart';
 import 'delivery_repository.dart';
 import 'delivery_status_presentation.dart';
@@ -113,6 +115,17 @@ class _DeliveryMissionDetailScreenState extends ConsumerState<DeliveryMissionDet
           );
       _completionIdempotencyKey = null;
       ref.invalidate(missionDetailProvider(widget.missionId));
+      // Targeted invalidation (mandate DRIVER-APP-04 §15/§16), not a
+      // brute-force refresh: these are exactly the two providers Home's
+      // "continue active work" card reads (see home_screen.dart) - without
+      // this, a just-completed delivery kept showing as active work there
+      // until an unrelated rebuild happened to drop the cached value.
+      ref.invalidate(availabilityProvider(widget.scope));
+      ref.invalidate(missionListByStatusProvider((widget.scope, 'OUT_FOR_DELIVERY')));
+      // Work Feed reads a third, separate provider (mandate §15) - found via
+      // real on-device testing: the first two alone left the just-completed
+      // mission still showing "Out for delivery" in the Work Feed list.
+      ref.invalidate(workFeedProvider(widget.scope));
     } on AppFailure catch (failure) {
       if (mounted) setState(() => _completeFailure = failure);
     } finally {
@@ -405,6 +418,9 @@ class _DeliveryMissionDetailScreenState extends ConsumerState<DeliveryMissionDet
         const SizedBox(height: AppSpacing.md),
         DropdownButtonFormField<CreateDeliveryIncidentDtoType>(
           initialValue: _incidentType,
+          // See the identical comment in mobility_incidents_section.dart -
+          // an un-expanded dropdown sizes itself to its widest item.
+          isExpanded: true,
           decoration: InputDecoration(labelText: l10n.incidentTypeLabel),
           items: [
             DropdownMenuItem(value: CreateDeliveryIncidentDtoType.delay, child: Text(l10n.incidentTypeDelay)),

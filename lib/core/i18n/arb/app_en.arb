@@ -121,10 +121,16 @@
   "incidentSubmitCta": "Report incident",
   "incidentsEmpty": "No incidents reported",
 
-  "qrEntryTitle": "Scan QR",
-  "qrEntryHint": "Enter the handoff QR token manually. Camera scanning is coming in a later update.",
+  "qrEntryTitle": "Enter QR code",
+  "qrEntryHint": "Enter the handoff QR token manually.",
   "qrEntryTokenLabel": "QR token",
   "qrEntrySubmitCta": "Submit",
+  "qrEntryUseCameraCta": "Scan with camera",
+  "qrScanTitle": "Scan QR code",
+  "qrScanHint": "Point your camera at the delivery's QR code.",
+  "qrScanManualEntryCta": "Enter code manually",
+  "qrScanPermissionDenied": "Camera access was denied. Enter the code manually instead.",
+  "qrScanCameraUnavailable": "Camera scanning isn't available on this device. Enter the code manually instead.",
 
   "serviceTypeTaxi": "Taxi",
   "serviceTypeTaxiMoto": "Taxi Moto",

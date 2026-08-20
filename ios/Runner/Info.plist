@@ -55,6 +55,10 @@
 	     iOS build valid. -->
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>NOKI Driver uses your location to show it on the map alongside your active delivery or ride, and to keep dispatch updated on where you are while you're available.</string>
+	<!-- QR camera scanning (DRIVER-APP-04 §19) - requested only when the
+	     scanner screen opens. Manual entry remains the fallback. -->
+	<key>NSCameraUsageDescription</key>
+	<string>NOKI Driver uses the camera to scan a delivery's QR handoff code.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>

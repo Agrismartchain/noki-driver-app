@@ -140,11 +140,14 @@ class FakeDriverApiClient implements DriverApiClient {
     return vehiclesResponse!;
   }
 
+  int driverAvailabilityCallCount = 0;
+
   @override
   Future<DriverAvailabilityResponseDto> driverAvailability({
     required String organizationId,
     required String countryCode,
   }) async {
+    driverAvailabilityCallCount++;
     if (availabilityFailure != null) throw availabilityFailure!;
     return availabilityResponse!;
   }
@@ -156,6 +159,8 @@ class FakeDriverApiClient implements DriverApiClient {
     return availabilityResponse!;
   }
 
+  int driverWorkFeedCallCount = 0;
+
   @override
   Future<DriverWorkFeedListResponseDto> driverWorkFeed({
     required String organizationId,
@@ -163,11 +168,14 @@ class FakeDriverApiClient implements DriverApiClient {
     int page = 1,
     int pageSize = 25,
   }) async {
+    driverWorkFeedCallCount++;
     if (workFeedFailure != null) throw workFeedFailure!;
     return workFeedResponse!;
   }
 
   // --- Delivery (own-scoped) ---------------------------------------------
+
+  int listOwnMissionsCallCount = 0;
 
   @override
   Future<DriverMissionListResponseDto> listOwnMissions({
@@ -177,6 +185,7 @@ class FakeDriverApiClient implements DriverApiClient {
     int page = 1,
     int pageSize = 25,
   }) async {
+    listOwnMissionsCallCount++;
     if (listOwnMissionsFailure != null) throw listOwnMissionsFailure!;
     return listOwnMissionsResponse!;
   }
@@ -246,11 +255,14 @@ class FakeDriverApiClient implements DriverApiClient {
     return mobilityOffersResponse!;
   }
 
+  int currentMobilityRideCallCount = 0;
+
   @override
   Future<MobilityRideDetailDto?> currentMobilityRide({
     required String organizationId,
     required String countryCode,
   }) async {
+    currentMobilityRideCallCount++;
     if (currentMobilityRideFailure != null) throw currentMobilityRideFailure!;
     return currentMobilityRideResponse;
   }

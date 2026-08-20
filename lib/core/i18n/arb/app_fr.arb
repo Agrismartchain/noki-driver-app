@@ -112,10 +112,16 @@
   "incidentSubmitCta": "Signaler un incident",
   "incidentsEmpty": "Aucun incident signalé",
 
-  "qrEntryTitle": "Scanner le QR code",
-  "qrEntryHint": "Saisissez le jeton du QR code de remise manuellement. La lecture par caméra arrivera dans une prochaine mise à jour.",
+  "qrEntryTitle": "Saisir le QR code",
+  "qrEntryHint": "Saisissez le jeton du QR code de remise manuellement.",
   "qrEntryTokenLabel": "Jeton QR",
   "qrEntrySubmitCta": "Valider",
+  "qrEntryUseCameraCta": "Scanner avec la caméra",
+  "qrScanTitle": "Scanner le QR code",
+  "qrScanHint": "Pointez votre caméra vers le QR code de la livraison.",
+  "qrScanManualEntryCta": "Saisir le code manuellement",
+  "qrScanPermissionDenied": "L'accès à la caméra a été refusé. Saisissez le code manuellement.",
+  "qrScanCameraUnavailable": "La lecture par caméra n'est pas disponible sur cet appareil. Saisissez le code manuellement.",
 
   "serviceTypeTaxi": "Taxi",
   "serviceTypeTaxiMoto": "Taxi Moto",

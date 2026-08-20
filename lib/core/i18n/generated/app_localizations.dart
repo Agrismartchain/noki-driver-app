@@ -715,13 +715,13 @@ abstract class AppLocalizations {
   /// No description provided for @qrEntryTitle.
   ///
   /// In en, this message translates to:
-  /// **'Scan QR'**
+  /// **'Enter QR code'**
   String get qrEntryTitle;
 
   /// No description provided for @qrEntryHint.
   ///
   /// In en, this message translates to:
-  /// **'Enter the handoff QR token manually. Camera scanning is coming in a later update.'**
+  /// **'Enter the handoff QR token manually.'**
   String get qrEntryHint;
 
   /// No description provided for @qrEntryTokenLabel.
@@ -735,6 +735,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Submit'**
   String get qrEntrySubmitCta;
+
+  /// No description provided for @qrEntryUseCameraCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan with camera'**
+  String get qrEntryUseCameraCta;
+
+  /// No description provided for @qrScanTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan QR code'**
+  String get qrScanTitle;
+
+  /// No description provided for @qrScanHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Point your camera at the delivery\'s QR code.'**
+  String get qrScanHint;
+
+  /// No description provided for @qrScanManualEntryCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter code manually'**
+  String get qrScanManualEntryCta;
+
+  /// No description provided for @qrScanPermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera access was denied. Enter the code manually instead.'**
+  String get qrScanPermissionDenied;
+
+  /// No description provided for @qrScanCameraUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera scanning isn\'t available on this device. Enter the code manually instead.'**
+  String get qrScanCameraUnavailable;
 
   /// No description provided for @serviceTypeTaxi.
   ///

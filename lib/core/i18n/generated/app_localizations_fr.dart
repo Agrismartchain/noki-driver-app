@@ -374,17 +374,38 @@ class AppLocalizationsFr extends AppLocalizations {
   String get incidentsEmpty => 'Aucun incident signalé';
 
   @override
-  String get qrEntryTitle => 'Scanner le QR code';
+  String get qrEntryTitle => 'Saisir le QR code';
 
   @override
   String get qrEntryHint =>
-      'Saisissez le jeton du QR code de remise manuellement. La lecture par caméra arrivera dans une prochaine mise à jour.';
+      'Saisissez le jeton du QR code de remise manuellement.';
 
   @override
   String get qrEntryTokenLabel => 'Jeton QR';
 
   @override
   String get qrEntrySubmitCta => 'Valider';
+
+  @override
+  String get qrEntryUseCameraCta => 'Scanner avec la caméra';
+
+  @override
+  String get qrScanTitle => 'Scanner le QR code';
+
+  @override
+  String get qrScanHint =>
+      'Pointez votre caméra vers le QR code de la livraison.';
+
+  @override
+  String get qrScanManualEntryCta => 'Saisir le code manuellement';
+
+  @override
+  String get qrScanPermissionDenied =>
+      'L\'accès à la caméra a été refusé. Saisissez le code manuellement.';
+
+  @override
+  String get qrScanCameraUnavailable =>
+      'La lecture par caméra n\'est pas disponible sur cet appareil. Saisissez le code manuellement.';
 
   @override
   String get serviceTypeTaxi => 'Taxi';

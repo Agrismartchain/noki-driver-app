@@ -112,10 +112,16 @@
   "incidentSubmitCta": "الإبلاغ عن حادثة",
   "incidentsEmpty": "لا توجد حوادث مُبلّغ عنها",
 
-  "qrEntryTitle": "مسح رمز QR",
-  "qrEntryHint": "أدخل رمز QR الخاص بالتسليم يدويًا. ستتوفر ميزة المسح بالكاميرا في تحديث لاحق.",
+  "qrEntryTitle": "إدخال رمز QR",
+  "qrEntryHint": "أدخل رمز QR الخاص بالتسليم يدويًا.",
   "qrEntryTokenLabel": "رمز QR",
   "qrEntrySubmitCta": "إرسال",
+  "qrEntryUseCameraCta": "المسح بالكاميرا",
+  "qrScanTitle": "مسح رمز QR",
+  "qrScanHint": "وجّه الكاميرا نحو رمز QR الخاص بالتوصيلة.",
+  "qrScanManualEntryCta": "إدخال الرمز يدويًا",
+  "qrScanPermissionDenied": "تم رفض الوصول إلى الكاميرا. أدخل الرمز يدويًا بدلاً من ذلك.",
+  "qrScanCameraUnavailable": "المسح بالكاميرا غير متاح على هذا الجهاز. أدخل الرمز يدويًا بدلاً من ذلك.",
 
   "serviceTypeTaxi": "تاكسي",
   "serviceTypeTaxiMoto": "تاكسي دراجة",

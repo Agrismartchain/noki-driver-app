@@ -374,17 +374,36 @@ class AppLocalizationsEn extends AppLocalizations {
   String get incidentsEmpty => 'No incidents reported';
 
   @override
-  String get qrEntryTitle => 'Scan QR';
+  String get qrEntryTitle => 'Enter QR code';
 
   @override
-  String get qrEntryHint =>
-      'Enter the handoff QR token manually. Camera scanning is coming in a later update.';
+  String get qrEntryHint => 'Enter the handoff QR token manually.';
 
   @override
   String get qrEntryTokenLabel => 'QR token';
 
   @override
   String get qrEntrySubmitCta => 'Submit';
+
+  @override
+  String get qrEntryUseCameraCta => 'Scan with camera';
+
+  @override
+  String get qrScanTitle => 'Scan QR code';
+
+  @override
+  String get qrScanHint => 'Point your camera at the delivery\'s QR code.';
+
+  @override
+  String get qrScanManualEntryCta => 'Enter code manually';
+
+  @override
+  String get qrScanPermissionDenied =>
+      'Camera access was denied. Enter the code manually instead.';
+
+  @override
+  String get qrScanCameraUnavailable =>
+      'Camera scanning isn\'t available on this device. Enter the code manually instead.';
 
   @override
   String get serviceTypeTaxi => 'Taxi';

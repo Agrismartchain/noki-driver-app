@@ -8,15 +8,13 @@ import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_theme.dart';
 import '../driver_context/driver_context_repository.dart';
 import 'delivery_mission_detail_screen.dart';
+import 'delivery_qr_scan_screen.dart';
 import 'delivery_repository.dart';
 
-/// QR entry point required by mandate §21. The token
-/// (`ScanDeliveryQrDto.token`, 32-256 chars) is opaque and not something a
-/// human reads off a label - camera scanning is explicitly deferred to a
-/// later phase (§23/§63). This screen is the interim, contractually-valid
-/// path: manual paste, useful for QA and for a driver relaying a token given
-/// to them out of band, submitted to the same endpoint a real scanner would
-/// call.
+/// Manual QR token entry - the fallback for [DeliveryQrScanScreen] (camera
+/// permission denied/unavailable), and still useful on its own for a driver
+/// relaying a token given to them out of band. Submits to the exact same
+/// `scanMissionQr` endpoint the camera path calls.
 class DeliveryQrEntryScreen extends ConsumerStatefulWidget {
   const DeliveryQrEntryScreen({super.key, required this.scope});
 
@@ -63,7 +61,18 @@ class _DeliveryQrEntryScreenState extends ConsumerState<DeliveryQrEntryScreen> {
     final colors = context.nokiColors;
 
     return Scaffold(
-      appBar: AppBar(title: Text(l10n.qrEntryTitle)),
+      appBar: AppBar(
+        title: Text(l10n.qrEntryTitle),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.qr_code_scanner_outlined),
+            tooltip: l10n.qrEntryUseCameraCta,
+            onPressed: () => Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (_) => DeliveryQrScanScreen(scope: widget.scope)),
+            ),
+          ),
+        ],
+      ),
       body: Padding(
         padding: const EdgeInsets.all(AppSpacing.lg),
         child: Column(
