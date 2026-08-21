@@ -129,11 +129,6 @@ class _HeroHeader extends StatelessWidget {
         NokiSectionHeader(
           title: l10n.homeGreeting(driverName),
           subtitle: l10n.appTitle,
-          trailing: const NokiMetricPill(
-            icon: Icons.bolt,
-            label: 'MASTER OS',
-            emphasis: true,
-          ),
         ),
       ],
     );

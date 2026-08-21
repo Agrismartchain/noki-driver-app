@@ -63,11 +63,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
-                        const NokiBadge(
-                          label: 'MASTER OS',
-                          tone: NokiBadgeTone.primary,
-                        ),
-                        const SizedBox(height: AppSpacing.xl),
                         Semantics(
                           header: true,
                           child: Text(
