@@ -543,6 +543,100 @@ class AppLocalizationsFr extends AppLocalizations {
   String get settingsCancel => 'Annuler';
 
   @override
+  String get profileIdentityEyebrow => 'Identité chauffeur';
+
+  @override
+  String get profileNoEmail => 'Aucun e-mail de contact disponible';
+
+  @override
+  String get profileOperationalTitle => 'Statut opérationnel';
+
+  @override
+  String get profileOrganizationTitle => 'Organisation';
+
+  @override
+  String get profileOrganizationLabel => 'Organisation';
+
+  @override
+  String get profileVehicleTitle => 'Véhicule et services';
+
+  @override
+  String get profileActivationTitle => 'Activation et documents';
+
+  @override
+  String get profileDocumentsBackendRequired =>
+      'Les documents chauffeur et contrôles de conformité nécessitent un support backend.';
+
+  @override
+  String get profileActivityTitle => 'Activité opérationnelle';
+
+  @override
+  String get profileActivityBody =>
+      'Les livraisons terminées sont disponibles aujourd\'hui. L\'historique mobilité nécessite encore le backend.';
+
+  @override
+  String get profileNotificationsBackendRequired =>
+      'Un centre de notifications dédié nécessite un support backend.';
+
+  @override
+  String get profilePreferencesTitle => 'Préférences';
+
+  @override
+  String get profileOpenVehicles => 'Ouvrir les véhicules';
+
+  @override
+  String get profileOpenHistory => 'Ouvrir l\'historique des livraisons';
+
+  @override
+  String get profileVehicleUnavailable =>
+      'Aucun véhicule assigné pour le moment';
+
+  @override
+  String get profileStatusDelivery => 'Livraison';
+
+  @override
+  String get profileStatusMobility => 'Mobilité';
+
+  @override
+  String get profileStatusAvailability => 'Disponibilité';
+
+  @override
+  String get profileStatusOnboarding => 'Activation';
+
+  @override
+  String get profileStatusActive => 'Actif';
+
+  @override
+  String get profileStatusInactive => 'Inactif';
+
+  @override
+  String get profileStatusSuspended => 'Suspendu';
+
+  @override
+  String get profileStatusOffline => 'Hors ligne';
+
+  @override
+  String get profileStatusAvailable => 'Disponible';
+
+  @override
+  String get profileStatusBusy => 'Occupé';
+
+  @override
+  String get profileStatusDraft => 'Brouillon';
+
+  @override
+  String get profileStatusSubmitted => 'Soumis';
+
+  @override
+  String get profileStatusUnderReview => 'En revue';
+
+  @override
+  String get profileStatusApproved => 'Approuvé';
+
+  @override
+  String get profileStatusRejected => 'Rejeté';
+
+  @override
   String get accessDeniedTitle =>
       'Ce compte ne peut pas utiliser NOKI Chauffeur';
 

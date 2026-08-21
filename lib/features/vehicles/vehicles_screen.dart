@@ -7,6 +7,7 @@ import '../../core/errors/error_view.dart';
 import '../../core/i18n/generated/app_localizations.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/ui/noki_ui.dart';
 import '../driver_context/driver_context_repository.dart';
 import 'vehicles_repository.dart';
 
@@ -22,33 +23,36 @@ class VehiclesScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.vehiclesTitle)),
-      body: asyncVehicles.when(
-        loading: () => const LoadingView(),
-        error: (error, _) => ErrorView(
-          failure: error is AppFailure
-              ? error
-              : const AppFailure(AppFailureType.unknown),
-          onRetry: () => ref.invalidate(vehiclesProvider(scope)),
-        ),
-        data: (list) {
-          if (list.items.isEmpty) {
-            return EmptyView(
-              icon: Icons.directions_car_outlined,
-              title: l10n.vehiclesEmpty,
-              body: l10n.vehiclesEmptyBody,
+      body: NokiScreenBackground(
+        child: asyncVehicles.when(
+          loading: () => const LoadingView(),
+          error: (error, _) => ErrorView(
+            failure: error is AppFailure
+                ? error
+                : const AppFailure(AppFailureType.unknown),
+            onRetry: () => ref.invalidate(vehiclesProvider(scope)),
+          ),
+          data: (list) {
+            if (list.items.isEmpty) {
+              return EmptyView(
+                icon: Icons.directions_car_outlined,
+                title: l10n.vehiclesEmpty,
+                body: l10n.vehiclesEmptyBody,
+              );
+            }
+            return RefreshIndicator(
+              onRefresh: () async => ref.invalidate(vehiclesProvider(scope)),
+              child: ListView.separated(
+                padding: const EdgeInsets.all(AppSpacing.lg),
+                itemCount: list.items.length,
+                separatorBuilder: (_, _) =>
+                    const SizedBox(height: AppSpacing.md),
+                itemBuilder: (context, index) =>
+                    _VehicleTile(vehicle: list.items[index]),
+              ),
             );
-          }
-          return RefreshIndicator(
-            onRefresh: () async => ref.invalidate(vehiclesProvider(scope)),
-            child: ListView.separated(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              itemCount: list.items.length,
-              separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.md),
-              itemBuilder: (context, index) =>
-                  _VehicleTile(vehicle: list.items[index]),
-            ),
-          );
-        },
+          },
+        ),
       ),
     );
   }
@@ -64,17 +68,12 @@ class _VehicleTile extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final colors = context.nokiColors;
 
-    // Icon + make/model on their own line (ellipsized - never wraps the
-    // status), then plate + status badge in a Wrap on a second line. A Wrap
-    // can never throw a RenderFlex overflow: if the plate and a long status
-    // label (e.g. PENDING_VALIDATION -> "En attente de validation") don't
-    // fit side by side at a given width, the badge simply drops to its own
-    // line instead of clipping or forcing the row to overflow. Verified at
-    // 320/360/390/430dp, FR/AR-RTL, light/dark - see
-    // test/features/vehicles/vehicles_responsive_test.dart.
-    return Card(
+    return NokiSurfaceCard(
+      tone: vehicle.status == DriverVehicleDtoStatus.active
+          ? NokiSurfaceTone.defaultTone
+          : NokiSurfaceTone.subtle,
       child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.lg),
+        padding: EdgeInsets.zero,
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -96,6 +95,31 @@ class _VehicleTile extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: AppSpacing.xs),
+                  Wrap(
+                    spacing: AppSpacing.sm,
+                    runSpacing: AppSpacing.xs,
+                    children: [
+                      NokiBadge(
+                        label: vehicle.type == DriverVehicleDtoType.motorcycle
+                            ? l10n.vehicleTypeMotorcycle
+                            : l10n.vehicleTypeCar,
+                        tone: NokiBadgeTone.neutral,
+                      ),
+                      for (final service in vehicle.allowedServiceTypes)
+                        NokiBadge(
+                          label: switch (service) {
+                            DriverVehicleDtoAllowedServiceTypes.taxi =>
+                              l10n.serviceTypeTaxi,
+                            DriverVehicleDtoAllowedServiceTypes.taxiMoto =>
+                              l10n.serviceTypeTaxiMoto,
+                            DriverVehicleDtoAllowedServiceTypes.unknown =>
+                              l10n.errorUnknown,
+                          },
+                          tone: NokiBadgeTone.info,
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: AppSpacing.sm),
                   Wrap(
                     crossAxisAlignment: WrapCrossAlignment.center,
                     spacing: AppSpacing.sm,

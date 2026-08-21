@@ -1030,6 +1030,186 @@ abstract class AppLocalizations {
   /// **'Cancel'**
   String get settingsCancel;
 
+  /// No description provided for @profileIdentityEyebrow.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver identity'**
+  String get profileIdentityEyebrow;
+
+  /// No description provided for @profileNoEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'No contact email available'**
+  String get profileNoEmail;
+
+  /// No description provided for @profileOperationalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Operational status'**
+  String get profileOperationalTitle;
+
+  /// No description provided for @profileOrganizationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Organization'**
+  String get profileOrganizationTitle;
+
+  /// No description provided for @profileOrganizationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Organization'**
+  String get profileOrganizationLabel;
+
+  /// No description provided for @profileVehicleTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle and services'**
+  String get profileVehicleTitle;
+
+  /// No description provided for @profileActivationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Activation and documents'**
+  String get profileActivationTitle;
+
+  /// No description provided for @profileDocumentsBackendRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver documents and compliance checkpoints require backend support.'**
+  String get profileDocumentsBackendRequired;
+
+  /// No description provided for @profileActivityTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Operational activity'**
+  String get profileActivityTitle;
+
+  /// No description provided for @profileActivityBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed deliveries are available today. Mobility trip history still requires backend support.'**
+  String get profileActivityBody;
+
+  /// No description provided for @profileNotificationsBackendRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'A dedicated notifications center requires backend support.'**
+  String get profileNotificationsBackendRequired;
+
+  /// No description provided for @profilePreferencesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferences'**
+  String get profilePreferencesTitle;
+
+  /// No description provided for @profileOpenVehicles.
+  ///
+  /// In en, this message translates to:
+  /// **'Open vehicles'**
+  String get profileOpenVehicles;
+
+  /// No description provided for @profileOpenHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Open delivery history'**
+  String get profileOpenHistory;
+
+  /// No description provided for @profileVehicleUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No vehicle assigned yet'**
+  String get profileVehicleUnavailable;
+
+  /// No description provided for @profileStatusDelivery.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery'**
+  String get profileStatusDelivery;
+
+  /// No description provided for @profileStatusMobility.
+  ///
+  /// In en, this message translates to:
+  /// **'Mobility'**
+  String get profileStatusMobility;
+
+  /// No description provided for @profileStatusAvailability.
+  ///
+  /// In en, this message translates to:
+  /// **'Availability'**
+  String get profileStatusAvailability;
+
+  /// No description provided for @profileStatusOnboarding.
+  ///
+  /// In en, this message translates to:
+  /// **'Onboarding'**
+  String get profileStatusOnboarding;
+
+  /// No description provided for @profileStatusActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get profileStatusActive;
+
+  /// No description provided for @profileStatusInactive.
+  ///
+  /// In en, this message translates to:
+  /// **'Inactive'**
+  String get profileStatusInactive;
+
+  /// No description provided for @profileStatusSuspended.
+  ///
+  /// In en, this message translates to:
+  /// **'Suspended'**
+  String get profileStatusSuspended;
+
+  /// No description provided for @profileStatusOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline'**
+  String get profileStatusOffline;
+
+  /// No description provided for @profileStatusAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Available'**
+  String get profileStatusAvailable;
+
+  /// No description provided for @profileStatusBusy.
+  ///
+  /// In en, this message translates to:
+  /// **'Busy'**
+  String get profileStatusBusy;
+
+  /// No description provided for @profileStatusDraft.
+  ///
+  /// In en, this message translates to:
+  /// **'Draft'**
+  String get profileStatusDraft;
+
+  /// No description provided for @profileStatusSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted'**
+  String get profileStatusSubmitted;
+
+  /// No description provided for @profileStatusUnderReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Under review'**
+  String get profileStatusUnderReview;
+
+  /// No description provided for @profileStatusApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved'**
+  String get profileStatusApproved;
+
+  /// No description provided for @profileStatusRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get profileStatusRejected;
+
   /// No description provided for @accessDeniedTitle.
   ///
   /// In en, this message translates to:

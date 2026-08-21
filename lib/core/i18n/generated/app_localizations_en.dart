@@ -541,6 +541,99 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsCancel => 'Cancel';
 
   @override
+  String get profileIdentityEyebrow => 'Driver identity';
+
+  @override
+  String get profileNoEmail => 'No contact email available';
+
+  @override
+  String get profileOperationalTitle => 'Operational status';
+
+  @override
+  String get profileOrganizationTitle => 'Organization';
+
+  @override
+  String get profileOrganizationLabel => 'Organization';
+
+  @override
+  String get profileVehicleTitle => 'Vehicle and services';
+
+  @override
+  String get profileActivationTitle => 'Activation and documents';
+
+  @override
+  String get profileDocumentsBackendRequired =>
+      'Driver documents and compliance checkpoints require backend support.';
+
+  @override
+  String get profileActivityTitle => 'Operational activity';
+
+  @override
+  String get profileActivityBody =>
+      'Completed deliveries are available today. Mobility trip history still requires backend support.';
+
+  @override
+  String get profileNotificationsBackendRequired =>
+      'A dedicated notifications center requires backend support.';
+
+  @override
+  String get profilePreferencesTitle => 'Preferences';
+
+  @override
+  String get profileOpenVehicles => 'Open vehicles';
+
+  @override
+  String get profileOpenHistory => 'Open delivery history';
+
+  @override
+  String get profileVehicleUnavailable => 'No vehicle assigned yet';
+
+  @override
+  String get profileStatusDelivery => 'Delivery';
+
+  @override
+  String get profileStatusMobility => 'Mobility';
+
+  @override
+  String get profileStatusAvailability => 'Availability';
+
+  @override
+  String get profileStatusOnboarding => 'Onboarding';
+
+  @override
+  String get profileStatusActive => 'Active';
+
+  @override
+  String get profileStatusInactive => 'Inactive';
+
+  @override
+  String get profileStatusSuspended => 'Suspended';
+
+  @override
+  String get profileStatusOffline => 'Offline';
+
+  @override
+  String get profileStatusAvailable => 'Available';
+
+  @override
+  String get profileStatusBusy => 'Busy';
+
+  @override
+  String get profileStatusDraft => 'Draft';
+
+  @override
+  String get profileStatusSubmitted => 'Submitted';
+
+  @override
+  String get profileStatusUnderReview => 'Under review';
+
+  @override
+  String get profileStatusApproved => 'Approved';
+
+  @override
+  String get profileStatusRejected => 'Rejected';
+
+  @override
   String get accessDeniedTitle => 'This account cannot use NOKI Driver';
 
   @override

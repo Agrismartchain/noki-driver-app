@@ -11,8 +11,13 @@ import '../../fixtures/test_harness.dart';
 const _scope = DriverScope(organizationId: 'org-1', countryCode: 'MA');
 
 void main() {
-  testWidgets('renders a real vehicle list with make/model/plate/status', (tester) async {
-    final client = FakeDriverApiClient()..vehiclesResponse = DriverVehicleListResponseDto.fromJson(sampleVehicleList());
+  testWidgets('renders a real vehicle list with make/model/plate/status', (
+    tester,
+  ) async {
+    final client = FakeDriverApiClient()
+      ..vehiclesResponse = DriverVehicleListResponseDto.fromJson(
+        sampleVehicleList(),
+      );
 
     await pumpWithProviders(
       tester,
@@ -23,19 +28,28 @@ void main() {
     expect(find.textContaining('Dacia Logan'), findsOneWidget);
     expect(find.textContaining('12345-A-6'), findsOneWidget);
     expect(find.text('Active'), findsOneWidget);
+    expect(find.text('Taxi'), findsAtLeastNWidgets(1));
   });
 
-  testWidgets('shows a real empty state, not invented vehicles, when the list is empty', (tester) async {
-    final client = FakeDriverApiClient()
-      ..vehiclesResponse = const DriverVehicleListResponseDto(items: [], total: 0, page: 1, pageSize: 25);
+  testWidgets(
+    'shows a real empty state, not invented vehicles, when the list is empty',
+    (tester) async {
+      final client = FakeDriverApiClient()
+        ..vehiclesResponse = const DriverVehicleListResponseDto(
+          items: [],
+          total: 0,
+          page: 1,
+          pageSize: 25,
+        );
 
-    await pumpWithProviders(
-      tester,
-      const VehiclesScreen(scope: _scope),
-      overrides: [driverApiClientProvider.overrideWithValue(client)],
-    );
+      await pumpWithProviders(
+        tester,
+        const VehiclesScreen(scope: _scope),
+        overrides: [driverApiClientProvider.overrideWithValue(client)],
+      );
 
-    expect(find.text('No vehicles on your profile yet'), findsOneWidget);
-    expect(find.textContaining('Dacia'), findsNothing);
-  });
+      expect(find.text('No vehicles on your profile yet'), findsOneWidget);
+      expect(find.textContaining('Dacia'), findsNothing);
+    },
+  );
 }

@@ -535,6 +535,99 @@ class AppLocalizationsAr extends AppLocalizations {
   String get settingsCancel => 'إلغاء';
 
   @override
+  String get profileIdentityEyebrow => 'هوية السائق';
+
+  @override
+  String get profileNoEmail => 'لا يوجد بريد تواصل متاح';
+
+  @override
+  String get profileOperationalTitle => 'الحالة التشغيلية';
+
+  @override
+  String get profileOrganizationTitle => 'الجهة';
+
+  @override
+  String get profileOrganizationLabel => 'الجهة';
+
+  @override
+  String get profileVehicleTitle => 'المركبة والخدمات';
+
+  @override
+  String get profileActivationTitle => 'التفعيل والمستندات';
+
+  @override
+  String get profileDocumentsBackendRequired =>
+      'مستندات السائق ونقاط الامتثال تحتاج إلى دعم من الواجهة الخلفية.';
+
+  @override
+  String get profileActivityTitle => 'النشاط التشغيلي';
+
+  @override
+  String get profileActivityBody =>
+      'سجل التوصيلات المكتملة متاح اليوم. سجل الرحلات ما زال يحتاج إلى دعم من الواجهة الخلفية.';
+
+  @override
+  String get profileNotificationsBackendRequired =>
+      'مركز إشعارات مخصص يحتاج إلى دعم من الواجهة الخلفية.';
+
+  @override
+  String get profilePreferencesTitle => 'التفضيلات';
+
+  @override
+  String get profileOpenVehicles => 'فتح المركبات';
+
+  @override
+  String get profileOpenHistory => 'فتح سجل التوصيلات';
+
+  @override
+  String get profileVehicleUnavailable => 'لا توجد مركبة مخصصة بعد';
+
+  @override
+  String get profileStatusDelivery => 'التوصيل';
+
+  @override
+  String get profileStatusMobility => 'التنقل';
+
+  @override
+  String get profileStatusAvailability => 'التوفر';
+
+  @override
+  String get profileStatusOnboarding => 'التفعيل';
+
+  @override
+  String get profileStatusActive => 'نشط';
+
+  @override
+  String get profileStatusInactive => 'غير نشط';
+
+  @override
+  String get profileStatusSuspended => 'موقوف';
+
+  @override
+  String get profileStatusOffline => 'غير متصل';
+
+  @override
+  String get profileStatusAvailable => 'متاح';
+
+  @override
+  String get profileStatusBusy => 'مشغول';
+
+  @override
+  String get profileStatusDraft => 'مسودة';
+
+  @override
+  String get profileStatusSubmitted => 'تم الإرسال';
+
+  @override
+  String get profileStatusUnderReview => 'قيد المراجعة';
+
+  @override
+  String get profileStatusApproved => 'مقبول';
+
+  @override
+  String get profileStatusRejected => 'مرفوض';
+
+  @override
   String get accessDeniedTitle => 'لا يمكن لهذا الحساب استخدام نوكي للسائقين';
 
   @override
