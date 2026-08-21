@@ -7,9 +7,12 @@ import '../../core/errors/error_view.dart';
 import '../../core/i18n/generated/app_localizations.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/ui/noki_finance.dart';
+import '../../core/ui/noki_ui.dart';
 import '../driver_context/driver_context_repository.dart';
 import 'delivery_mission_detail_screen.dart';
 import 'delivery_repository.dart';
+import 'delivery_status_presentation.dart';
 
 /// Completed-Delivery history (mandate §42). Reuses the already-wired
 /// `listOwnMissions` with a `status=DELIVERED` filter - no new endpoint.
@@ -29,41 +32,43 @@ class DeliveryHistoryScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: Text(l10n.deliveryHistoryTitle)),
-      body: asyncMissions.when(
-        loading: () => const LoadingView(),
-        error: (error, _) => ErrorView(
-          failure: error is AppFailure
-              ? error
-              : const AppFailure(AppFailureType.unknown),
-          onRetry: () => ref.invalidate(missionListByStatusProvider(key)),
-        ),
-        data: (list) {
-          if (list.items.isEmpty) {
-            return EmptyView(
-              icon: Icons.history,
-              title: l10n.deliveryHistoryEmpty,
-            );
-          }
-          return ListView.separated(
-            padding: const EdgeInsets.all(AppSpacing.lg),
-            itemCount: list.items.length,
-            separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.sm),
-            itemBuilder: (context, index) {
-              final mission = list.items[index];
-              return _HistoryTile(
-                mission: mission,
-                onTap: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => DeliveryMissionDetailScreen(
-                      missionId: mission.id,
-                      scope: scope,
+      body: NokiScreenBackground(
+        child: asyncMissions.when(
+          loading: () => const LoadingView(),
+          error: (error, _) => ErrorView(
+            failure: error is AppFailure
+                ? error
+                : const AppFailure(AppFailureType.unknown),
+            onRetry: () => ref.invalidate(missionListByStatusProvider(key)),
+          ),
+          data: (list) {
+            if (list.items.isEmpty) {
+              return EmptyView(
+                icon: Icons.history,
+                title: l10n.deliveryHistoryEmpty,
+              );
+            }
+            return ListView.separated(
+              padding: const EdgeInsets.all(AppSpacing.lg),
+              itemCount: list.items.length,
+              separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.md),
+              itemBuilder: (context, index) {
+                final mission = list.items[index];
+                return _HistoryTile(
+                  mission: mission,
+                  onTap: () => Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (_) => DeliveryMissionDetailScreen(
+                        missionId: mission.id,
+                        scope: scope,
+                      ),
                     ),
                   ),
-                ),
-              );
-            },
-          );
-        },
+                );
+              },
+            );
+          },
+        ),
       ),
     );
   }
@@ -78,37 +83,71 @@ class _HistoryTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.nokiColors;
-    return Card(
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(AppRadius.md),
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          child: Row(
+    final l10n = AppLocalizations.of(context);
+    final presentation = missionStatusPresentation(
+      l10n,
+      colors,
+      mission.status,
+    );
+    final statusLabel = presentation.$1;
+    return NokiSurfaceCard(
+      onTap: onTap,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Icon(Icons.local_shipping_outlined, color: colors.textSecondary),
-              const SizedBox(width: AppSpacing.md),
               Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                child: Wrap(
+                  spacing: AppSpacing.sm,
+                  runSpacing: AppSpacing.sm,
                   children: [
-                    Text(
-                      mission.customerFullName,
-                      style: Theme.of(context).textTheme.bodyMedium,
+                    NokiBadge(
+                      label: l10n.workFeedTypeDelivery,
+                      tone: NokiBadgeTone.primary,
+                      icon: Icons.local_shipping_outlined,
                     ),
-                    if (mission.deliveredAt != null)
-                      Text(
-                        mission.deliveredAt!,
-                        style: Theme.of(context).textTheme.bodySmall
-                            ?.copyWith(color: colors.textMuted),
-                      ),
+                    NokiBadge(label: statusLabel, tone: NokiBadgeTone.success),
                   ],
                 ),
               ),
               Icon(Icons.chevron_right, color: colors.textMuted),
             ],
           ),
-        ),
+          const SizedBox(height: AppSpacing.lg),
+          Text(
+            mission.customerFullName,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: AppSpacing.xs),
+          Text(
+            mission.addressLine1,
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+          if (mission.addressLine2 != null) ...[
+            const SizedBox(height: AppSpacing.xs),
+            Text(
+              mission.addressLine2!,
+              style: Theme.of(context).textTheme.bodySmall
+                  ?.copyWith(color: colors.textMuted),
+            ),
+          ],
+          if (mission.deliveredAt != null) ...[
+            const SizedBox(height: AppSpacing.md),
+            Text(
+              mission.deliveredAt!,
+              style: Theme.of(context).textTheme.bodySmall
+                  ?.copyWith(color: colors.textMuted),
+            ),
+          ],
+          const SizedBox(height: AppSpacing.lg),
+          NokiFinanceCallout(
+            label: l10n.financeAmountToCollectLabel,
+            amount: mission.codExpectedAmount,
+            tone: NokiFinanceTone.collect,
+          ),
+        ],
       ),
     );
   }
