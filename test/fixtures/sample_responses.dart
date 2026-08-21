@@ -18,6 +18,7 @@ Map<String, dynamic> sampleAuthTokens({
 Map<String, dynamic> sampleDriverContext({
   bool withProfile = true,
   bool withVehicle = true,
+  String vehicleType = 'CAR',
 }) => {
   'actorId': 'actor-1',
   'displayName': 'Amine Tazi',
@@ -41,7 +42,7 @@ Map<String, dynamic> sampleDriverContext({
             'assignedVehicle': withVehicle
                 ? {
                     'id': 'vehicle-1',
-                    'type': 'CAR',
+                    'type': vehicleType,
                     'plate': '12345-A-6',
                     'make': 'Dacia',
                     'model': 'Logan',

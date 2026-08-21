@@ -30,21 +30,32 @@ class NavigationTarget {
   const NavigationTarget({
     required this.destination,
     required this.serviceType,
+    this.vehicleMode,
   });
 
   final MapPoint destination;
   final ComputeDriverRouteRequestDtoServiceType serviceType;
+
+  /// Only meaningful for `DELIVERY` - the backend ignores it for
+  /// `TAXI`/`TAXI_MOTO` (those always route as car/motorcycle respectively).
+  /// Null when no authoritative vehicle context is available; never guessed.
+  final ComputeDriverRouteRequestDtoVehicleMode? vehicleMode;
 
   @override
   bool operator ==(Object other) =>
       other is NavigationTarget &&
       other.destination.latitude == destination.latitude &&
       other.destination.longitude == destination.longitude &&
-      other.serviceType == serviceType;
+      other.serviceType == serviceType &&
+      other.vehicleMode == vehicleMode;
 
   @override
-  int get hashCode =>
-      Object.hash(destination.latitude, destination.longitude, serviceType);
+  int get hashCode => Object.hash(
+    destination.latitude,
+    destination.longitude,
+    serviceType,
+    vehicleMode,
+  );
 }
 
 class NavigationRouteState {
@@ -118,6 +129,7 @@ class NavigationRouteController
           origin: origin,
           destination: arg.destination,
           serviceType: arg.serviceType,
+          vehicleMode: arg.vehicleMode,
         );
     state = NavigationRouteState(route: route, isLoading: false);
   }

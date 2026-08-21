@@ -2,6 +2,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:noki_driver_app/core/api/api_providers.dart';
 import 'package:noki_driver_app/core/api/generated/driver_models.generated.dart';
+import 'package:noki_driver_app/core/errors/app_failure.dart';
 import 'package:noki_driver_app/core/i18n/generated/app_localizations.dart';
 import 'package:noki_driver_app/core/location/location_repository.dart';
 import 'package:noki_driver_app/features/delivery/delivery_mission_map_screen.dart';
@@ -223,6 +224,123 @@ void main() {
         find.text(l10n.financeAmountToCollectLabel.toUpperCase()),
         findsOneWidget,
       );
+    },
+  );
+
+  testWidgets(
+    'a driver whose assigned vehicle for this scope is a motorcycle routes the DELIVERY request with vehicleMode motorcycle',
+    (tester) async {
+      final client = FakeDriverApiClient()
+        ..getOwnMissionResponse = DriverMissionResponseDto.fromJson(
+          sampleMission(),
+        )
+        ..deliveryMissionIncidentsResponse = []
+        ..driverContextResponse = DriverContextResponseDto.fromJson(
+          sampleDriverContext(vehicleType: 'MOTORCYCLE'),
+        )
+        ..computeRouteResponse = ComputeDriverRouteResponseDto.fromJson(
+          sampleComputeRouteResponse(),
+        );
+      final feedItem = DriverWorkFeedItemDto.fromJson(
+        sampleWorkFeedDeliveryItem(),
+      );
+
+      await pumpWithProviders(
+        tester,
+        DeliveryMissionMapScreen(
+          tileProvider: FakeTileProvider(),
+          missionId: 'shipment-1',
+          scope: _scope,
+          feedItem: feedItem,
+        ),
+        overrides: [
+          driverApiClientProvider.overrideWithValue(client),
+          locationRepositoryProvider.overrideWithValue(
+            FakeLocationRepository(),
+          ),
+        ],
+      );
+
+      expect(
+        client.lastComputeRouteRequest?.vehicleMode,
+        ComputeDriverRouteRequestDtoVehicleMode.motorcycle,
+      );
+    },
+  );
+
+  testWidgets(
+    'a mission with no assigned vehicle for this scope routes the DELIVERY request with vehicleMode null',
+    (tester) async {
+      final client = FakeDriverApiClient()
+        ..getOwnMissionResponse = DriverMissionResponseDto.fromJson(
+          sampleMission(),
+        )
+        ..deliveryMissionIncidentsResponse = []
+        ..driverContextResponse = DriverContextResponseDto.fromJson(
+          sampleDriverContext(withVehicle: false),
+        )
+        ..computeRouteResponse = ComputeDriverRouteResponseDto.fromJson(
+          sampleComputeRouteResponse(),
+        );
+      final feedItem = DriverWorkFeedItemDto.fromJson(
+        sampleWorkFeedDeliveryItem(),
+      );
+
+      await pumpWithProviders(
+        tester,
+        DeliveryMissionMapScreen(
+          tileProvider: FakeTileProvider(),
+          missionId: 'shipment-1',
+          scope: _scope,
+          feedItem: feedItem,
+        ),
+        overrides: [
+          driverApiClientProvider.overrideWithValue(client),
+          locationRepositoryProvider.overrideWithValue(
+            FakeLocationRepository(),
+          ),
+        ],
+      );
+
+      expect(client.lastComputeRouteRequest?.vehicleMode, isNull);
+    },
+  );
+
+  testWidgets(
+    'driver context that fails to load (never delayed/blocked) still routes with vehicleMode null',
+    (tester) async {
+      final client = FakeDriverApiClient()
+        ..getOwnMissionResponse = DriverMissionResponseDto.fromJson(
+          sampleMission(),
+        )
+        ..deliveryMissionIncidentsResponse = []
+        ..driverContextFailure = const AppFailure(AppFailureType.server)
+        ..computeRouteResponse = ComputeDriverRouteResponseDto.fromJson(
+          sampleComputeRouteResponse(),
+        );
+      final feedItem = DriverWorkFeedItemDto.fromJson(
+        sampleWorkFeedDeliveryItem(),
+      );
+
+      await pumpWithProviders(
+        tester,
+        DeliveryMissionMapScreen(
+          tileProvider: FakeTileProvider(),
+          missionId: 'shipment-1',
+          scope: _scope,
+          feedItem: feedItem,
+        ),
+        overrides: [
+          driverApiClientProvider.overrideWithValue(client),
+          locationRepositoryProvider.overrideWithValue(
+            FakeLocationRepository(),
+          ),
+        ],
+      );
+
+      expect(client.lastComputeRouteRequest?.vehicleMode, isNull);
+      // The mission remains fully actionable even without driver context.
+      expect(find.byType(PolylineLayer), findsOneWidget);
     },
   );
 }

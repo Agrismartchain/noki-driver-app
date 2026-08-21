@@ -14,6 +14,35 @@ void main() {
     serviceType: ComputeDriverRouteRequestDtoServiceType.delivery,
   );
 
+  test('two targets differing only in vehicleMode are not equal', () {
+    const withCar = NavigationTarget(
+      destination: MapPoint(33.37, -7.59),
+      serviceType: ComputeDriverRouteRequestDtoServiceType.delivery,
+      vehicleMode: ComputeDriverRouteRequestDtoVehicleMode.car,
+    );
+    const withMotorcycle = NavigationTarget(
+      destination: MapPoint(33.37, -7.59),
+      serviceType: ComputeDriverRouteRequestDtoServiceType.delivery,
+      vehicleMode: ComputeDriverRouteRequestDtoVehicleMode.motorcycle,
+    );
+    const withNull = NavigationTarget(
+      destination: MapPoint(33.37, -7.59),
+      serviceType: ComputeDriverRouteRequestDtoServiceType.delivery,
+    );
+
+    expect(withCar == withMotorcycle, isFalse);
+    expect(withCar == withNull, isFalse);
+    expect(withCar.hashCode == withMotorcycle.hashCode, isFalse);
+    expect(
+      withCar,
+      const NavigationTarget(
+        destination: MapPoint(33.37, -7.59),
+        serviceType: ComputeDriverRouteRequestDtoServiceType.delivery,
+        vehicleMode: ComputeDriverRouteRequestDtoVehicleMode.car,
+      ),
+    );
+  });
+
   ProviderContainer buildContainer(FakeDriverApiClient client) {
     final container = ProviderContainer(
       overrides: [driverApiClientProvider.overrideWithValue(client)],

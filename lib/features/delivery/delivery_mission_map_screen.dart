@@ -93,6 +93,7 @@ class _DeliveryMissionMapScreenState
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final asyncMission = ref.watch(missionDetailProvider(widget.missionId));
+    final asyncDriverContext = ref.watch(driverContextProvider);
 
     final pickupCoords = widget.feedItem?.pickup;
     final dropoffCoords = widget.feedItem?.dropoff;
@@ -143,11 +144,21 @@ class _DeliveryMissionMapScreenState
                   pickup: pickup,
                   dropoff: dropoff,
                 );
+          // Best-effort only (mandate: never block or delay route computation
+          // on driver context) - `valueOrNull` is null while context is
+          // still loading or failed, and that's fine: the request simply
+          // omits vehicleMode and the backend applies its own conservative
+          // fallback.
+          final vehicleMode = _assignedVehicleModeFor(
+            asyncDriverContext.valueOrNull,
+            widget.scope,
+          );
           final target = destination == null
               ? null
               : NavigationTarget(
                   destination: destination,
                   serviceType: ComputeDriverRouteRequestDtoServiceType.delivery,
+                  vehicleMode: vehicleMode,
                 );
           final navState = target == null
               ? null
@@ -468,4 +479,33 @@ MapPoint? _deliveryNavigationDestination(
     case DriverMissionResponseDtoStatus.unknown:
       return null;
   }
+}
+
+/// The driver's real, currently-assigned vehicle type for [scope], mapped to
+/// the route-request vocabulary - or null when driver context hasn't loaded,
+/// has no profile matching [scope], or that profile has no assigned vehicle
+/// (e.g. a delivery-only driver with no mobility vehicle in that scope).
+/// Never guessed: this is purely a passthrough of authoritative context.
+ComputeDriverRouteRequestDtoVehicleMode? _assignedVehicleModeFor(
+  DriverContextResponseDto? context,
+  DriverScope scope,
+) {
+  if (context == null) return null;
+  for (final profile in context.profiles) {
+    if (profile.organizationId != scope.organizationId ||
+        profile.countryCode != scope.countryCode) {
+      continue;
+    }
+    final vehicleType = profile.assignedVehicle?.type;
+    if (vehicleType == null) return null;
+    switch (vehicleType) {
+      case DriverContextVehicleSummaryDtoType.car:
+        return ComputeDriverRouteRequestDtoVehicleMode.car;
+      case DriverContextVehicleSummaryDtoType.motorcycle:
+        return ComputeDriverRouteRequestDtoVehicleMode.motorcycle;
+      case DriverContextVehicleSummaryDtoType.unknown:
+        return ComputeDriverRouteRequestDtoVehicleMode.unknown;
+    }
+  }
+  return null;
 }

@@ -45,6 +45,34 @@ enum ComputeDriverRouteRequestDtoServiceType {
   }
 }
 
+enum ComputeDriverRouteRequestDtoVehicleMode {
+  car,
+  motorcycle,
+  unknown;
+
+  static ComputeDriverRouteRequestDtoVehicleMode fromJson(String value) {
+    switch (value) {
+      case "CAR":
+        return ComputeDriverRouteRequestDtoVehicleMode.car;
+      case "MOTORCYCLE":
+        return ComputeDriverRouteRequestDtoVehicleMode.motorcycle;
+      default:
+        return ComputeDriverRouteRequestDtoVehicleMode.unknown;
+    }
+  }
+
+  String toJson() {
+    switch (this) {
+      case ComputeDriverRouteRequestDtoVehicleMode.car:
+        return "CAR";
+      case ComputeDriverRouteRequestDtoVehicleMode.motorcycle:
+        return "MOTORCYCLE";
+      case ComputeDriverRouteRequestDtoVehicleMode.unknown:
+        return "CAR";
+    }
+  }
+}
+
 enum ComputeDriverRouteResponseDtoProfile {
   auto,
   motorcycle,
@@ -1648,17 +1676,20 @@ class ComputeDriverRouteRequestDto {
     required this.origin,
     required this.destination,
     required this.serviceType,
+    this.vehicleMode,
   });
 
   final NavigationGeoPointInputDto origin;
   final NavigationGeoPointInputDto destination;
   final ComputeDriverRouteRequestDtoServiceType serviceType;
+  final ComputeDriverRouteRequestDtoVehicleMode? vehicleMode;
 
   factory ComputeDriverRouteRequestDto.fromJson(Map<String, dynamic> json) {
     return ComputeDriverRouteRequestDto(
       origin: NavigationGeoPointInputDto.fromJson(json["origin"] as Map<String, dynamic>),
       destination: NavigationGeoPointInputDto.fromJson(json["destination"] as Map<String, dynamic>),
       serviceType: ComputeDriverRouteRequestDtoServiceType.fromJson(json["serviceType"] as String),
+      vehicleMode: json["vehicleMode"] == null ? null : ComputeDriverRouteRequestDtoVehicleMode.fromJson(json["vehicleMode"] as String),
     );
   }
 
@@ -1667,6 +1698,7 @@ class ComputeDriverRouteRequestDto {
       "origin": origin.toJson(),
       "destination": destination.toJson(),
       "serviceType": serviceType.toJson(),
+      "vehicleMode": ?vehicleMode?.toJson(),
     };
   }
 }

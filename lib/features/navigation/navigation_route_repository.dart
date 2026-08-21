@@ -21,6 +21,7 @@ class NavigationRouteRepository {
     required MapPoint origin,
     required MapPoint destination,
     required ComputeDriverRouteRequestDtoServiceType serviceType,
+    ComputeDriverRouteRequestDtoVehicleMode? vehicleMode,
   }) async {
     try {
       final response = await _client.computeRoute(
@@ -34,6 +35,7 @@ class NavigationRouteRepository {
             longitude: destination.longitude,
           ),
           serviceType: serviceType,
+          vehicleMode: vehicleMode,
         ),
       );
       return NavigationRoute.fromDto(response);

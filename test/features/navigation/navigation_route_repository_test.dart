@@ -54,6 +54,42 @@ void main() {
     );
   });
 
+  test('includes vehicleMode in the request DTO when provided', () async {
+    final client = FakeDriverApiClient()
+      ..computeRouteResponse = ComputeDriverRouteResponseDto.fromJson(
+        sampleComputeRouteResponse(),
+      );
+    final repository = NavigationRouteRepository(client);
+
+    await repository.computeRoute(
+      origin: origin,
+      destination: destination,
+      serviceType: ComputeDriverRouteRequestDtoServiceType.delivery,
+      vehicleMode: ComputeDriverRouteRequestDtoVehicleMode.motorcycle,
+    );
+
+    expect(
+      client.lastComputeRouteRequest?.vehicleMode,
+      ComputeDriverRouteRequestDtoVehicleMode.motorcycle,
+    );
+  });
+
+  test('omits vehicleMode (leaves it null) when not provided', () async {
+    final client = FakeDriverApiClient()
+      ..computeRouteResponse = ComputeDriverRouteResponseDto.fromJson(
+        sampleComputeRouteResponse(),
+      );
+    final repository = NavigationRouteRepository(client);
+
+    await repository.computeRoute(
+      origin: origin,
+      destination: destination,
+      serviceType: ComputeDriverRouteRequestDtoServiceType.taxi,
+    );
+
+    expect(client.lastComputeRouteRequest?.vehicleMode, isNull);
+  });
+
   test('a null geometry response maps to a route with no geometry (never a fabricated line)', () async {
     final client = FakeDriverApiClient()
       ..computeRouteResponse = ComputeDriverRouteResponseDto.fromJson(
