@@ -37,6 +37,7 @@ class HomeScreen extends ConsumerWidget {
     return Scaffold(
       body: NokiScreenBackground(
         showMapGrid: true,
+        safeTop: true,
         child: Column(
           children: [
             const SizedBox(height: AppSpacing.sm),
