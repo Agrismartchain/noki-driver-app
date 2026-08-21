@@ -21,6 +21,8 @@ import '../driver_context/driver_context_repository.dart';
 import '../map/map_chrome.dart';
 import '../map/map_point.dart';
 import '../map/map_view.dart';
+import '../navigation/navigation_route_controller.dart';
+import '../navigation/navigation_status_chips.dart';
 import '../work_feed/work_feed_repository.dart';
 import 'mobility_repository.dart';
 import 'mobility_status_presentation.dart';
@@ -118,25 +120,73 @@ class _MobilityRideMapScreenState extends ConsumerState<MobilityRideMapScreen> {
           final asyncPosition = ref.watch(livePositionProvider);
           final safeTop =
               MediaQuery.paddingOf(context).top + kToolbarHeight + 8;
+
+          final ride = asyncRide.valueOrNull;
+          final pickup = ride == null
+              ? null
+              : MapPoint(
+                  ride.pickupLatitude.toDouble(),
+                  ride.pickupLongitude.toDouble(),
+                );
+          final dropoff = ride == null
+              ? null
+              : MapPoint(
+                  ride.dropoffLatitude.toDouble(),
+                  ride.dropoffLongitude.toDouble(),
+                );
+          final destination = ride == null || pickup == null || dropoff == null
+              ? null
+              : _mobilityNavigationDestination(
+                  ride.status,
+                  pickup: pickup,
+                  dropoff: dropoff,
+                );
+          final target = ride == null || destination == null
+              ? null
+              : NavigationTarget(
+                  destination: destination,
+                  serviceType: _navigationServiceType(ride.serviceType),
+                );
+          final navState = target == null
+              ? null
+              : ref.watch(navigationRouteControllerProvider(target));
+
+          // See the identical comment in DeliveryMissionMapScreen: the
+          // controller itself enforces the deviation + cooldown gate
+          // (mandate §40/§41), so forwarding the current position on every
+          // frame is harmless.
+          final currentPosition = asyncPosition.valueOrNull;
+          if (target != null && currentPosition != null) {
+            final origin = MapPoint(
+              currentPosition.latitude,
+              currentPosition.longitude,
+            );
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!mounted) return;
+              ref
+                  .read(navigationRouteControllerProvider(target).notifier)
+                  .updateOrigin(origin);
+            });
+          }
+
           return Stack(
             children: [
-              asyncRide.maybeWhen(
-                data: (ride) => NokiMapView(
+              if (ride != null)
+                NokiMapView(
                   tileProvider: widget.tileProvider,
                   driverPosition: asyncPosition.whenOrNull(
                     data: (p) => MapPoint(p.latitude, p.longitude),
                   ),
-                  pickup: MapPoint(
-                    ride.pickupLatitude.toDouble(),
-                    ride.pickupLongitude.toDouble(),
-                  ),
-                  dropoff: MapPoint(
-                    ride.dropoffLatitude.toDouble(),
-                    ride.dropoffLongitude.toDouble(),
-                  ),
-                ),
-                orElse: () => const SizedBox.shrink(),
-              ),
+                  pickup: pickup,
+                  dropoff: dropoff,
+                  routeGeometry:
+                      navState?.route?.isOk == true &&
+                          navState?.route?.hasGeometry == true
+                      ? navState!.route!.geometry
+                      : null,
+                )
+              else
+                const SizedBox.shrink(),
               Positioned(
                 left: AppSpacing.lg,
                 right: AppSpacing.lg,
@@ -145,8 +195,8 @@ class _MobilityRideMapScreenState extends ConsumerState<MobilityRideMapScreen> {
                   spacing: AppSpacing.sm,
                   runSpacing: AppSpacing.sm,
                   children: [
-                    asyncRide.maybeWhen(
-                      data: (ride) => NokiMapStatusChip(
+                    if (ride != null)
+                      NokiMapStatusChip(
                         label: rideServiceTypeLabel(l10n, ride.serviceType),
                         icon:
                             ride.serviceType ==
@@ -156,9 +206,23 @@ class _MobilityRideMapScreenState extends ConsumerState<MobilityRideMapScreen> {
                         backgroundColor: context.nokiColors.actionPrimary,
                         foregroundColor: context.nokiColors.actionPrimaryInk,
                       ),
-                      orElse: () => const SizedBox.shrink(),
-                    ),
                     _GpsChip(asyncPosition: asyncPosition),
+                    ...navigationStatusChips(
+                      context,
+                      route: navState?.route,
+                      onRetry: () {
+                        final position = asyncPosition.valueOrNull;
+                        if (position == null || target == null) return;
+                        ref
+                            .read(
+                              navigationRouteControllerProvider(target)
+                                  .notifier,
+                            )
+                            .retry(
+                              MapPoint(position.latitude, position.longitude),
+                            );
+                      },
+                    ),
                   ],
                 ),
               ),
@@ -400,5 +464,43 @@ class _GpsChip extends ConsumerWidget {
         icon: Icons.gps_fixed_outlined,
       ),
     );
+  }
+}
+
+/// Which point the driver should be routed to, mirroring the real ride
+/// state machine in [legalRideTransitions]/`mobility_status_presentation.dart`
+/// - not an invented state. `driverAssigned`/`driverEnRoute` are before the
+/// driver has reached the rider, so they route to pickup;
+/// `driverArrived`/`inProgress` are at-or-after pickup, so they route to
+/// drop-off; `completed`/`cancelled` need no further navigation.
+MapPoint? _mobilityNavigationDestination(
+  MobilityRideDetailDtoStatus status, {
+  required MapPoint pickup,
+  required MapPoint dropoff,
+}) {
+  switch (status) {
+    case MobilityRideDetailDtoStatus.driverAssigned:
+    case MobilityRideDetailDtoStatus.driverEnRoute:
+      return pickup;
+    case MobilityRideDetailDtoStatus.driverArrived:
+    case MobilityRideDetailDtoStatus.inProgress:
+      return dropoff;
+    case MobilityRideDetailDtoStatus.completed:
+    case MobilityRideDetailDtoStatus.cancelled:
+    case MobilityRideDetailDtoStatus.unknown:
+      return null;
+  }
+}
+
+ComputeDriverRouteRequestDtoServiceType _navigationServiceType(
+  MobilityRideDetailDtoServiceType serviceType,
+) {
+  switch (serviceType) {
+    case MobilityRideDetailDtoServiceType.taxi:
+      return ComputeDriverRouteRequestDtoServiceType.taxi;
+    case MobilityRideDetailDtoServiceType.taxiMoto:
+      return ComputeDriverRouteRequestDtoServiceType.taxiMoto;
+    case MobilityRideDetailDtoServiceType.unknown:
+      return ComputeDriverRouteRequestDtoServiceType.taxi;
   }
 }

@@ -96,11 +96,19 @@ class FakeDriverApiClient implements DriverApiClient {
   SubmitDeliveryLocationResponseDto? submitDeliveryLocationResponse;
   AppFailure? submitDeliveryLocationFailure;
 
+  ComputeDriverRouteResponseDto? computeRouteResponse;
+  AppFailure? computeRouteFailure;
+  ComputeDriverRouteRequestDto? lastComputeRouteRequest;
+  int computeRouteCallCount = 0;
+
   int loginCallCount = 0;
   int refreshCallCount = 0;
 
   @override
-  Future<AuthTokensResponseDto> login({required String email, required String password}) async {
+  Future<AuthTokensResponseDto> login({
+    required String email,
+    required String password,
+  }) async {
     loginCallCount++;
     if (loginDelay != null) await Future<void>.delayed(loginDelay!);
     if (loginFailure != null) throw loginFailure!;
@@ -121,7 +129,8 @@ class FakeDriverApiClient implements DriverApiClient {
   Future<MeResponseDto> me() async => meResponse!;
 
   @override
-  Future<AuthCapabilitiesResponseDto> capabilities() async => capabilitiesResponse!;
+  Future<AuthCapabilitiesResponseDto> capabilities() async =>
+      capabilitiesResponse!;
 
   @override
   Future<DriverContextResponseDto> driverContext() async {
@@ -153,7 +162,9 @@ class FakeDriverApiClient implements DriverApiClient {
   }
 
   @override
-  Future<DriverAvailabilityResponseDto> updateDriverAvailability(UpdateDriverAvailabilityDto body) async {
+  Future<DriverAvailabilityResponseDto> updateDriverAvailability(
+    UpdateDriverAvailabilityDto body,
+  ) async {
     lastAvailabilityUpdate = body;
     if (availabilityFailure != null) throw availabilityFailure!;
     return availabilityResponse!;
@@ -198,13 +209,18 @@ class FakeDriverApiClient implements DriverApiClient {
   }
 
   @override
-  Future<DeliveryHandoffOtpChallengeResponseDto> requestHandoffOtp(String missionId) async {
+  Future<DeliveryHandoffOtpChallengeResponseDto> requestHandoffOtp(
+    String missionId,
+  ) async {
     if (requestHandoffOtpFailure != null) throw requestHandoffOtpFailure!;
     return requestHandoffOtpResponse!;
   }
 
   @override
-  Future<DeliveryHandoffOtpVerificationResponseDto> verifyHandoffOtp(String missionId, VerifyDeliveryHandoffOtpDto body) async {
+  Future<DeliveryHandoffOtpVerificationResponseDto> verifyHandoffOtp(
+    String missionId,
+    VerifyDeliveryHandoffOtpDto body,
+  ) async {
     lastVerifyHandoffOtpBody = body;
     if (verifyHandoffOtpFailure != null) throw verifyHandoffOtpFailure!;
     return verifyHandoffOtpResponse!;
@@ -224,15 +240,24 @@ class FakeDriverApiClient implements DriverApiClient {
   }
 
   @override
-  Future<DeliveryIncidentResponseDto> createMissionIncident(String missionId, CreateDeliveryIncidentDto body) async {
+  Future<DeliveryIncidentResponseDto> createMissionIncident(
+    String missionId,
+    CreateDeliveryIncidentDto body,
+  ) async {
     lastCreateMissionIncidentBody = body;
-    if (createMissionIncidentFailure != null) throw createMissionIncidentFailure!;
+    if (createMissionIncidentFailure != null) {
+      throw createMissionIncidentFailure!;
+    }
     return createMissionIncidentResponse!;
   }
 
   @override
-  Future<List<DeliveryIncidentResponseDto>> deliveryMissionIncidents(String missionId) async {
-    if (deliveryMissionIncidentsFailure != null) throw deliveryMissionIncidentsFailure!;
+  Future<List<DeliveryIncidentResponseDto>> deliveryMissionIncidents(
+    String missionId,
+  ) async {
+    if (deliveryMissionIncidentsFailure != null) {
+      throw deliveryMissionIncidentsFailure!;
+    }
     return deliveryMissionIncidentsResponse!;
   }
 
@@ -285,9 +310,13 @@ class FakeDriverApiClient implements DriverApiClient {
   }
 
   @override
-  Future<MobilityIncidentDto> createMobilityIncident(CreateOwnMobilityIncidentRequestDto body) async {
+  Future<MobilityIncidentDto> createMobilityIncident(
+    CreateOwnMobilityIncidentRequestDto body,
+  ) async {
     lastCreateMobilityIncidentBody = body;
-    if (createMobilityIncidentFailure != null) throw createMobilityIncidentFailure!;
+    if (createMobilityIncidentFailure != null) {
+      throw createMobilityIncidentFailure!;
+    }
     return createMobilityIncidentResponse!;
   }
 
@@ -299,21 +328,46 @@ class FakeDriverApiClient implements DriverApiClient {
   }
 
   @override
-  Future<MobilityRideDetailDto> transitionMobilityRide(String rideId, TransitionMobilityRideDto body) async {
+  Future<MobilityRideDetailDto> transitionMobilityRide(
+    String rideId,
+    TransitionMobilityRideDto body,
+  ) async {
     lastTransitionMobilityRideBody = body;
-    if (transitionMobilityRideFailure != null) throw transitionMobilityRideFailure!;
+    if (transitionMobilityRideFailure != null) {
+      throw transitionMobilityRideFailure!;
+    }
     return transitionMobilityRideResponse!;
   }
 
   @override
-  Future<MobilityDriverDto> submitMobilityLocation(SubmitMobilityLocationDto body) async {
-    if (submitMobilityLocationFailure != null) throw submitMobilityLocationFailure!;
+  Future<MobilityDriverDto> submitMobilityLocation(
+    SubmitMobilityLocationDto body,
+  ) async {
+    if (submitMobilityLocationFailure != null) {
+      throw submitMobilityLocationFailure!;
+    }
     return submitMobilityLocationResponse!;
   }
 
   @override
-  Future<SubmitDeliveryLocationResponseDto> submitDeliveryLocation(SubmitDeliveryLocationDto body) async {
-    if (submitDeliveryLocationFailure != null) throw submitDeliveryLocationFailure!;
+  Future<SubmitDeliveryLocationResponseDto> submitDeliveryLocation(
+    SubmitDeliveryLocationDto body,
+  ) async {
+    if (submitDeliveryLocationFailure != null) {
+      throw submitDeliveryLocationFailure!;
+    }
     return submitDeliveryLocationResponse!;
+  }
+
+  // --- Navigation -----------------------------------------------------------
+
+  @override
+  Future<ComputeDriverRouteResponseDto> computeRoute(
+    ComputeDriverRouteRequestDto body,
+  ) async {
+    computeRouteCallCount++;
+    lastComputeRouteRequest = body;
+    if (computeRouteFailure != null) throw computeRouteFailure!;
+    return computeRouteResponse!;
   }
 }

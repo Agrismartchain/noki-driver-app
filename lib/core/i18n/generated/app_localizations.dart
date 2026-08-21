@@ -1419,6 +1419,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'GPS disabled'**
   String get mapGpsDisabled;
+
+  /// No description provided for @mapRecenterAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Recenter'**
+  String get mapRecenterAction;
+
+  /// No description provided for @navigationRouteUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Route unavailable right now.'**
+  String get navigationRouteUnavailable;
+
+  /// No description provided for @navigationRetryAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get navigationRetryAction;
+
+  /// No description provided for @navigationEtaLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Estimated arrival at {time}'**
+  String navigationEtaLabel(String time);
+
+  /// No description provided for @navigationDistanceRemainingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{distance} remaining'**
+  String navigationDistanceRemainingLabel(String distance);
+
+  /// No description provided for @navigationNextManeuverLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'In {distance}: {instruction}'**
+  String navigationNextManeuverLabel(String distance, String instruction);
 }
 
 class _AppLocalizationsDelegate

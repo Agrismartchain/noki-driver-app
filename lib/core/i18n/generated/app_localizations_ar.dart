@@ -739,4 +739,28 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get mapGpsDisabled => 'تم تعطيل GPS';
+
+  @override
+  String get mapRecenterAction => 'إعادة التوسيط';
+
+  @override
+  String get navigationRouteUnavailable => 'الطريق غير متاح حاليًا.';
+
+  @override
+  String get navigationRetryAction => 'إعادة المحاولة';
+
+  @override
+  String navigationEtaLabel(String time) {
+    return 'الوصول المقدر الساعة $time';
+  }
+
+  @override
+  String navigationDistanceRemainingLabel(String distance) {
+    return '$distance متبقية';
+  }
+
+  @override
+  String navigationNextManeuverLabel(String distance, String instruction) {
+    return 'خلال $distance: $instruction';
+  }
 }

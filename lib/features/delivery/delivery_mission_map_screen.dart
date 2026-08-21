@@ -19,6 +19,8 @@ import '../driver_context/driver_context_repository.dart';
 import '../map/map_chrome.dart';
 import '../map/map_point.dart';
 import '../map/map_view.dart';
+import '../navigation/navigation_route_controller.dart';
+import '../navigation/navigation_status_chips.dart';
 import 'delivery_repository.dart';
 import 'delivery_status_presentation.dart';
 
@@ -92,8 +94,22 @@ class _DeliveryMissionMapScreenState
     final l10n = AppLocalizations.of(context);
     final asyncMission = ref.watch(missionDetailProvider(widget.missionId));
 
-    final pickup = widget.feedItem?.pickup;
-    final dropoff = widget.feedItem?.dropoff;
+    final pickupCoords = widget.feedItem?.pickup;
+    final dropoffCoords = widget.feedItem?.dropoff;
+    final pickup =
+        pickupCoords?.latitude != null && pickupCoords?.longitude != null
+        ? MapPoint(
+            pickupCoords!.latitude!.toDouble(),
+            pickupCoords.longitude!.toDouble(),
+          )
+        : null;
+    final dropoff =
+        dropoffCoords?.latitude != null && dropoffCoords?.longitude != null
+        ? MapPoint(
+            dropoffCoords!.latitude!.toDouble(),
+            dropoffCoords.longitude!.toDouble(),
+          )
+        : null;
 
     return Scaffold(
       extendBodyBehindAppBar: true,
@@ -114,6 +130,49 @@ class _DeliveryMissionMapScreenState
           final asyncPosition = ref.watch(livePositionProvider);
           final safeTop =
               MediaQuery.paddingOf(context).top + kToolbarHeight + 8;
+
+          // Pre-pickup (package not yet with the driver) routes to pickup;
+          // once out-for-delivery (package handed to the driver) it routes
+          // to drop-off - see the class doc and the mission report for the
+          // evidence behind this split. Terminal statuses need no route.
+          final mission = asyncMission.valueOrNull;
+          final destination = mission == null
+              ? null
+              : _deliveryNavigationDestination(
+                  mission.status,
+                  pickup: pickup,
+                  dropoff: dropoff,
+                );
+          final target = destination == null
+              ? null
+              : NavigationTarget(
+                  destination: destination,
+                  serviceType: ComputeDriverRouteRequestDtoServiceType.delivery,
+                );
+          final navState = target == null
+              ? null
+              : ref.watch(navigationRouteControllerProvider(target));
+
+          // Forwards the current driver position to the controller after
+          // every frame; the controller itself applies the deviation +
+          // cooldown gate (mandate §40/§41), so calling this on every
+          // rebuild is harmless - it fetches once immediately (screen
+          // entry) and then only actually recomputes once both thresholds
+          // are satisfied.
+          final currentPosition = asyncPosition.valueOrNull;
+          if (target != null && currentPosition != null) {
+            final origin = MapPoint(
+              currentPosition.latitude,
+              currentPosition.longitude,
+            );
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!mounted) return;
+              ref
+                  .read(navigationRouteControllerProvider(target).notifier)
+                  .updateOrigin(origin);
+            });
+          }
+
           return Stack(
             children: [
               NokiMapView(
@@ -121,17 +180,12 @@ class _DeliveryMissionMapScreenState
                 driverPosition: asyncPosition.whenOrNull(
                   data: (p) => MapPoint(p.latitude, p.longitude),
                 ),
-                pickup: pickup?.latitude != null && pickup?.longitude != null
-                    ? MapPoint(
-                        pickup!.latitude!.toDouble(),
-                        pickup.longitude!.toDouble(),
-                      )
-                    : null,
-                dropoff: dropoff?.latitude != null && dropoff?.longitude != null
-                    ? MapPoint(
-                        dropoff!.latitude!.toDouble(),
-                        dropoff.longitude!.toDouble(),
-                      )
+                pickup: pickup,
+                dropoff: dropoff,
+                routeGeometry:
+                    navState?.route?.isOk == true &&
+                        navState?.route?.hasGeometry == true
+                    ? navState!.route!.geometry
                     : null,
               ),
               Positioned(
@@ -149,6 +203,22 @@ class _DeliveryMissionMapScreenState
                       foregroundColor: context.nokiColors.actionPrimaryInk,
                     ),
                     _GpsChip(asyncPosition: asyncPosition),
+                    ...navigationStatusChips(
+                      context,
+                      route: navState?.route,
+                      onRetry: () {
+                        final position = asyncPosition.valueOrNull;
+                        if (position == null || target == null) return;
+                        ref
+                            .read(
+                              navigationRouteControllerProvider(target)
+                                  .notifier,
+                            )
+                            .retry(
+                              MapPoint(position.latitude, position.longitude),
+                            );
+                      },
+                    ),
                   ],
                 ),
               ),
@@ -369,5 +439,33 @@ class _GpsChip extends ConsumerWidget {
         icon: Icons.gps_fixed_outlined,
       ),
     );
+  }
+}
+
+/// Which point the driver should be routed to, given the mission's real
+/// status. `readyForDispatch`/`assigned` mean the package is not yet with
+/// the driver - `assignedAt` is set but `outForDeliveryAt` is not, so the
+/// driver still has a real driving leg to the pickup warehouse ahead of
+/// them. `outForDelivery` is set once the driver scans the shipment QR at
+/// pickup (`scanMissionQr`), which is the actual pickup event server-side -
+/// from that point on the package is physically with the driver, so the
+/// remaining leg is to the customer. `delivered`/`failed`/`cancelled` are
+/// terminal: no further driving leg, so no navigation is offered.
+MapPoint? _deliveryNavigationDestination(
+  DriverMissionResponseDtoStatus status, {
+  required MapPoint? pickup,
+  required MapPoint? dropoff,
+}) {
+  switch (status) {
+    case DriverMissionResponseDtoStatus.readyForDispatch:
+    case DriverMissionResponseDtoStatus.assigned:
+      return pickup;
+    case DriverMissionResponseDtoStatus.outForDelivery:
+      return dropoff;
+    case DriverMissionResponseDtoStatus.delivered:
+    case DriverMissionResponseDtoStatus.failed:
+    case DriverMissionResponseDtoStatus.cancelled:
+    case DriverMissionResponseDtoStatus.unknown:
+      return null;
   }
 }

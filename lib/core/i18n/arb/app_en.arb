@@ -247,5 +247,15 @@
   "mapGpsLive": "GPS live",
   "mapGpsLocating": "Locating driver",
   "mapGpsUnavailable": "Location unavailable",
-  "mapGpsDisabled": "GPS disabled"
+  "mapGpsDisabled": "GPS disabled",
+  "mapRecenterAction": "Recenter",
+
+  "navigationRouteUnavailable": "Route unavailable right now.",
+  "navigationRetryAction": "Retry",
+  "navigationEtaLabel": "Estimated arrival at {time}",
+  "@navigationEtaLabel": {"placeholders": {"time": {"type": "String"}}},
+  "navigationDistanceRemainingLabel": "{distance} remaining",
+  "@navigationDistanceRemainingLabel": {"placeholders": {"distance": {"type": "String"}}},
+  "navigationNextManeuverLabel": "In {distance}: {instruction}",
+  "@navigationNextManeuverLabel": {"placeholders": {"distance": {"type": "String"}, "instruction": {"type": "String"}}}
 }

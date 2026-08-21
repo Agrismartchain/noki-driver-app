@@ -180,9 +180,19 @@ class _DeliveryMissionDetailScreenState
     await launchUrl(Uri(scheme: 'tel', path: phone));
   }
 
-  Future<void> _navigate(num latitude, num longitude) async {
-    await launchUrl(
-      Uri.parse('geo:$latitude,$longitude?q=$latitude,$longitude'),
+  /// Navigation is in-app only (mandate: no external handoff) - both the
+  /// pickup and drop-off "Itinéraire" actions open the same enhanced map
+  /// screen, which decides pickup vs drop-off as the active target from the
+  /// mission's own status (see `DeliveryMissionMapScreen`).
+  void _openMap() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => DeliveryMissionMapScreen(
+          missionId: widget.missionId,
+          scope: widget.scope,
+          feedItem: widget.feedItem,
+        ),
+      ),
     );
   }
 
@@ -289,7 +299,7 @@ class _DeliveryMissionDetailScreenState
         if (pickup.latitude != null && pickup.longitude != null) ...[
           const SizedBox(height: AppSpacing.sm),
           OutlinedButton.icon(
-            onPressed: () => _navigate(pickup.latitude!, pickup.longitude!),
+            onPressed: _openMap,
             icon: const Icon(Icons.navigation_outlined, size: 18),
             label: Text(l10n.missionNavigateAction),
           ),
@@ -332,10 +342,7 @@ class _DeliveryMissionDetailScreenState
             if (dropoffCoords?.latitude != null &&
                 dropoffCoords?.longitude != null)
               OutlinedButton.icon(
-                onPressed: () => _navigate(
-                  dropoffCoords!.latitude!,
-                  dropoffCoords.longitude!,
-                ),
+                onPressed: _openMap,
                 icon: const Icon(Icons.navigation_outlined, size: 18),
                 label: Text(l10n.missionNavigateAction),
               ),

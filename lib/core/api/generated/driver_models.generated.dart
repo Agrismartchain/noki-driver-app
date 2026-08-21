@@ -12,6 +12,105 @@
 
 
 
+enum ComputeDriverRouteRequestDtoServiceType {
+  delivery,
+  taxi,
+  taxiMoto,
+  unknown;
+
+  static ComputeDriverRouteRequestDtoServiceType fromJson(String value) {
+    switch (value) {
+      case "DELIVERY":
+        return ComputeDriverRouteRequestDtoServiceType.delivery;
+      case "TAXI":
+        return ComputeDriverRouteRequestDtoServiceType.taxi;
+      case "TAXI_MOTO":
+        return ComputeDriverRouteRequestDtoServiceType.taxiMoto;
+      default:
+        return ComputeDriverRouteRequestDtoServiceType.unknown;
+    }
+  }
+
+  String toJson() {
+    switch (this) {
+      case ComputeDriverRouteRequestDtoServiceType.delivery:
+        return "DELIVERY";
+      case ComputeDriverRouteRequestDtoServiceType.taxi:
+        return "TAXI";
+      case ComputeDriverRouteRequestDtoServiceType.taxiMoto:
+        return "TAXI_MOTO";
+      case ComputeDriverRouteRequestDtoServiceType.unknown:
+        return "DELIVERY";
+    }
+  }
+}
+
+enum ComputeDriverRouteResponseDtoProfile {
+  auto,
+  motorcycle,
+  unknown;
+
+  static ComputeDriverRouteResponseDtoProfile fromJson(String value) {
+    switch (value) {
+      case "auto":
+        return ComputeDriverRouteResponseDtoProfile.auto;
+      case "motorcycle":
+        return ComputeDriverRouteResponseDtoProfile.motorcycle;
+      default:
+        return ComputeDriverRouteResponseDtoProfile.unknown;
+    }
+  }
+
+  String toJson() {
+    switch (this) {
+      case ComputeDriverRouteResponseDtoProfile.auto:
+        return "auto";
+      case ComputeDriverRouteResponseDtoProfile.motorcycle:
+        return "motorcycle";
+      case ComputeDriverRouteResponseDtoProfile.unknown:
+        return "auto";
+    }
+  }
+}
+
+enum ComputeDriverRouteResponseDtoProviderStatus {
+  ok,
+  noRoute,
+  providerUnavailable,
+  timeout,
+  unknown;
+
+  static ComputeDriverRouteResponseDtoProviderStatus fromJson(String value) {
+    switch (value) {
+      case "OK":
+        return ComputeDriverRouteResponseDtoProviderStatus.ok;
+      case "NO_ROUTE":
+        return ComputeDriverRouteResponseDtoProviderStatus.noRoute;
+      case "PROVIDER_UNAVAILABLE":
+        return ComputeDriverRouteResponseDtoProviderStatus.providerUnavailable;
+      case "TIMEOUT":
+        return ComputeDriverRouteResponseDtoProviderStatus.timeout;
+      default:
+        return ComputeDriverRouteResponseDtoProviderStatus.unknown;
+    }
+  }
+
+  String toJson() {
+    switch (this) {
+      case ComputeDriverRouteResponseDtoProviderStatus.ok:
+        return "OK";
+      case ComputeDriverRouteResponseDtoProviderStatus.noRoute:
+        return "NO_ROUTE";
+      case ComputeDriverRouteResponseDtoProviderStatus.providerUnavailable:
+        return "PROVIDER_UNAVAILABLE";
+      case ComputeDriverRouteResponseDtoProviderStatus.timeout:
+        return "TIMEOUT";
+      case ComputeDriverRouteResponseDtoProviderStatus.unknown:
+        return "OK";
+    }
+  }
+}
+
 enum CreateDeliveryIncidentDtoType {
   delay,
   vehicleIssue,
@@ -1250,6 +1349,29 @@ enum MobilityRideDetailDtoStatus {
   }
 }
 
+enum RouteGeometryDtoType {
+  linestring,
+  unknown;
+
+  static RouteGeometryDtoType fromJson(String value) {
+    switch (value) {
+      case "LineString":
+        return RouteGeometryDtoType.linestring;
+      default:
+        return RouteGeometryDtoType.unknown;
+    }
+  }
+
+  String toJson() {
+    switch (this) {
+      case RouteGeometryDtoType.linestring:
+        return "LineString";
+      case RouteGeometryDtoType.unknown:
+        return "LineString";
+    }
+  }
+}
+
 enum TransitionMobilityRideDtoStatus {
   driverAssigned,
   driverEnRoute,
@@ -1517,6 +1639,74 @@ class CompleteDriverMissionDto {
       "latitude": ?latitude,
       "longitude": ?longitude,
       "accuracyMeters": ?accuracyMeters,
+    };
+  }
+}
+
+class ComputeDriverRouteRequestDto {
+  const ComputeDriverRouteRequestDto({
+    required this.origin,
+    required this.destination,
+    required this.serviceType,
+  });
+
+  final NavigationGeoPointInputDto origin;
+  final NavigationGeoPointInputDto destination;
+  final ComputeDriverRouteRequestDtoServiceType serviceType;
+
+  factory ComputeDriverRouteRequestDto.fromJson(Map<String, dynamic> json) {
+    return ComputeDriverRouteRequestDto(
+      origin: NavigationGeoPointInputDto.fromJson(json["origin"] as Map<String, dynamic>),
+      destination: NavigationGeoPointInputDto.fromJson(json["destination"] as Map<String, dynamic>),
+      serviceType: ComputeDriverRouteRequestDtoServiceType.fromJson(json["serviceType"] as String),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "origin": origin.toJson(),
+      "destination": destination.toJson(),
+      "serviceType": serviceType.toJson(),
+    };
+  }
+}
+
+class ComputeDriverRouteResponseDto {
+  const ComputeDriverRouteResponseDto({
+    this.geometry,
+    this.distanceMeters,
+    this.durationSeconds,
+    required this.profile,
+    required this.maneuvers,
+    required this.providerStatus,
+  });
+
+  final RouteGeometryDto? geometry;
+  final num? distanceMeters;
+  final num? durationSeconds;
+  final ComputeDriverRouteResponseDtoProfile profile;
+  final List<NavigationManeuverDto> maneuvers;
+  final ComputeDriverRouteResponseDtoProviderStatus providerStatus;
+
+  factory ComputeDriverRouteResponseDto.fromJson(Map<String, dynamic> json) {
+    return ComputeDriverRouteResponseDto(
+      geometry: json["geometry"] == null ? null : RouteGeometryDto.fromJson(json["geometry"] as Map<String, dynamic>),
+      distanceMeters: (json["distanceMeters"] as num?),
+      durationSeconds: (json["durationSeconds"] as num?),
+      profile: ComputeDriverRouteResponseDtoProfile.fromJson(json["profile"] as String),
+      maneuvers: (json["maneuvers"] as List<dynamic>).map((e) => NavigationManeuverDto.fromJson(e as Map<String, dynamic>)).toList(),
+      providerStatus: ComputeDriverRouteResponseDtoProviderStatus.fromJson(json["providerStatus"] as String),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "geometry": ?geometry?.toJson(),
+      "distanceMeters": ?distanceMeters,
+      "durationSeconds": ?durationSeconds,
+      "profile": profile.toJson(),
+      "maneuvers": maneuvers.map((e) => e.toJson()).toList(),
+      "providerStatus": providerStatus.toJson(),
     };
   }
 }
@@ -3177,6 +3367,98 @@ class MobilityTrackPointDto {
   }
 }
 
+class NavigationGeoPointInputDto {
+  const NavigationGeoPointInputDto({
+    required this.latitude,
+    required this.longitude,
+  });
+
+  final num latitude;
+  final num longitude;
+
+  factory NavigationGeoPointInputDto.fromJson(Map<String, dynamic> json) {
+    return NavigationGeoPointInputDto(
+      latitude: (json["latitude"] as num?)!,
+      longitude: (json["longitude"] as num?)!,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "latitude": latitude,
+      "longitude": longitude,
+    };
+  }
+}
+
+class NavigationManeuverDto {
+  const NavigationManeuverDto({
+    required this.type,
+    this.modifier,
+    this.instruction,
+    required this.distanceMeters,
+    required this.durationSeconds,
+    required this.location,
+    this.streetName,
+  });
+
+  final String type;
+  final String? modifier;
+  final String? instruction;
+  final num distanceMeters;
+  final num durationSeconds;
+  final NavigationManeuverLocationDto location;
+  final String? streetName;
+
+  factory NavigationManeuverDto.fromJson(Map<String, dynamic> json) {
+    return NavigationManeuverDto(
+      type: json["type"] as String,
+      modifier: json["modifier"] as String?,
+      instruction: json["instruction"] as String?,
+      distanceMeters: (json["distanceMeters"] as num?)!,
+      durationSeconds: (json["durationSeconds"] as num?)!,
+      location: NavigationManeuverLocationDto.fromJson(json["location"] as Map<String, dynamic>),
+      streetName: json["streetName"] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "type": type,
+      "modifier": ?modifier,
+      "instruction": ?instruction,
+      "distanceMeters": distanceMeters,
+      "durationSeconds": durationSeconds,
+      "location": location.toJson(),
+      "streetName": ?streetName,
+    };
+  }
+}
+
+class NavigationManeuverLocationDto {
+  const NavigationManeuverLocationDto({
+    required this.latitude,
+    required this.longitude,
+  });
+
+  final num latitude;
+  final num longitude;
+
+  factory NavigationManeuverLocationDto.fromJson(Map<String, dynamic> json) {
+    return NavigationManeuverLocationDto(
+      latitude: (json["latitude"] as num?)!,
+      longitude: (json["longitude"] as num?)!,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "latitude": latitude,
+      "longitude": longitude,
+    };
+  }
+}
+
 class RefreshRequestDto {
   const RefreshRequestDto({
     required this.refreshToken,
@@ -3193,6 +3475,30 @@ class RefreshRequestDto {
   Map<String, dynamic> toJson() {
     return {
       "refreshToken": refreshToken,
+    };
+  }
+}
+
+class RouteGeometryDto {
+  const RouteGeometryDto({
+    required this.type,
+    required this.coordinates,
+  });
+
+  final RouteGeometryDtoType type;
+  final List<List<num>> coordinates;
+
+  factory RouteGeometryDto.fromJson(Map<String, dynamic> json) {
+    return RouteGeometryDto(
+      type: RouteGeometryDtoType.fromJson(json["type"] as String),
+      coordinates: (json["coordinates"] as List<dynamic>).map((e) => (e as List<dynamic>).map((e) => (e as num?)!).toList()).toList(),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "type": type.toJson(),
+      "coordinates": coordinates.map((e) => e.map((e) => e).toList()).toList(),
     };
   }
 }

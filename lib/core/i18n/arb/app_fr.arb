@@ -238,5 +238,12 @@
   "mapGpsLive": "GPS actif",
   "mapGpsLocating": "Localisation en cours",
   "mapGpsUnavailable": "Position indisponible",
-  "mapGpsDisabled": "GPS désactivé"
+  "mapGpsDisabled": "GPS désactivé",
+  "mapRecenterAction": "Recentrer",
+
+  "navigationRouteUnavailable": "Itinéraire indisponible pour le moment.",
+  "navigationRetryAction": "Réessayer",
+  "navigationEtaLabel": "Arrivée estimée à {time}",
+  "navigationDistanceRemainingLabel": "{distance} restants",
+  "navigationNextManeuverLabel": "Dans {distance} : {instruction}"
 }

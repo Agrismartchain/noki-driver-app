@@ -755,4 +755,29 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get mapGpsDisabled => 'GPS désactivé';
+
+  @override
+  String get mapRecenterAction => 'Recentrer';
+
+  @override
+  String get navigationRouteUnavailable =>
+      'Itinéraire indisponible pour le moment.';
+
+  @override
+  String get navigationRetryAction => 'Réessayer';
+
+  @override
+  String navigationEtaLabel(String time) {
+    return 'Arrivée estimée à $time';
+  }
+
+  @override
+  String navigationDistanceRemainingLabel(String distance) {
+    return '$distance restants';
+  }
+
+  @override
+  String navigationNextManeuverLabel(String distance, String instruction) {
+    return 'Dans $distance : $instruction';
+  }
 }

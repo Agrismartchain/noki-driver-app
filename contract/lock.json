@@ -1,7 +1,7 @@
 {
-  "apiHead": "8888eb9dfbb7a7f5269cc31ee87dd157abd21f7e",
-  "contractsVersion": "0.44.0",
-  "openapiChecksum": "45429a359e1d2dd78c06810a1b20f595e4d87a75ffdd0b93a819b8b037dee0ba",
+  "apiHead": "bad9584ce4a2422316aad59e7f00cc6adb75c17e",
+  "contractsVersion": "0.45.0",
+  "openapiChecksum": "75bbca7e35ea8cc5a36a45946a042ac9a58c9f1564a3b67316d708a7ce7148b2",
   "generator": "tool/generate_api_models.mjs (in-repo, deterministic)",
   "generatorVersion": "1.0.0",
   "note": "apiHead/contractsVersion/openapiChecksum must match noki-api HEAD and the published @agrismartchain/noki-shared-contracts version they were exported from. openapiChecksum is verified against ../noki-shared-contracts/spec/checksums/noki-api.openapi.sha256 before every generation run. No tokens or credentialed URLs are stored here.",
@@ -32,6 +32,7 @@
     "MobilityDriverController_acceptOffer",
     "MobilityDriverController_transitionRide",
     "MobilityDriverController_submitLocation",
-    "DeliveryController_submitOwnLocation"
+    "DeliveryController_submitOwnLocation",
+    "NavigationController_computeRoute"
   ]
 }

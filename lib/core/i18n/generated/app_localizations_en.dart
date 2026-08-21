@@ -749,4 +749,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mapGpsDisabled => 'GPS disabled';
+
+  @override
+  String get mapRecenterAction => 'Recenter';
+
+  @override
+  String get navigationRouteUnavailable => 'Route unavailable right now.';
+
+  @override
+  String get navigationRetryAction => 'Retry';
+
+  @override
+  String navigationEtaLabel(String time) {
+    return 'Estimated arrival at $time';
+  }
+
+  @override
+  String navigationDistanceRemainingLabel(String distance) {
+    return '$distance remaining';
+  }
+
+  @override
+  String navigationNextManeuverLabel(String distance, String instruction) {
+    return 'In $distance: $instruction';
+  }
 }

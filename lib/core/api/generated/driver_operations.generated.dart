@@ -51,4 +51,5 @@ const List<GeneratedApiOperation> generatedApiOperations = [
   GeneratedApiOperation(operationId: "MobilityDriverController_acceptOffer", method: "POST", path: "/v1/mobility/driver/offers/{id}/accept"),
   GeneratedApiOperation(operationId: "MobilityDriverController_submitLocation", method: "POST", path: "/v1/mobility/driver/location"),
   GeneratedApiOperation(operationId: "MobilityDriverController_transitionRide", method: "POST", path: "/v1/mobility/driver/rides/{id}/transition"),
+  GeneratedApiOperation(operationId: "NavigationController_computeRoute", method: "POST", path: "/v1/driver/navigation/route"),
 ];

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/api/generated/driver_models.generated.dart';
 import '../../core/errors/app_failure.dart';
@@ -64,9 +63,16 @@ class _MobilityRideScreenState extends ConsumerState<MobilityRideScreen> {
     }
   }
 
-  Future<void> _navigate(num latitude, num longitude) async {
-    await launchUrl(
-      Uri.parse('geo:$latitude,$longitude?q=$latitude,$longitude'),
+  /// Navigation is in-app only (mandate: no external handoff) - both the
+  /// pickup and drop-off "Itinéraire" actions open the same enhanced map
+  /// screen, which decides pickup vs drop-off as the active target from the
+  /// ride's own status (see `MobilityRideMapScreen`).
+  void _openMap() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) =>
+            MobilityRideMapScreen(rideId: widget.rideId, scope: widget.scope),
+      ),
     );
   }
 
@@ -156,16 +162,14 @@ class _MobilityRideScreenState extends ConsumerState<MobilityRideScreen> {
                     icon: Icons.trip_origin,
                     label: l10n.missionSectionPickup,
                     address: ride.pickupAddressSnapshot,
-                    onNavigate: () =>
-                        _navigate(ride.pickupLatitude, ride.pickupLongitude),
+                    onNavigate: _openMap,
                   ),
                   const SizedBox(height: AppSpacing.md),
                   _RoutePoint(
                     icon: Icons.place_outlined,
                     label: l10n.missionSectionDropoff,
                     address: ride.dropoffAddressSnapshot,
-                    onNavigate: () =>
-                        _navigate(ride.dropoffLatitude, ride.dropoffLongitude),
+                    onNavigate: _openMap,
                   ),
                   const SizedBox(height: AppSpacing.lg),
                   Text(

@@ -238,5 +238,12 @@
   "mapGpsLive": "نظام GPS نشط",
   "mapGpsLocating": "جارٍ تحديد موقع السائق",
   "mapGpsUnavailable": "الموقع غير متاح",
-  "mapGpsDisabled": "تم تعطيل GPS"
+  "mapGpsDisabled": "تم تعطيل GPS",
+  "mapRecenterAction": "إعادة التوسيط",
+
+  "navigationRouteUnavailable": "الطريق غير متاح حاليًا.",
+  "navigationRetryAction": "إعادة المحاولة",
+  "navigationEtaLabel": "الوصول المقدر الساعة {time}",
+  "navigationDistanceRemainingLabel": "{distance} متبقية",
+  "navigationNextManeuverLabel": "خلال {distance}: {instruction}"
 }

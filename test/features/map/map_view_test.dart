@@ -29,4 +29,75 @@ void main() {
       expect(find.byType(PolylineLayer), findsNothing);
     },
   );
+
+  testWidgets(
+    'draws a route polyline below the marker layer when real backend geometry is supplied',
+    (tester) async {
+      await pumpWithProviders(
+        tester,
+        Scaffold(
+          body: NokiMapView(
+            tileProvider: FakeTileProvider(),
+            driverPosition: MapPoint(5.34, -4.02),
+            pickup: MapPoint(5.35, -4.01),
+            dropoff: MapPoint(5.36, -4.00),
+            routeGeometry: const [
+              MapPoint(5.34, -4.02),
+              MapPoint(5.35, -4.015),
+              MapPoint(5.36, -4.00),
+            ],
+          ),
+        ),
+      );
+
+      expect(find.byType(PolylineLayer), findsOneWidget);
+      expect(find.byKey(const Key('noki-map-marker-driver')), findsOneWidget);
+
+      final flutterMap = tester.widget<FlutterMap>(find.byType(FlutterMap));
+      final children = flutterMap.children;
+      final polylineIndex = children.indexWhere((w) => w is PolylineLayer);
+      final markerIndex = children.indexWhere((w) => w is MarkerLayer);
+      expect(polylineIndex, greaterThanOrEqualTo(0));
+      expect(markerIndex, greaterThanOrEqualTo(0));
+      expect(
+        polylineIndex,
+        lessThan(markerIndex),
+        reason: 'the route must never occlude the markers drawn on top of it',
+      );
+    },
+  );
+
+  testWidgets('draws no polyline when routeGeometry is empty, same as null', (
+    tester,
+  ) async {
+    await pumpWithProviders(
+      tester,
+      Scaffold(
+        body: NokiMapView(
+          tileProvider: FakeTileProvider(),
+          driverPosition: MapPoint(5.34, -4.02),
+          routeGeometry: const [],
+        ),
+      ),
+    );
+
+    expect(find.byType(PolylineLayer), findsNothing);
+  });
+
+  testWidgets('shows an OpenStreetMap attribution over the tiles', (
+    tester,
+  ) async {
+    await pumpWithProviders(
+      tester,
+      Scaffold(
+        body: NokiMapView(
+          tileProvider: FakeTileProvider(),
+          driverPosition: MapPoint(5.34, -4.02),
+        ),
+      ),
+    );
+
+    expect(find.byType(SimpleAttributionWidget), findsOneWidget);
+    expect(find.textContaining('OpenStreetMap contributors'), findsOneWidget);
+  });
 }

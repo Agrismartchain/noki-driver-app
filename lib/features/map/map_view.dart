@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
 
+import '../../core/i18n/generated/app_localizations.dart';
 import '../../core/theme/app_theme.dart';
 import 'map_chrome.dart';
 import 'map_markers.dart';
@@ -9,22 +10,29 @@ import 'map_point.dart';
 
 /// The one place `flutter_map`'s types are used directly (mandate §5).
 /// Business screens hand in plain [MapPoint]s; this widget owns tiles,
-/// markers, camera fit and the recenter action.
+/// markers, camera fit/follow and the recenter action.
 ///
-/// No route polyline is drawn: the backend provides no routing geometry, and
-/// mandate §16 forbids labelling a straight line as a "route" - markers only.
+/// A route polyline is drawn only when [routeGeometry] carries real backend
+/// geometry (never a straight origin->destination fallback - mandate §16):
+/// when it's null or empty, nothing is drawn, exactly as before real routing
+/// existed.
 class NokiMapView extends StatefulWidget {
   const NokiMapView({
     super.key,
     this.driverPosition,
     this.pickup,
     this.dropoff,
+    this.routeGeometry,
     this.tileProvider,
   });
 
   final MapPoint? driverPosition;
   final MapPoint? pickup;
   final MapPoint? dropoff;
+
+  /// Real routing geometry from the backend, already ordered start->end.
+  /// Null/empty means "no route to draw" - never a fabricated straight line.
+  final List<MapPoint>? routeGeometry;
 
   /// Overridable only so widget tests can substitute a tile source that
   /// doesn't hit the real network (see `test/fixtures/fake_tile_provider.dart`)
@@ -38,6 +46,12 @@ class NokiMapView extends StatefulWidget {
 class _NokiMapViewState extends State<NokiMapView> {
   final _controller = MapController();
   bool _fitted = false;
+
+  /// Whether the camera keeps recentering on [widget.driverPosition] as it
+  /// updates. Defaults to on; a user pan/zoom gesture turns it off, and
+  /// tapping the recenter button turns it back on (mandate: default-follow,
+  /// stop on manual gesture, resume+refit on recenter tap).
+  bool _following = true;
 
   List<MapPoint> get _points => [
     if (widget.driverPosition != null) widget.driverPosition!,
@@ -61,6 +75,16 @@ class _NokiMapViewState extends State<NokiMapView> {
     // recenter.
     if (!_fitted && _points.isNotEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _fit());
+      return;
+    }
+    final position = widget.driverPosition;
+    if (_fitted &&
+        _following &&
+        position != null &&
+        (oldWidget.driverPosition == null ||
+            oldWidget.driverPosition!.latitude != position.latitude ||
+            oldWidget.driverPosition!.longitude != position.longitude)) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _followDriver());
     }
   }
 
@@ -85,6 +109,21 @@ class _NokiMapViewState extends State<NokiMapView> {
     );
   }
 
+  void _followDriver() {
+    final position = widget.driverPosition;
+    if (position == null || !mounted) return;
+    _controller.move(
+      LatLng(position.latitude, position.longitude),
+      _controller.camera.zoom,
+    );
+  }
+
+  void _onRecenter() {
+    _following = true;
+    _fitted = false;
+    _fit();
+  }
+
   @override
   Widget build(BuildContext context) {
     final colors = context.nokiColors;
@@ -101,12 +140,37 @@ class _NokiMapViewState extends State<NokiMapView> {
           options: MapOptions(
             initialCenter: initialCenter,
             initialZoom: points.isEmpty ? 2 : 15,
+            onPositionChanged: (camera, hasGesture) {
+              // A driver-driven pan/zoom stops follow mode; a programmatic
+              // move (our own `_fit()`/`_followDriver()` calls) never does.
+              if (hasGesture && _following) {
+                setState(() => _following = false);
+              }
+            },
           ),
           children: [
             ColorFiltered(
               colorFilter: isDark ? _darkMapFilter : _lightMapFilter,
               child: _tileLayer(),
             ),
+            // Route polyline sits below MarkerLayer (mandate: the route
+            // never occludes markers) and is only ever drawn when real
+            // backend geometry is supplied - see class doc.
+            if (widget.routeGeometry != null &&
+                widget.routeGeometry!.isNotEmpty)
+              PolylineLayer(
+                polylines: [
+                  Polyline(
+                    points: widget.routeGeometry!
+                        .map((p) => LatLng(p.latitude, p.longitude))
+                        .toList(),
+                    strokeWidth: 5,
+                    color: colors.brandAccent,
+                    borderStrokeWidth: 2.5,
+                    borderColor: colors.chromeSurface,
+                  ),
+                ],
+              ),
             MarkerLayer(
               markers: [
                 if (widget.pickup != null) pickupMarker(widget.pickup!, colors),
@@ -115,6 +179,11 @@ class _NokiMapViewState extends State<NokiMapView> {
                 if (widget.driverPosition != null)
                   driverMarker(widget.driverPosition!, colors),
               ],
+            ),
+            SimpleAttributionWidget(
+              source: const Text('OpenStreetMap contributors'),
+              alignment: Alignment.bottomLeft,
+              backgroundColor: colors.surface.withValues(alpha: 0.75),
             ),
           ],
         ),
@@ -144,11 +213,8 @@ class _NokiMapViewState extends State<NokiMapView> {
           bottom: 20,
           child: NokiMapControlButton(
             icon: Icons.my_location_rounded,
-            tooltip: 'Recenter map',
-            onPressed: () {
-              _fitted = false;
-              _fit();
-            },
+            tooltip: AppLocalizations.of(context).mapRecenterAction,
+            onPressed: _onRecenter,
           ),
         ),
       ],
