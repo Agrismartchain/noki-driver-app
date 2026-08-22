@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:noki_driver_app/core/api/api_providers.dart';
@@ -139,6 +140,48 @@ void main() {
     },
   );
 
+  testWidgets(
+    'no feedItem in hand (e.g. Home "Continue delivery" reentry) still finds a real route via the Work Feed fallback',
+    (tester) async {
+      final client = FakeDriverApiClient()
+        ..getOwnMissionResponse = DriverMissionResponseDto.fromJson(
+          sampleMission(),
+        )
+        ..deliveryMissionIncidentsResponse = []
+        ..workFeedResponse = DriverWorkFeedListResponseDto.fromJson(
+          sampleWorkFeedList(),
+        )
+        ..computeRouteResponse = ComputeDriverRouteResponseDto.fromJson(
+          sampleComputeRouteResponse(),
+        );
+
+      await pumpWithProviders(
+        tester,
+        DeliveryMissionMapScreen(
+          tileProvider: FakeTileProvider(),
+          missionId: 'shipment-1',
+          scope: _scope,
+          // No feedItem - only the mission id is known, exactly like the
+          // Home "Continue delivery" reentry tile.
+        ),
+        overrides: [
+          driverApiClientProvider.overrideWithValue(client),
+          locationRepositoryProvider.overrideWithValue(
+            FakeLocationRepository(),
+          ),
+        ],
+      );
+
+      // Package is already with the driver (OUT_FOR_DELIVERY) - routes to
+      // drop-off, matched from the Work Feed item by resourceId.
+      expect(
+        client.lastComputeRouteRequest?.destination.latitude,
+        sampleWorkFeedDeliveryItem()['dropoff']['latitude'],
+      );
+      expect(find.byType(PolylineLayer), findsOneWidget);
+    },
+  );
+
   testWidgets('an assigned mission routes to pickup, not drop-off', (
     tester,
   ) async {
@@ -224,6 +267,67 @@ void main() {
         find.text(l10n.financeAmountToCollectLabel.toUpperCase()),
         findsOneWidget,
       );
+    },
+  );
+
+  testWidgets(
+    'retrying from route unavailable to route success keeps the delivery overlay chrome mounted',
+    (tester) async {
+      final client = FakeDriverApiClient()
+        ..getOwnMissionResponse = DriverMissionResponseDto.fromJson(
+          sampleMission(),
+        )
+        ..deliveryMissionIncidentsResponse = []
+        ..computeRouteResponse = ComputeDriverRouteResponseDto.fromJson(
+          sampleComputeRouteResponse(
+            providerStatus: 'PROVIDER_UNAVAILABLE',
+            withGeometry: false,
+          ),
+        );
+      final feedItem = DriverWorkFeedItemDto.fromJson(
+        sampleWorkFeedDeliveryItem(),
+      );
+
+      await pumpWithProviders(
+        tester,
+        DeliveryMissionMapScreen(
+          tileProvider: FakeTileProvider(),
+          missionId: 'shipment-1',
+          scope: _scope,
+          feedItem: feedItem,
+        ),
+        overrides: [
+          driverApiClientProvider.overrideWithValue(client),
+          locationRepositoryProvider.overrideWithValue(
+            FakeLocationRepository(),
+          ),
+        ],
+      );
+
+      final l10n = AppLocalizations.of(
+        tester.element(find.byType(DeliveryMissionMapScreen)),
+      );
+      expect(find.byType(BackdropGroup), findsOneWidget);
+      expect(find.text(l10n.navigationRouteUnavailable), findsOneWidget);
+      expect(find.text(l10n.workFeedTypeDelivery), findsOneWidget);
+
+      client.computeRouteResponse = ComputeDriverRouteResponseDto.fromJson(
+        sampleComputeRouteResponse(),
+      );
+
+      final retryTapTarget = find.descendant(
+        of: find.byTooltip(l10n.navigationRetryAction),
+        matching: find.byType(InkWell),
+      );
+      expect(retryTapTarget, findsOneWidget);
+      tester.widget<InkWell>(retryTapTarget).onTap!.call();
+      await tester.pumpAndSettle();
+
+      expect(find.byType(BackdropGroup), findsOneWidget);
+      expect(find.text(l10n.navigationRouteUnavailable), findsNothing);
+      expect(find.byType(PolylineLayer), findsOneWidget);
+      expect(find.textContaining('24.1 km'), findsOneWidget);
+      expect(find.text(l10n.workFeedTypeDelivery), findsOneWidget);
     },
   );
 

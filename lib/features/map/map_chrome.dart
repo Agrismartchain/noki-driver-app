@@ -26,7 +26,7 @@ class NokiMapControlButton extends StatelessWidget {
       message: tooltip ?? '',
       child: ClipRRect(
         borderRadius: BorderRadius.circular(metrics.radiusButton),
-        child: BackdropFilter(
+        child: BackdropFilter.grouped(
           filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
           child: Material(
             color: colors.surface.withValues(alpha: 0.92),
@@ -64,32 +64,48 @@ class NokiMapStatusChip extends StatelessWidget {
     final colors = context.nokiColors;
     final bg = backgroundColor ?? colors.surface.withValues(alpha: 0.9);
     final fg = foregroundColor ?? colors.textPrimary;
+    final maxChipWidth = MediaQuery.sizeOf(context).width - (AppSpacing.lg * 2);
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(AppRadius.full),
-      child: BackdropFilter(
+      child: BackdropFilter.grouped(
         filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-        child: Container(
-          padding: const EdgeInsets.symmetric(
-            horizontal: AppSpacing.md,
-            vertical: AppSpacing.sm,
-          ),
-          decoration: BoxDecoration(
-            color: bg,
-            borderRadius: BorderRadius.circular(AppRadius.full),
-            border: Border.all(color: colors.border),
-          ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(icon, size: 16, color: fg),
-              const SizedBox(width: AppSpacing.xs),
-              Text(
-                label,
-                style: Theme.of(context).textTheme.labelMedium
-                    ?.copyWith(color: fg, fontWeight: FontWeight.w700),
-              ),
-            ],
+        child: ConstrainedBox(
+          constraints: BoxConstraints(maxWidth: maxChipWidth),
+          child: Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: AppSpacing.md,
+              vertical: AppSpacing.sm,
+            ),
+            decoration: BoxDecoration(
+              color: bg,
+              borderRadius: BorderRadius.circular(AppRadius.full),
+              border: Border.all(color: colors.border),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(top: 1),
+                  child: Icon(icon, size: 16, color: fg),
+                ),
+                const SizedBox(width: AppSpacing.xs),
+                Flexible(
+                  child: Text(
+                    label,
+                    softWrap: true,
+                    maxLines: 3,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      color: fg,
+                      fontWeight: FontWeight.w700,
+                      height: 1.2,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
@@ -109,7 +125,7 @@ class NokiMapBottomPanel extends StatelessWidget {
 
     return ClipRRect(
       borderRadius: BorderRadius.circular(metrics.radiusCard + 4),
-      child: BackdropFilter(
+      child: BackdropFilter.grouped(
         filter: ImageFilter.blur(sigmaX: 18, sigmaY: 18),
         child: Container(
           decoration: BoxDecoration(
@@ -130,20 +146,36 @@ class NokiMapBottomPanel extends StatelessWidget {
             AppSpacing.lg,
             AppSpacing.lg,
           ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 44,
-                height: 5,
-                decoration: BoxDecoration(
-                  color: colors.borderStrong,
-                  borderRadius: BorderRadius.circular(AppRadius.full),
+          // Capped and internally scrollable (mandate: the top status strip -
+          // service/GPS/route chips, which can grow to 2-3 wrapped rows once
+          // ETA/distance/maneuver or a route-unavailable+retry pair join the
+          // base chips - must never be painted over by this panel, which is
+          // the last/topmost Stack child on both map screens). Without a cap
+          // this panel sizes to its full (mission-dependent) content height
+          // and, on shorter screens or content-heavy missions, can grow tall
+          // enough to visually occlude those chips even though they remain
+          // in the semantics tree (mandate §22: semantics present, pixels
+          // absent). Uncapped Column + `mainAxisSize.min` still applies
+          // within the cap, so short content keeps its natural height.
+          child: ConstrainedBox(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.sizeOf(context).height * 0.5,
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 44,
+                  height: 5,
+                  decoration: BoxDecoration(
+                    color: colors.borderStrong,
+                    borderRadius: BorderRadius.circular(AppRadius.full),
+                  ),
                 ),
-              ),
-              const SizedBox(height: AppSpacing.md),
-              child,
-            ],
+                const SizedBox(height: AppSpacing.md),
+                Flexible(child: SingleChildScrollView(child: child)),
+              ],
+            ),
           ),
         ),
       ),

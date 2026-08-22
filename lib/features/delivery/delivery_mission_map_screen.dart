@@ -21,6 +21,7 @@ import '../map/map_point.dart';
 import '../map/map_view.dart';
 import '../navigation/navigation_route_controller.dart';
 import '../navigation/navigation_status_chips.dart';
+import '../work_feed/work_feed_repository.dart';
 import 'delivery_repository.dart';
 import 'delivery_status_presentation.dart';
 
@@ -95,8 +96,18 @@ class _DeliveryMissionMapScreenState
     final asyncMission = ref.watch(missionDetailProvider(widget.missionId));
     final asyncDriverContext = ref.watch(driverContextProvider);
 
-    final pickupCoords = widget.feedItem?.pickup;
-    final dropoffCoords = widget.feedItem?.dropoff;
+    // Entry points that don't already hold the Work Feed item in hand (e.g.
+    // the Home "Continue delivery" reentry tile, which only knows the
+    // mission id) leave [widget.feedItem] null - `DriverMissionResponseDto`
+    // itself carries no coordinates (see the class doc), so without this
+    // fallback lookup those entries would silently show no route at all
+    // instead of a real pickup/drop-off. Falls back to the Work Feed list,
+    // matched by the same `underlyingResource.resourceId` the feed screen
+    // uses to open this mission in the first place.
+    final feedItem =
+        widget.feedItem ?? _matchingWorkFeedItem(ref, widget.scope, widget.missionId);
+    final pickupCoords = feedItem?.pickup;
+    final dropoffCoords = feedItem?.dropoff;
     final pickup =
         pickupCoords?.latitude != null && pickupCoords?.longitude != null
         ? MapPoint(
@@ -184,72 +195,74 @@ class _DeliveryMissionMapScreenState
             });
           }
 
-          return Stack(
-            children: [
-              NokiMapView(
-                tileProvider: widget.tileProvider,
-                driverPosition: asyncPosition.whenOrNull(
-                  data: (p) => MapPoint(p.latitude, p.longitude),
-                ),
-                pickup: pickup,
-                dropoff: dropoff,
-                routeGeometry:
-                    navState?.route?.isOk == true &&
-                        navState?.route?.hasGeometry == true
-                    ? navState!.route!.geometry
-                    : null,
-              ),
-              Positioned(
-                left: AppSpacing.lg,
-                right: AppSpacing.lg,
-                top: safeTop,
-                child: Wrap(
-                  spacing: AppSpacing.sm,
-                  runSpacing: AppSpacing.sm,
-                  children: [
-                    NokiMapStatusChip(
-                      label: l10n.workFeedTypeDelivery,
-                      icon: Icons.local_shipping_outlined,
-                      backgroundColor: context.nokiColors.actionPrimary,
-                      foregroundColor: context.nokiColors.actionPrimaryInk,
-                    ),
-                    _GpsChip(asyncPosition: asyncPosition),
-                    ...navigationStatusChips(
-                      context,
-                      route: navState?.route,
-                      onRetry: () {
-                        final position = asyncPosition.valueOrNull;
-                        if (position == null || target == null) return;
-                        ref
-                            .read(
-                              navigationRouteControllerProvider(target)
-                                  .notifier,
-                            )
-                            .retry(
-                              MapPoint(position.latitude, position.longitude),
-                            );
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              Positioned(
-                left: AppSpacing.lg,
-                right: AppSpacing.lg,
-                bottom: AppSpacing.lg,
-                child: asyncMission.maybeWhen(
-                  data: (mission) => _BottomSheet(
-                    mission: mission,
-                    feedItem: widget.feedItem,
-                    onOpenDetails: () => Navigator.of(context).pop(),
-                    onCall: mission.customerPhone == null
-                        ? null
-                        : () => _call(mission.customerPhone!),
+          return BackdropGroup(
+            child: Stack(
+              children: [
+                NokiMapView(
+                  tileProvider: widget.tileProvider,
+                  driverPosition: asyncPosition.whenOrNull(
+                    data: (p) => MapPoint(p.latitude, p.longitude),
                   ),
-                  orElse: () => const SizedBox.shrink(),
+                  pickup: pickup,
+                  dropoff: dropoff,
+                  routeGeometry:
+                      navState?.route?.isOk == true &&
+                          navState?.route?.hasGeometry == true
+                      ? navState!.route!.geometry
+                      : null,
                 ),
-              ),
-            ],
+                Positioned(
+                  left: AppSpacing.lg,
+                  right: AppSpacing.lg,
+                  top: safeTop,
+                  child: Wrap(
+                    spacing: AppSpacing.sm,
+                    runSpacing: AppSpacing.sm,
+                    children: [
+                      NokiMapStatusChip(
+                        label: l10n.workFeedTypeDelivery,
+                        icon: Icons.local_shipping_outlined,
+                        backgroundColor: context.nokiColors.actionPrimary,
+                        foregroundColor: context.nokiColors.actionPrimaryInk,
+                      ),
+                      _GpsChip(asyncPosition: asyncPosition),
+                      ...navigationStatusChips(
+                        context,
+                        route: navState?.route,
+                        onRetry: () {
+                          final position = asyncPosition.valueOrNull;
+                          if (position == null || target == null) return;
+                          ref
+                              .read(
+                                navigationRouteControllerProvider(target)
+                                    .notifier,
+                              )
+                              .retry(
+                                MapPoint(position.latitude, position.longitude),
+                              );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                Positioned(
+                  left: AppSpacing.lg,
+                  right: AppSpacing.lg,
+                  bottom: AppSpacing.lg,
+                  child: asyncMission.maybeWhen(
+                    data: (mission) => _BottomSheet(
+                      mission: mission,
+                      feedItem: feedItem,
+                      onOpenDetails: () => Navigator.of(context).pop(),
+                      onCall: mission.customerPhone == null
+                          ? null
+                          : () => _call(mission.customerPhone!),
+                    ),
+                    orElse: () => const SizedBox.shrink(),
+                  ),
+                ),
+              ],
+            ),
           );
         },
       ),
@@ -451,6 +464,25 @@ class _GpsChip extends ConsumerWidget {
       ),
     );
   }
+}
+
+/// Best-effort fallback for entry points that only know [missionId] - looks
+/// up the matching Work Feed item (by the same `resourceId` the Work Feed
+/// screen matches on) purely for its pickup/drop-off coordinates. Returns
+/// null while the feed is still loading or has no matching item; callers
+/// already treat a null pickup/dropoff as "no route yet", so this never
+/// needs to distinguish "still loading" from "genuinely no feed item".
+DriverWorkFeedItemDto? _matchingWorkFeedItem(
+  WidgetRef ref,
+  DriverScope scope,
+  String missionId,
+) {
+  final items = ref.watch(workFeedProvider(scope)).valueOrNull?.items;
+  if (items == null) return null;
+  for (final item in items) {
+    if (item.underlyingResource.resourceId == missionId) return item;
+  }
+  return null;
 }
 
 /// Which point the driver should be routed to, given the mission's real

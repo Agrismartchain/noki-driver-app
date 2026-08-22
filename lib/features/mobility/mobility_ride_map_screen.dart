@@ -169,78 +169,80 @@ class _MobilityRideMapScreenState extends ConsumerState<MobilityRideMapScreen> {
             });
           }
 
-          return Stack(
-            children: [
-              if (ride != null)
-                NokiMapView(
-                  tileProvider: widget.tileProvider,
-                  driverPosition: asyncPosition.whenOrNull(
-                    data: (p) => MapPoint(p.latitude, p.longitude),
-                  ),
-                  pickup: pickup,
-                  dropoff: dropoff,
-                  routeGeometry:
-                      navState?.route?.isOk == true &&
-                          navState?.route?.hasGeometry == true
-                      ? navState!.route!.geometry
-                      : null,
-                )
-              else
-                const SizedBox.shrink(),
-              Positioned(
-                left: AppSpacing.lg,
-                right: AppSpacing.lg,
-                top: safeTop,
-                child: Wrap(
-                  spacing: AppSpacing.sm,
-                  runSpacing: AppSpacing.sm,
-                  children: [
-                    if (ride != null)
-                      NokiMapStatusChip(
-                        label: rideServiceTypeLabel(l10n, ride.serviceType),
-                        icon:
-                            ride.serviceType ==
-                                MobilityRideDetailDtoServiceType.taxiMoto
-                            ? Icons.moped_outlined
-                            : Icons.local_taxi_outlined,
-                        backgroundColor: context.nokiColors.actionPrimary,
-                        foregroundColor: context.nokiColors.actionPrimaryInk,
-                      ),
-                    _GpsChip(asyncPosition: asyncPosition),
-                    ...navigationStatusChips(
-                      context,
-                      route: navState?.route,
-                      onRetry: () {
-                        final position = asyncPosition.valueOrNull;
-                        if (position == null || target == null) return;
-                        ref
-                            .read(
-                              navigationRouteControllerProvider(target)
-                                  .notifier,
-                            )
-                            .retry(
-                              MapPoint(position.latitude, position.longitude),
-                            );
-                      },
+          return BackdropGroup(
+            child: Stack(
+              children: [
+                if (ride != null)
+                  NokiMapView(
+                    tileProvider: widget.tileProvider,
+                    driverPosition: asyncPosition.whenOrNull(
+                      data: (p) => MapPoint(p.latitude, p.longitude),
                     ),
-                  ],
-                ),
-              ),
-              Positioned(
-                left: AppSpacing.lg,
-                right: AppSpacing.lg,
-                bottom: AppSpacing.lg,
-                child: asyncRide.maybeWhen(
-                  data: (ride) => _BottomSheet(
-                    ride: ride,
-                    pendingTransition: _pendingTransition,
-                    failure: _transitionFailure,
-                    onTransition: _transition,
+                    pickup: pickup,
+                    dropoff: dropoff,
+                    routeGeometry:
+                        navState?.route?.isOk == true &&
+                            navState?.route?.hasGeometry == true
+                        ? navState!.route!.geometry
+                        : null,
+                  )
+                else
+                  const SizedBox.shrink(),
+                Positioned(
+                  left: AppSpacing.lg,
+                  right: AppSpacing.lg,
+                  top: safeTop,
+                  child: Wrap(
+                    spacing: AppSpacing.sm,
+                    runSpacing: AppSpacing.sm,
+                    children: [
+                      if (ride != null)
+                        NokiMapStatusChip(
+                          label: rideServiceTypeLabel(l10n, ride.serviceType),
+                          icon:
+                              ride.serviceType ==
+                                  MobilityRideDetailDtoServiceType.taxiMoto
+                              ? Icons.moped_outlined
+                              : Icons.local_taxi_outlined,
+                          backgroundColor: context.nokiColors.actionPrimary,
+                          foregroundColor: context.nokiColors.actionPrimaryInk,
+                        ),
+                      _GpsChip(asyncPosition: asyncPosition),
+                      ...navigationStatusChips(
+                        context,
+                        route: navState?.route,
+                        onRetry: () {
+                          final position = asyncPosition.valueOrNull;
+                          if (position == null || target == null) return;
+                          ref
+                              .read(
+                                navigationRouteControllerProvider(target)
+                                    .notifier,
+                              )
+                              .retry(
+                                MapPoint(position.latitude, position.longitude),
+                              );
+                        },
+                      ),
+                    ],
                   ),
-                  orElse: () => const SizedBox.shrink(),
                 ),
-              ),
-            ],
+                Positioned(
+                  left: AppSpacing.lg,
+                  right: AppSpacing.lg,
+                  bottom: AppSpacing.lg,
+                  child: asyncRide.maybeWhen(
+                    data: (ride) => _BottomSheet(
+                      ride: ride,
+                      pendingTransition: _pendingTransition,
+                      failure: _transitionFailure,
+                      onTransition: _transition,
+                    ),
+                    orElse: () => const SizedBox.shrink(),
+                  ),
+                ),
+              ],
+            ),
           );
         },
       ),

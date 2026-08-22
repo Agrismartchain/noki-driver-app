@@ -74,7 +74,15 @@ void main() {
         ],
       );
 
-      await tester.tap(find.widgetWithText(ElevatedButton, 'Mark en route'));
+      // The bottom panel's content now scrolls within a capped height
+      // (mandate: never let it grow tall enough to paint over the status
+      // chip strip above it - see `NokiMapBottomPanel`), so on the test
+      // harness's small default surface the button starts outside the
+      // panel's visible viewport.
+      final markEnRoute = find.widgetWithText(ElevatedButton, 'Mark en route');
+      await tester.ensureVisible(markEnRoute);
+      await tester.pumpAndSettle();
+      await tester.tap(markEnRoute);
       await tester.pumpAndSettle();
 
       expect(
