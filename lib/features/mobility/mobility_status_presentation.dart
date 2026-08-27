@@ -157,6 +157,23 @@ IconData rideServiceTypeIcon(MobilityRideDetailDtoServiceType serviceType) {
   }
 }
 
+/// Shared across every screen that renders a Cargo summary (work feed card,
+/// offer detail, active ride detail) - the same required vehicle class must
+/// read identically everywhere a driver sees it.
+String cargoVehicleClassLabel(
+  AppLocalizations l10n,
+  DriverCargoSummaryDtoVehicleClass vehicleClass,
+) {
+  return switch (vehicleClass) {
+    DriverCargoSummaryDtoVehicleClass.van => l10n.vehicleClassVan,
+    DriverCargoSummaryDtoVehicleClass.truckSmall => l10n.vehicleClassTruckSmall,
+    DriverCargoSummaryDtoVehicleClass.truckMedium =>
+      l10n.vehicleClassTruckMedium,
+    DriverCargoSummaryDtoVehicleClass.truckLarge => l10n.vehicleClassTruckLarge,
+    DriverCargoSummaryDtoVehicleClass.unknown => l10n.errorUnknown,
+  };
+}
+
 String mobilityIncidentTypeLabel(
   AppLocalizations l10n,
   MobilityIncidentDtoType type,

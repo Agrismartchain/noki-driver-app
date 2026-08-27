@@ -1,7 +1,7 @@
 {
-  "apiHead": "e3287c2079bca434b0056243b408c93dba6b3373",
-  "contractsVersion": "0.54.0",
-  "openapiChecksum": "6c5836c71b70cf45a985ee45f1af18724ad94afb8958623b5464104e56ff8f96",
+  "apiHead": "b28aabb00153e5bfe2d62e6287e87bb88a62dcc0",
+  "contractsVersion": "0.55.0",
+  "openapiChecksum": "541cc75986d29471a3a6cfa1b8f4e68cd4a9eb6e7b3094c976dfb70a3cdc3c7a",
   "generator": "tool/generate_api_models.mjs (in-repo, deterministic)",
   "generatorVersion": "1.0.0",
   "note": "apiHead/contractsVersion/openapiChecksum must match noki-api HEAD and the published @agrismartchain/noki-shared-contracts version they were exported from. openapiChecksum is verified against ../noki-shared-contracts/spec/checksums/noki-api.openapi.sha256 before every generation run. No tokens or credentialed URLs are stored here.",

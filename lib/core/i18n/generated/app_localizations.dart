@@ -850,6 +850,48 @@ abstract class AppLocalizations {
   /// **'Large truck'**
   String get vehicleClassTruckLarge;
 
+  /// No description provided for @mobilityCargoSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cargo'**
+  String get mobilityCargoSectionTitle;
+
+  /// No description provided for @mobilityCargoVehicleRequiredLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Vehicle required'**
+  String get mobilityCargoVehicleRequiredLabel;
+
+  /// No description provided for @mobilityCargoWeightLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Weight'**
+  String get mobilityCargoWeightLabel;
+
+  /// No description provided for @mobilityCargoQuantityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Quantity'**
+  String get mobilityCargoQuantityLabel;
+
+  /// No description provided for @mobilityCargoDimensionsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Dimensions'**
+  String get mobilityCargoDimensionsLabel;
+
+  /// No description provided for @mobilityCargoFragileLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Fragile'**
+  String get mobilityCargoFragileLabel;
+
+  /// No description provided for @mobilityCargoDescriptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get mobilityCargoDescriptionLabel;
+
   /// No description provided for @mobilityOfferLabel.
   ///
   /// In en, this message translates to:

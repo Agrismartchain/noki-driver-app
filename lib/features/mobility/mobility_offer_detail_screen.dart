@@ -10,6 +10,7 @@ import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_theme.dart';
 import '../driver_context/driver_context_repository.dart';
 import '../work_feed/work_feed_repository.dart';
+import 'cargo_summary_card.dart';
 import 'mobility_repository.dart';
 import 'mobility_ride_screen.dart';
 import 'mobility_status_presentation.dart';
@@ -22,6 +23,7 @@ class MobilityOfferDetailViewModel {
     required this.pickupAddressSnapshot,
     required this.dropoffAddressSnapshot,
     required this.estimatedFare,
+    required this.cargoSummary,
   });
 
   factory MobilityOfferDetailViewModel.fromOffer(DriverMobilityOfferDto offer) {
@@ -32,6 +34,7 @@ class MobilityOfferDetailViewModel {
       pickupAddressSnapshot: offer.pickupAddressSnapshot,
       dropoffAddressSnapshot: offer.dropoffAddressSnapshot,
       estimatedFare: offer.estimatedFare,
+      cargoSummary: offer.cargoSummary,
     );
   }
 
@@ -52,6 +55,7 @@ class MobilityOfferDetailViewModel {
               amount: item.amount!.amount,
               currencyCode: item.amount!.currencyCode,
             ),
+      cargoSummary: item.cargoSummary,
     );
   }
 
@@ -61,6 +65,7 @@ class MobilityOfferDetailViewModel {
   final String pickupAddressSnapshot;
   final String dropoffAddressSnapshot;
   final DriverWorkMoneySummaryDto? estimatedFare;
+  final DriverCargoSummaryDto? cargoSummary;
 }
 
 /// The Work Feed's `DriverWorkFeedItemDtoServiceType` also carries `DELIVERY`
@@ -273,6 +278,10 @@ class _MobilityOfferDetailScreenState
               ),
             ),
           ),
+          if (offer.cargoSummary != null) ...[
+            const SizedBox(height: AppSpacing.lg),
+            CargoSummaryCard(cargo: offer.cargoSummary!),
+          ],
           const SizedBox(height: AppSpacing.xl),
           ElevatedButton(
             onPressed: _accepting ? null : _accept,

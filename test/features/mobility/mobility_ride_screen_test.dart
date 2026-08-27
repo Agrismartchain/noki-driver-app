@@ -133,4 +133,45 @@ void main() {
       expect(find.text('Aéroport Mohammed V'), findsOneWidget);
     },
   );
+
+  testWidgets(
+    'an active CARGO ride renders the real Cargo load summary (vehicle class + weight), never fabricated',
+    (tester) async {
+      final client = FakeDriverApiClient()
+        ..mobilityRideByIdResponse = MobilityRideDetailDto.fromJson(
+          sampleMobilityRide(
+            serviceType: 'CARGO',
+            cargoSummary: sampleDriverCargoSummary(),
+          ),
+        );
+
+      await pumpWithProviders(
+        tester,
+        const MobilityRideScreen(rideId: 'ride-1', scope: _scope),
+        overrides: [driverApiClientProvider.overrideWithValue(client)],
+      );
+
+      expect(find.text('Van'), findsOneWidget);
+      expect(find.text('400 kg'), findsOneWidget);
+      expect(find.text('3'), findsOneWidget);
+      expect(find.text('Palettes de ciment'), findsOneWidget);
+    },
+  );
+
+  testWidgets('an active TAXI ride shows no Cargo section at all', (
+    tester,
+  ) async {
+    final client = FakeDriverApiClient()
+      ..mobilityRideByIdResponse = MobilityRideDetailDto.fromJson(
+        sampleMobilityRide(),
+      );
+
+    await pumpWithProviders(
+      tester,
+      const MobilityRideScreen(rideId: 'ride-1', scope: _scope),
+      overrides: [driverApiClientProvider.overrideWithValue(client)],
+    );
+
+    expect(find.text('Cargo'), findsNothing);
+  });
 }

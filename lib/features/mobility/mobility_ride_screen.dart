@@ -11,6 +11,7 @@ import '../../core/theme/app_theme.dart';
 import '../availability/availability_repository.dart';
 import '../driver_context/driver_context_repository.dart';
 import '../work_feed/work_feed_repository.dart';
+import 'cargo_summary_card.dart';
 import 'mobility_incidents_section.dart';
 import 'mobility_repository.dart';
 import 'mobility_ride_map_screen.dart';
@@ -183,6 +184,10 @@ class _MobilityRideScreenState extends ConsumerState<MobilityRideScreen> {
               ),
             ),
           ),
+          if (ride.cargoSummary != null) ...[
+            const SizedBox(height: AppSpacing.lg),
+            CargoSummaryCard(cargo: ride.cargoSummary!),
+          ],
           if (ride.timeline.isNotEmpty) ...[
             const SizedBox(height: AppSpacing.lg),
             Card(

@@ -195,11 +195,23 @@ Map<String, dynamic> sampleWorkFeedCargoOfferItem() => {
     'longitude': -7.5,
   },
   'amount': {'amount': '350.00', 'currencyCode': 'MAD'},
+  'cargoSummary': sampleDriverCargoSummary(),
   'actions': ['ACCEPT_OFFER'],
   'underlyingResource': {
     'resourceType': 'MobilityRideOffer',
     'resourceId': 'offer-cargo-1',
   },
+};
+
+Map<String, dynamic> sampleDriverCargoSummary() => {
+  'vehicleClass': 'VAN',
+  'cargoWeightKg': 400,
+  'cargoLengthCm': 220,
+  'cargoWidthCm': 140,
+  'cargoHeightCm': 160,
+  'cargoQuantity': 3,
+  'fragile': true,
+  'cargoDescription': 'Palettes de ciment',
 };
 
 Map<String, dynamic> sampleMobilityCargoOffer() => {
@@ -345,11 +357,13 @@ Map<String, dynamic> sampleMobilityOfferList() => {
 Map<String, dynamic> sampleMobilityRide({
   String status = 'DRIVER_ASSIGNED',
   String serviceType = 'TAXI',
+  Map<String, dynamic>? cargoSummary,
 }) => {
   'id': 'ride-1',
   'reference': 'RIDE-0001',
   'serviceType': serviceType,
   'status': status,
+  'cargoSummary': cargoSummary,
   'pickupAddressSnapshot': 'Gare Casa-Voyageurs',
   'dropoffAddressSnapshot': 'Aéroport Mohammed V',
   'driverDisplayName': 'Amine Tazi',

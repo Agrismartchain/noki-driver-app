@@ -450,6 +450,27 @@ class AppLocalizationsFr extends AppLocalizations {
   String get vehicleClassTruckLarge => 'Grand camion';
 
   @override
+  String get mobilityCargoSectionTitle => 'Cargo';
+
+  @override
+  String get mobilityCargoVehicleRequiredLabel => 'Véhicule requis';
+
+  @override
+  String get mobilityCargoWeightLabel => 'Poids';
+
+  @override
+  String get mobilityCargoQuantityLabel => 'Quantité';
+
+  @override
+  String get mobilityCargoDimensionsLabel => 'Dimensions';
+
+  @override
+  String get mobilityCargoFragileLabel => 'Fragile';
+
+  @override
+  String get mobilityCargoDescriptionLabel => 'Description';
+
+  @override
   String get mobilityOfferLabel => 'Offre';
 
   @override

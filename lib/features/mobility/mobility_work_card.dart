@@ -5,6 +5,7 @@ import '../../core/i18n/generated/app_localizations.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/ui/noki_finance.dart';
+import 'cargo_summary_card.dart';
 import 'mobility_status_presentation.dart';
 
 /// Work Feed card for a RIDE work item (either an open offer or an active
@@ -71,6 +72,10 @@ class MobilityWorkCard extends StatelessWidget {
                             item.dropoff!.addressLine1 ?? item.dropoff!.label!,
                         color: colors.textPrimary,
                       ),
+                    ],
+                    if (item.cargoSummary != null) ...[
+                      const SizedBox(height: AppSpacing.sm),
+                      CargoSummaryLine(cargo: item.cargoSummary!),
                     ],
                     if (item.amount != null) ...[
                       const SizedBox(height: AppSpacing.sm),

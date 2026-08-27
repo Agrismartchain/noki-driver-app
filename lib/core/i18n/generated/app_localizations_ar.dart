@@ -443,6 +443,27 @@ class AppLocalizationsAr extends AppLocalizations {
   String get vehicleClassTruckLarge => 'شاحنة كبيرة';
 
   @override
+  String get mobilityCargoSectionTitle => 'الشحنة';
+
+  @override
+  String get mobilityCargoVehicleRequiredLabel => 'المركبة المطلوبة';
+
+  @override
+  String get mobilityCargoWeightLabel => 'الوزن';
+
+  @override
+  String get mobilityCargoQuantityLabel => 'الكمية';
+
+  @override
+  String get mobilityCargoDimensionsLabel => 'الأبعاد';
+
+  @override
+  String get mobilityCargoFragileLabel => 'قابل للكسر';
+
+  @override
+  String get mobilityCargoDescriptionLabel => 'الوصف';
+
+  @override
   String get mobilityOfferLabel => 'عرض';
 
   @override

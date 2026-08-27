@@ -514,6 +514,44 @@ enum DriverAvailabilityResponseDtoMobilityOperationalStatus {
   }
 }
 
+enum DriverCargoSummaryDtoVehicleClass {
+  van,
+  truckSmall,
+  truckMedium,
+  truckLarge,
+  unknown;
+
+  static DriverCargoSummaryDtoVehicleClass fromJson(String value) {
+    switch (value) {
+      case "VAN":
+        return DriverCargoSummaryDtoVehicleClass.van;
+      case "TRUCK_SMALL":
+        return DriverCargoSummaryDtoVehicleClass.truckSmall;
+      case "TRUCK_MEDIUM":
+        return DriverCargoSummaryDtoVehicleClass.truckMedium;
+      case "TRUCK_LARGE":
+        return DriverCargoSummaryDtoVehicleClass.truckLarge;
+      default:
+        return DriverCargoSummaryDtoVehicleClass.unknown;
+    }
+  }
+
+  String toJson() {
+    switch (this) {
+      case DriverCargoSummaryDtoVehicleClass.van:
+        return "VAN";
+      case DriverCargoSummaryDtoVehicleClass.truckSmall:
+        return "TRUCK_SMALL";
+      case DriverCargoSummaryDtoVehicleClass.truckMedium:
+        return "TRUCK_MEDIUM";
+      case DriverCargoSummaryDtoVehicleClass.truckLarge:
+        return "TRUCK_LARGE";
+      case DriverCargoSummaryDtoVehicleClass.unknown:
+        return "VAN";
+    }
+  }
+}
+
 enum DriverContextProfileDtoDeliveryStatus {
   active,
   inactive,
@@ -2163,6 +2201,54 @@ class DriverAvailabilityResponseDto {
   }
 }
 
+class DriverCargoSummaryDto {
+  const DriverCargoSummaryDto({
+    required this.vehicleClass,
+    required this.cargoWeightKg,
+    this.cargoLengthCm,
+    this.cargoWidthCm,
+    this.cargoHeightCm,
+    required this.cargoQuantity,
+    required this.fragile,
+    required this.cargoDescription,
+  });
+
+  final DriverCargoSummaryDtoVehicleClass vehicleClass;
+  final num cargoWeightKg;
+  final num? cargoLengthCm;
+  final num? cargoWidthCm;
+  final num? cargoHeightCm;
+  final num cargoQuantity;
+  final bool fragile;
+  final String cargoDescription;
+
+  factory DriverCargoSummaryDto.fromJson(Map<String, dynamic> json) {
+    return DriverCargoSummaryDto(
+      vehicleClass: DriverCargoSummaryDtoVehicleClass.fromJson(json["vehicleClass"] as String),
+      cargoWeightKg: (json["cargoWeightKg"] as num?)!,
+      cargoLengthCm: (json["cargoLengthCm"] as num?),
+      cargoWidthCm: (json["cargoWidthCm"] as num?),
+      cargoHeightCm: (json["cargoHeightCm"] as num?),
+      cargoQuantity: (json["cargoQuantity"] as num?)!,
+      fragile: json["fragile"] as bool,
+      cargoDescription: json["cargoDescription"] as String,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "vehicleClass": vehicleClass.toJson(),
+      "cargoWeightKg": cargoWeightKg,
+      "cargoLengthCm": ?cargoLengthCm,
+      "cargoWidthCm": ?cargoWidthCm,
+      "cargoHeightCm": ?cargoHeightCm,
+      "cargoQuantity": cargoQuantity,
+      "fragile": fragile,
+      "cargoDescription": cargoDescription,
+    };
+  }
+}
+
 class DriverContextProfileDto {
   const DriverContextProfileDto({
     required this.organizationId,
@@ -2597,6 +2683,7 @@ class DriverMobilityOfferDto {
     this.estimatedFare,
     this.estimatedRoadDistanceKm,
     this.geodesicDistanceKm,
+    this.cargoSummary,
     required this.offeredAt,
     required this.expiresAt,
   });
@@ -2617,6 +2704,7 @@ class DriverMobilityOfferDto {
   final DriverWorkMoneySummaryDto? estimatedFare;
   final num? estimatedRoadDistanceKm;
   final num? geodesicDistanceKm;
+  final DriverCargoSummaryDto? cargoSummary;
   final String offeredAt;
   final String expiresAt;
 
@@ -2638,6 +2726,7 @@ class DriverMobilityOfferDto {
       estimatedFare: json["estimatedFare"] == null ? null : DriverWorkMoneySummaryDto.fromJson(json["estimatedFare"] as Map<String, dynamic>),
       estimatedRoadDistanceKm: (json["estimatedRoadDistanceKm"] as num?),
       geodesicDistanceKm: (json["geodesicDistanceKm"] as num?),
+      cargoSummary: json["cargoSummary"] == null ? null : DriverCargoSummaryDto.fromJson(json["cargoSummary"] as Map<String, dynamic>),
       offeredAt: json["offeredAt"] as String,
       expiresAt: json["expiresAt"] as String,
     );
@@ -2661,6 +2750,7 @@ class DriverMobilityOfferDto {
       "estimatedFare": ?estimatedFare?.toJson(),
       "estimatedRoadDistanceKm": ?estimatedRoadDistanceKm,
       "geodesicDistanceKm": ?geodesicDistanceKm,
+      "cargoSummary": ?cargoSummary?.toJson(),
       "offeredAt": offeredAt,
       "expiresAt": expiresAt,
     };
@@ -2844,6 +2934,7 @@ class DriverWorkFeedItemDto {
     this.pickup,
     this.dropoff,
     this.amount,
+    this.cargoSummary,
     required this.actions,
     required this.underlyingResource,
   });
@@ -2859,6 +2950,7 @@ class DriverWorkFeedItemDto {
   final DriverWorkLocationSummaryDto? pickup;
   final DriverWorkLocationSummaryDto? dropoff;
   final DriverWorkMoneySummaryDto? amount;
+  final DriverCargoSummaryDto? cargoSummary;
   final List<String> actions;
   final DriverUnderlyingResourceDto underlyingResource;
 
@@ -2875,6 +2967,7 @@ class DriverWorkFeedItemDto {
       pickup: json["pickup"] == null ? null : DriverWorkLocationSummaryDto.fromJson(json["pickup"] as Map<String, dynamic>),
       dropoff: json["dropoff"] == null ? null : DriverWorkLocationSummaryDto.fromJson(json["dropoff"] as Map<String, dynamic>),
       amount: json["amount"] == null ? null : DriverWorkMoneySummaryDto.fromJson(json["amount"] as Map<String, dynamic>),
+      cargoSummary: json["cargoSummary"] == null ? null : DriverCargoSummaryDto.fromJson(json["cargoSummary"] as Map<String, dynamic>),
       actions: (json["actions"] as List<dynamic>).map((e) => e as String).toList(),
       underlyingResource: DriverUnderlyingResourceDto.fromJson(json["underlyingResource"] as Map<String, dynamic>),
     );
@@ -2893,6 +2986,7 @@ class DriverWorkFeedItemDto {
       "pickup": ?pickup?.toJson(),
       "dropoff": ?dropoff?.toJson(),
       "amount": ?amount?.toJson(),
+      "cargoSummary": ?cargoSummary?.toJson(),
       "actions": actions.map((e) => e).toList(),
       "underlyingResource": underlyingResource.toJson(),
     };
@@ -3313,6 +3407,7 @@ class MobilityRideDetailDto {
     required this.dropoffLongitude,
     required this.track,
     required this.timeline,
+    this.cargoSummary,
   });
 
   final String id;
@@ -3339,6 +3434,7 @@ class MobilityRideDetailDto {
   final num dropoffLongitude;
   final List<MobilityTrackPointDto> track;
   final List<MobilityRideTimelineEntryDto> timeline;
+  final DriverCargoSummaryDto? cargoSummary;
 
   factory MobilityRideDetailDto.fromJson(Map<String, dynamic> json) {
     return MobilityRideDetailDto(
@@ -3366,6 +3462,7 @@ class MobilityRideDetailDto {
       dropoffLongitude: (json["dropoffLongitude"] as num?)!,
       track: (json["track"] as List<dynamic>).map((e) => MobilityTrackPointDto.fromJson(e as Map<String, dynamic>)).toList(),
       timeline: (json["timeline"] as List<dynamic>).map((e) => MobilityRideTimelineEntryDto.fromJson(e as Map<String, dynamic>)).toList(),
+      cargoSummary: json["cargoSummary"] == null ? null : DriverCargoSummaryDto.fromJson(json["cargoSummary"] as Map<String, dynamic>),
     );
   }
 
@@ -3395,6 +3492,7 @@ class MobilityRideDetailDto {
       "dropoffLongitude": dropoffLongitude,
       "track": track.map((e) => e.toJson()).toList(),
       "timeline": timeline.map((e) => e.toJson()).toList(),
+      "cargoSummary": ?cargoSummary?.toJson(),
     };
   }
 }
