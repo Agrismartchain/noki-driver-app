@@ -425,6 +425,24 @@ class AppLocalizationsAr extends AppLocalizations {
   String get serviceTypeTaxiMoto => 'تاكسي دراجة';
 
   @override
+  String get serviceTypeCourier => 'توصيل سريع';
+
+  @override
+  String get serviceTypeCargo => 'شحن';
+
+  @override
+  String get vehicleClassVan => 'شاحنة صغيرة';
+
+  @override
+  String get vehicleClassTruckSmall => 'شاحنة صغيرة الحجم';
+
+  @override
+  String get vehicleClassTruckMedium => 'شاحنة متوسطة';
+
+  @override
+  String get vehicleClassTruckLarge => 'شاحنة كبيرة';
+
+  @override
   String get mobilityOfferLabel => 'عرض';
 
   @override

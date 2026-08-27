@@ -130,6 +130,12 @@
 
   "serviceTypeTaxi": "تاكسي",
   "serviceTypeTaxiMoto": "تاكسي دراجة",
+  "serviceTypeCourier": "توصيل سريع",
+  "serviceTypeCargo": "شحن",
+  "vehicleClassVan": "شاحنة صغيرة",
+  "vehicleClassTruckSmall": "شاحنة صغيرة الحجم",
+  "vehicleClassTruckMedium": "شاحنة متوسطة",
+  "vehicleClassTruckLarge": "شاحنة كبيرة",
   "mobilityOfferLabel": "عرض",
   "mobilityRideLabel": "رحلة نشطة",
   "mobilityOfferDetailTitle": "عرض رحلة",

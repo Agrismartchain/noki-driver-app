@@ -16,6 +16,8 @@ enum ComputeDriverRouteRequestDtoServiceType {
   delivery,
   taxi,
   taxiMoto,
+  courier,
+  cargo,
   unknown;
 
   static ComputeDriverRouteRequestDtoServiceType fromJson(String value) {
@@ -26,6 +28,10 @@ enum ComputeDriverRouteRequestDtoServiceType {
         return ComputeDriverRouteRequestDtoServiceType.taxi;
       case "TAXI_MOTO":
         return ComputeDriverRouteRequestDtoServiceType.taxiMoto;
+      case "COURIER":
+        return ComputeDriverRouteRequestDtoServiceType.courier;
+      case "CARGO":
+        return ComputeDriverRouteRequestDtoServiceType.cargo;
       default:
         return ComputeDriverRouteRequestDtoServiceType.unknown;
     }
@@ -39,6 +45,10 @@ enum ComputeDriverRouteRequestDtoServiceType {
         return "TAXI";
       case ComputeDriverRouteRequestDtoServiceType.taxiMoto:
         return "TAXI_MOTO";
+      case ComputeDriverRouteRequestDtoServiceType.courier:
+        return "COURIER";
+      case ComputeDriverRouteRequestDtoServiceType.cargo:
+        return "CARGO";
       case ComputeDriverRouteRequestDtoServiceType.unknown:
         return "DELIVERY";
     }
@@ -654,6 +664,8 @@ enum DriverContextProfileDtoMobilityOperationalStatus {
 enum DriverContextProfileDtoServiceTypes {
   taxi,
   taxiMoto,
+  courier,
+  cargo,
   unknown;
 
   static DriverContextProfileDtoServiceTypes fromJson(String value) {
@@ -662,6 +674,10 @@ enum DriverContextProfileDtoServiceTypes {
         return DriverContextProfileDtoServiceTypes.taxi;
       case "TAXI_MOTO":
         return DriverContextProfileDtoServiceTypes.taxiMoto;
+      case "COURIER":
+        return DriverContextProfileDtoServiceTypes.courier;
+      case "CARGO":
+        return DriverContextProfileDtoServiceTypes.cargo;
       default:
         return DriverContextProfileDtoServiceTypes.unknown;
     }
@@ -673,6 +689,10 @@ enum DriverContextProfileDtoServiceTypes {
         return "TAXI";
       case DriverContextProfileDtoServiceTypes.taxiMoto:
         return "TAXI_MOTO";
+      case DriverContextProfileDtoServiceTypes.courier:
+        return "COURIER";
+      case DriverContextProfileDtoServiceTypes.cargo:
+        return "CARGO";
       case DriverContextProfileDtoServiceTypes.unknown:
         return "TAXI";
     }
@@ -682,6 +702,8 @@ enum DriverContextProfileDtoServiceTypes {
 enum DriverContextVehicleSummaryDtoAllowedServiceTypes {
   taxi,
   taxiMoto,
+  courier,
+  cargo,
   unknown;
 
   static DriverContextVehicleSummaryDtoAllowedServiceTypes fromJson(String value) {
@@ -690,6 +712,10 @@ enum DriverContextVehicleSummaryDtoAllowedServiceTypes {
         return DriverContextVehicleSummaryDtoAllowedServiceTypes.taxi;
       case "TAXI_MOTO":
         return DriverContextVehicleSummaryDtoAllowedServiceTypes.taxiMoto;
+      case "COURIER":
+        return DriverContextVehicleSummaryDtoAllowedServiceTypes.courier;
+      case "CARGO":
+        return DriverContextVehicleSummaryDtoAllowedServiceTypes.cargo;
       default:
         return DriverContextVehicleSummaryDtoAllowedServiceTypes.unknown;
     }
@@ -701,6 +727,10 @@ enum DriverContextVehicleSummaryDtoAllowedServiceTypes {
         return "TAXI";
       case DriverContextVehicleSummaryDtoAllowedServiceTypes.taxiMoto:
         return "TAXI_MOTO";
+      case DriverContextVehicleSummaryDtoAllowedServiceTypes.courier:
+        return "COURIER";
+      case DriverContextVehicleSummaryDtoAllowedServiceTypes.cargo:
+        return "CARGO";
       case DriverContextVehicleSummaryDtoAllowedServiceTypes.unknown:
         return "TAXI";
     }
@@ -893,6 +923,8 @@ enum DriverMissionResponseDtoStatus {
 enum DriverMobilityOfferDtoServiceType {
   taxi,
   taxiMoto,
+  courier,
+  cargo,
   unknown;
 
   static DriverMobilityOfferDtoServiceType fromJson(String value) {
@@ -901,6 +933,10 @@ enum DriverMobilityOfferDtoServiceType {
         return DriverMobilityOfferDtoServiceType.taxi;
       case "TAXI_MOTO":
         return DriverMobilityOfferDtoServiceType.taxiMoto;
+      case "COURIER":
+        return DriverMobilityOfferDtoServiceType.courier;
+      case "CARGO":
+        return DriverMobilityOfferDtoServiceType.cargo;
       default:
         return DriverMobilityOfferDtoServiceType.unknown;
     }
@@ -912,6 +948,10 @@ enum DriverMobilityOfferDtoServiceType {
         return "TAXI";
       case DriverMobilityOfferDtoServiceType.taxiMoto:
         return "TAXI_MOTO";
+      case DriverMobilityOfferDtoServiceType.courier:
+        return "COURIER";
+      case DriverMobilityOfferDtoServiceType.cargo:
+        return "CARGO";
       case DriverMobilityOfferDtoServiceType.unknown:
         return "TAXI";
     }
@@ -921,6 +961,8 @@ enum DriverMobilityOfferDtoServiceType {
 enum DriverVehicleDtoAllowedServiceTypes {
   taxi,
   taxiMoto,
+  courier,
+  cargo,
   unknown;
 
   static DriverVehicleDtoAllowedServiceTypes fromJson(String value) {
@@ -929,6 +971,10 @@ enum DriverVehicleDtoAllowedServiceTypes {
         return DriverVehicleDtoAllowedServiceTypes.taxi;
       case "TAXI_MOTO":
         return DriverVehicleDtoAllowedServiceTypes.taxiMoto;
+      case "COURIER":
+        return DriverVehicleDtoAllowedServiceTypes.courier;
+      case "CARGO":
+        return DriverVehicleDtoAllowedServiceTypes.cargo;
       default:
         return DriverVehicleDtoAllowedServiceTypes.unknown;
     }
@@ -940,6 +986,10 @@ enum DriverVehicleDtoAllowedServiceTypes {
         return "TAXI";
       case DriverVehicleDtoAllowedServiceTypes.taxiMoto:
         return "TAXI_MOTO";
+      case DriverVehicleDtoAllowedServiceTypes.courier:
+        return "COURIER";
+      case DriverVehicleDtoAllowedServiceTypes.cargo:
+        return "CARGO";
       case DriverVehicleDtoAllowedServiceTypes.unknown:
         return "TAXI";
     }
@@ -1016,6 +1066,8 @@ enum DriverWorkFeedItemDtoServiceType {
   delivery,
   taxi,
   taxiMoto,
+  courier,
+  cargo,
   unknown;
 
   static DriverWorkFeedItemDtoServiceType fromJson(String value) {
@@ -1026,6 +1078,10 @@ enum DriverWorkFeedItemDtoServiceType {
         return DriverWorkFeedItemDtoServiceType.taxi;
       case "TAXI_MOTO":
         return DriverWorkFeedItemDtoServiceType.taxiMoto;
+      case "COURIER":
+        return DriverWorkFeedItemDtoServiceType.courier;
+      case "CARGO":
+        return DriverWorkFeedItemDtoServiceType.cargo;
       default:
         return DriverWorkFeedItemDtoServiceType.unknown;
     }
@@ -1039,6 +1095,10 @@ enum DriverWorkFeedItemDtoServiceType {
         return "TAXI";
       case DriverWorkFeedItemDtoServiceType.taxiMoto:
         return "TAXI_MOTO";
+      case DriverWorkFeedItemDtoServiceType.courier:
+        return "COURIER";
+      case DriverWorkFeedItemDtoServiceType.cargo:
+        return "CARGO";
       case DriverWorkFeedItemDtoServiceType.unknown:
         return "DELIVERY";
     }
@@ -1076,6 +1136,8 @@ enum DriverWorkFeedItemDtoWorkType {
 enum MobilityDriverDtoAllowedServiceTypes {
   taxi,
   taxiMoto,
+  courier,
+  cargo,
   unknown;
 
   static MobilityDriverDtoAllowedServiceTypes fromJson(String value) {
@@ -1084,6 +1146,10 @@ enum MobilityDriverDtoAllowedServiceTypes {
         return MobilityDriverDtoAllowedServiceTypes.taxi;
       case "TAXI_MOTO":
         return MobilityDriverDtoAllowedServiceTypes.taxiMoto;
+      case "COURIER":
+        return MobilityDriverDtoAllowedServiceTypes.courier;
+      case "CARGO":
+        return MobilityDriverDtoAllowedServiceTypes.cargo;
       default:
         return MobilityDriverDtoAllowedServiceTypes.unknown;
     }
@@ -1095,6 +1161,10 @@ enum MobilityDriverDtoAllowedServiceTypes {
         return "TAXI";
       case MobilityDriverDtoAllowedServiceTypes.taxiMoto:
         return "TAXI_MOTO";
+      case MobilityDriverDtoAllowedServiceTypes.courier:
+        return "COURIER";
+      case MobilityDriverDtoAllowedServiceTypes.cargo:
+        return "CARGO";
       case MobilityDriverDtoAllowedServiceTypes.unknown:
         return "TAXI";
     }
@@ -1304,6 +1374,8 @@ enum MobilityIncidentDtoType {
 enum MobilityRideDetailDtoServiceType {
   taxi,
   taxiMoto,
+  courier,
+  cargo,
   unknown;
 
   static MobilityRideDetailDtoServiceType fromJson(String value) {
@@ -1312,6 +1384,10 @@ enum MobilityRideDetailDtoServiceType {
         return MobilityRideDetailDtoServiceType.taxi;
       case "TAXI_MOTO":
         return MobilityRideDetailDtoServiceType.taxiMoto;
+      case "COURIER":
+        return MobilityRideDetailDtoServiceType.courier;
+      case "CARGO":
+        return MobilityRideDetailDtoServiceType.cargo;
       default:
         return MobilityRideDetailDtoServiceType.unknown;
     }
@@ -1323,6 +1399,10 @@ enum MobilityRideDetailDtoServiceType {
         return "TAXI";
       case MobilityRideDetailDtoServiceType.taxiMoto:
         return "TAXI_MOTO";
+      case MobilityRideDetailDtoServiceType.courier:
+        return "COURIER";
+      case MobilityRideDetailDtoServiceType.cargo:
+        return "CARGO";
       case MobilityRideDetailDtoServiceType.unknown:
         return "TAXI";
     }

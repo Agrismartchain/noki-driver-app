@@ -112,6 +112,10 @@ class _VehicleTile extends StatelessWidget {
                               l10n.serviceTypeTaxi,
                             DriverVehicleDtoAllowedServiceTypes.taxiMoto =>
                               l10n.serviceTypeTaxiMoto,
+                            DriverVehicleDtoAllowedServiceTypes.courier =>
+                              l10n.serviceTypeCourier,
+                            DriverVehicleDtoAllowedServiceTypes.cargo =>
+                              l10n.serviceTypeCargo,
                             DriverVehicleDtoAllowedServiceTypes.unknown =>
                               l10n.errorUnknown,
                           },

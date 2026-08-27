@@ -814,6 +814,42 @@ abstract class AppLocalizations {
   /// **'Taxi Moto'**
   String get serviceTypeTaxiMoto;
 
+  /// No description provided for @serviceTypeCourier.
+  ///
+  /// In en, this message translates to:
+  /// **'Courier'**
+  String get serviceTypeCourier;
+
+  /// No description provided for @serviceTypeCargo.
+  ///
+  /// In en, this message translates to:
+  /// **'Cargo'**
+  String get serviceTypeCargo;
+
+  /// No description provided for @vehicleClassVan.
+  ///
+  /// In en, this message translates to:
+  /// **'Van'**
+  String get vehicleClassVan;
+
+  /// No description provided for @vehicleClassTruckSmall.
+  ///
+  /// In en, this message translates to:
+  /// **'Small truck'**
+  String get vehicleClassTruckSmall;
+
+  /// No description provided for @vehicleClassTruckMedium.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium truck'**
+  String get vehicleClassTruckMedium;
+
+  /// No description provided for @vehicleClassTruckLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'Large truck'**
+  String get vehicleClassTruckLarge;
+
   /// No description provided for @mobilityOfferLabel.
   ///
   /// In en, this message translates to:

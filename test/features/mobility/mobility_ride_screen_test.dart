@@ -12,24 +12,66 @@ import '../../fixtures/test_harness.dart';
 const _scope = DriverScope(organizationId: 'org-1', countryCode: 'MA');
 
 void main() {
-  testWidgets('a DRIVER_ASSIGNED ride only offers "mark en route" and "cancel", never "complete"', (tester) async {
-    final client = FakeDriverApiClient()..mobilityRideByIdResponse = MobilityRideDetailDto.fromJson(sampleMobilityRide());
+  testWidgets(
+    'a DRIVER_ASSIGNED ride only offers "mark en route" and "cancel", never "complete"',
+    (tester) async {
+      final client = FakeDriverApiClient()
+        ..mobilityRideByIdResponse = MobilityRideDetailDto.fromJson(
+          sampleMobilityRide(),
+        );
 
-    await pumpWithProviders(
-      tester,
-      const MobilityRideScreen(rideId: 'ride-1', scope: _scope),
-      overrides: [driverApiClientProvider.overrideWithValue(client)],
-    );
+      await pumpWithProviders(
+        tester,
+        const MobilityRideScreen(rideId: 'ride-1', scope: _scope),
+        overrides: [driverApiClientProvider.overrideWithValue(client)],
+      );
 
-    expect(find.widgetWithText(ElevatedButton, 'Mark en route'), findsOneWidget);
-    expect(find.widgetWithText(OutlinedButton, 'Cancel ride'), findsOneWidget);
-    expect(find.text('Complete ride'), findsNothing);
-    expect(find.text('Start ride'), findsNothing);
-  });
+      expect(
+        find.widgetWithText(ElevatedButton, 'Mark en route'),
+        findsOneWidget,
+      );
+      expect(
+        find.widgetWithText(OutlinedButton, 'Cancel ride'),
+        findsOneWidget,
+      );
+      expect(find.text('Complete ride'), findsNothing);
+      expect(find.text('Start ride'), findsNothing);
+    },
+  );
 
-  testWidgets('an IN_PROGRESS ride offers "complete" and "cancel", never "mark en route" again', (tester) async {
+  testWidgets(
+    'an IN_PROGRESS ride offers "complete" and "cancel", never "mark en route" again',
+    (tester) async {
+      final client = FakeDriverApiClient()
+        ..mobilityRideByIdResponse = MobilityRideDetailDto.fromJson(
+          sampleMobilityRide(status: 'IN_PROGRESS'),
+        );
+
+      await pumpWithProviders(
+        tester,
+        const MobilityRideScreen(rideId: 'ride-1', scope: _scope),
+        overrides: [driverApiClientProvider.overrideWithValue(client)],
+      );
+
+      expect(
+        find.widgetWithText(ElevatedButton, 'Complete ride'),
+        findsOneWidget,
+      );
+      expect(
+        find.widgetWithText(OutlinedButton, 'Cancel ride'),
+        findsOneWidget,
+      );
+      expect(find.text('Mark en route'), findsNothing);
+    },
+  );
+
+  testWidgets('a COMPLETED ride is terminal - no action buttons at all', (
+    tester,
+  ) async {
     final client = FakeDriverApiClient()
-      ..mobilityRideByIdResponse = MobilityRideDetailDto.fromJson(sampleMobilityRide(status: 'IN_PROGRESS'));
+      ..mobilityRideByIdResponse = MobilityRideDetailDto.fromJson(
+        sampleMobilityRide(status: 'COMPLETED'),
+      );
 
     await pumpWithProviders(
       tester,
@@ -37,39 +79,58 @@ void main() {
       overrides: [driverApiClientProvider.overrideWithValue(client)],
     );
 
-    expect(find.widgetWithText(ElevatedButton, 'Complete ride'), findsOneWidget);
-    expect(find.widgetWithText(OutlinedButton, 'Cancel ride'), findsOneWidget);
-    expect(find.text('Mark en route'), findsNothing);
-  });
-
-  testWidgets('a COMPLETED ride is terminal - no action buttons at all', (tester) async {
-    final client = FakeDriverApiClient()
-      ..mobilityRideByIdResponse = MobilityRideDetailDto.fromJson(sampleMobilityRide(status: 'COMPLETED'));
-
-    await pumpWithProviders(
-      tester,
-      const MobilityRideScreen(rideId: 'ride-1', scope: _scope),
-      overrides: [driverApiClientProvider.overrideWithValue(client)],
+    expect(
+      find.text('No actions available for this ride right now'),
+      findsOneWidget,
     );
-
-    expect(find.text('No actions available for this ride right now'), findsOneWidget);
     expect(find.byType(ElevatedButton), findsNothing);
   });
 
-  testWidgets('tapping "mark en route" calls the transition endpoint with DRIVER_EN_ROUTE and refreshes', (tester) async {
-    final client = FakeDriverApiClient()
-      ..mobilityRideByIdResponse = MobilityRideDetailDto.fromJson(sampleMobilityRide())
-      ..transitionMobilityRideResponse = MobilityRideDetailDto.fromJson(sampleMobilityRide(status: 'DRIVER_EN_ROUTE'));
+  testWidgets(
+    'tapping "mark en route" calls the transition endpoint with DRIVER_EN_ROUTE and refreshes',
+    (tester) async {
+      final client = FakeDriverApiClient()
+        ..mobilityRideByIdResponse = MobilityRideDetailDto.fromJson(
+          sampleMobilityRide(),
+        )
+        ..transitionMobilityRideResponse = MobilityRideDetailDto.fromJson(
+          sampleMobilityRide(status: 'DRIVER_EN_ROUTE'),
+        );
 
-    await pumpWithProviders(
-      tester,
-      const MobilityRideScreen(rideId: 'ride-1', scope: _scope),
-      overrides: [driverApiClientProvider.overrideWithValue(client)],
-    );
+      await pumpWithProviders(
+        tester,
+        const MobilityRideScreen(rideId: 'ride-1', scope: _scope),
+        overrides: [driverApiClientProvider.overrideWithValue(client)],
+      );
 
-    await tester.tap(find.widgetWithText(ElevatedButton, 'Mark en route'));
-    await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(ElevatedButton, 'Mark en route'));
+      await tester.pumpAndSettle();
 
-    expect(client.lastTransitionMobilityRideBody?.status, TransitionMobilityRideDtoStatus.driverEnRoute);
-  });
+      expect(
+        client.lastTransitionMobilityRideBody?.status,
+        TransitionMobilityRideDtoStatus.driverEnRoute,
+      );
+    },
+  );
+
+  testWidgets(
+    'an active CARGO ride renders as "Cargo" with its real pickup/dropoff, not Unknown',
+    (tester) async {
+      final client = FakeDriverApiClient()
+        ..mobilityRideByIdResponse = MobilityRideDetailDto.fromJson(
+          sampleMobilityRide(serviceType: 'CARGO'),
+        );
+
+      await pumpWithProviders(
+        tester,
+        const MobilityRideScreen(rideId: 'ride-1', scope: _scope),
+        overrides: [driverApiClientProvider.overrideWithValue(client)],
+      );
+
+      expect(find.text('Cargo'), findsOneWidget);
+      expect(find.text('Unknown'), findsNothing);
+      expect(find.text('Gare Casa-Voyageurs'), findsOneWidget);
+      expect(find.text('Aéroport Mohammed V'), findsOneWidget);
+    },
+  );
 }

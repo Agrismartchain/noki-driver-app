@@ -174,6 +174,55 @@ Map<String, dynamic> sampleWorkFeedOfferItem() => {
   },
 };
 
+Map<String, dynamic> sampleWorkFeedCargoOfferItem() => {
+  'workItemId': 'work-4',
+  'workType': 'RIDE',
+  'serviceType': 'CARGO',
+  'sourceDomain': 'MOBILITY_OFFER',
+  'status': 'OFFERED',
+  'createdAt': '2026-08-01T09:20:00.000Z',
+  'updatedAt': '2026-08-01T09:20:00.000Z',
+  'pickup': {
+    'label': 'Entrepôt',
+    'addressLine1': 'Zone Industrielle Ain Sebaa',
+    'latitude': 33.6,
+    'longitude': -7.55,
+  },
+  'dropoff': {
+    'label': 'Chantier',
+    'addressLine1': 'Route de Rabat',
+    'latitude': 33.65,
+    'longitude': -7.5,
+  },
+  'amount': {'amount': '350.00', 'currencyCode': 'MAD'},
+  'actions': ['ACCEPT_OFFER'],
+  'underlyingResource': {
+    'resourceType': 'MobilityRideOffer',
+    'resourceId': 'offer-cargo-1',
+  },
+};
+
+Map<String, dynamic> sampleMobilityCargoOffer() => {
+  'id': 'offer-cargo-1',
+  'rideRequestId': 'req-cargo-1',
+  'organizationId': 'org-1',
+  'countryId': 'country-1',
+  'countryCode': 'MA',
+  'serviceType': 'CARGO',
+  'status': 'OFFERED',
+  'pickupAddressSnapshot': 'Zone Industrielle Ain Sebaa',
+  'dropoffAddressSnapshot': 'Route de Rabat',
+  'pickupLatitude': 33.6,
+  'pickupLongitude': -7.55,
+  'dropoffLatitude': 33.65,
+  'dropoffLongitude': -7.5,
+  'estimatedFare': {'amount': '350.00', 'currencyCode': 'MAD'},
+  'estimatedRoadDistanceKm': 12.4,
+  'geodesicDistanceKm': 10.1,
+  'offeredAt': '2026-08-01T09:20:00.000Z',
+  'expiresAt': '2026-08-01T09:25:00.000Z',
+};
+
 Map<String, dynamic> sampleWorkFeedList() => {
   'items': [sampleWorkFeedDeliveryItem(), sampleWorkFeedRideItem()],
   'total': 2,
@@ -293,41 +342,43 @@ Map<String, dynamic> sampleMobilityOfferList() => {
   'pageSize': 25,
 };
 
-Map<String, dynamic> sampleMobilityRide({String status = 'DRIVER_ASSIGNED'}) =>
+Map<String, dynamic> sampleMobilityRide({
+  String status = 'DRIVER_ASSIGNED',
+  String serviceType = 'TAXI',
+}) => {
+  'id': 'ride-1',
+  'reference': 'RIDE-0001',
+  'serviceType': serviceType,
+  'status': status,
+  'pickupAddressSnapshot': 'Gare Casa-Voyageurs',
+  'dropoffAddressSnapshot': 'Aéroport Mohammed V',
+  'driverDisplayName': 'Amine Tazi',
+  'vehicleLabel': 'Dacia Logan · 12345-A-6',
+  'fareAmount': 85.0,
+  'currencyCode': 'MAD',
+  'geodesicDistanceKm': 24.1,
+  'actualDistanceKm': null,
+  'paymentMethod': 'CASH',
+  'paymentStatus': 'PENDING',
+  'assignedAt': '2026-08-01T09:05:00.000Z',
+  'startedAt': null,
+  'completedAt': null,
+  'updatedAt': '2026-08-01T09:05:00.000Z',
+  'pickupLatitude': 33.59,
+  'pickupLongitude': -7.61,
+  'dropoffLatitude': 33.37,
+  'dropoffLongitude': -7.59,
+  'track': [],
+  'timeline': [
     {
-      'id': 'ride-1',
-      'reference': 'RIDE-0001',
-      'serviceType': 'TAXI',
-      'status': status,
-      'pickupAddressSnapshot': 'Gare Casa-Voyageurs',
-      'dropoffAddressSnapshot': 'Aéroport Mohammed V',
-      'driverDisplayName': 'Amine Tazi',
-      'vehicleLabel': 'Dacia Logan · 12345-A-6',
-      'fareAmount': 85.0,
-      'currencyCode': 'MAD',
-      'geodesicDistanceKm': 24.1,
-      'actualDistanceKm': null,
-      'paymentMethod': 'CASH',
-      'paymentStatus': 'PENDING',
-      'assignedAt': '2026-08-01T09:05:00.000Z',
-      'startedAt': null,
-      'completedAt': null,
-      'updatedAt': '2026-08-01T09:05:00.000Z',
-      'pickupLatitude': 33.59,
-      'pickupLongitude': -7.61,
-      'dropoffLatitude': 33.37,
-      'dropoffLongitude': -7.59,
-      'track': [],
-      'timeline': [
-        {
-          'type': 'STATUS_CHANGE',
-          'fromStatus': null,
-          'toStatus': 'DRIVER_ASSIGNED',
-          'message': null,
-          'createdAt': '2026-08-01T09:05:00.000Z',
-        },
-      ],
-    };
+      'type': 'STATUS_CHANGE',
+      'fromStatus': null,
+      'toStatus': 'DRIVER_ASSIGNED',
+      'message': null,
+      'createdAt': '2026-08-01T09:05:00.000Z',
+    },
+  ],
+};
 
 Map<String, dynamic> sampleComputeRouteResponse({
   String providerStatus = 'OK',

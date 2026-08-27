@@ -35,9 +35,7 @@ class MobilityWorkCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Icon(
-                item.serviceType == DriverWorkFeedItemDtoServiceType.taxiMoto
-                    ? Icons.moped_outlined
-                    : Icons.local_taxi_outlined,
+                _serviceTypeIcon(item.serviceType),
                 color: colors.actionPrimary,
               ),
               const SizedBox(width: AppSpacing.md),
@@ -95,6 +93,21 @@ class MobilityWorkCard extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+IconData _serviceTypeIcon(DriverWorkFeedItemDtoServiceType type) {
+  switch (type) {
+    case DriverWorkFeedItemDtoServiceType.taxiMoto:
+      return Icons.moped_outlined;
+    case DriverWorkFeedItemDtoServiceType.cargo:
+      return Icons.local_shipping_outlined;
+    case DriverWorkFeedItemDtoServiceType.courier:
+      return Icons.inventory_2_outlined;
+    case DriverWorkFeedItemDtoServiceType.delivery:
+    case DriverWorkFeedItemDtoServiceType.taxi:
+    case DriverWorkFeedItemDtoServiceType.unknown:
+      return Icons.local_taxi_outlined;
   }
 }
 

@@ -139,6 +139,12 @@
 
   "serviceTypeTaxi": "Taxi",
   "serviceTypeTaxiMoto": "Taxi Moto",
+  "serviceTypeCourier": "Courier",
+  "serviceTypeCargo": "Cargo",
+  "vehicleClassVan": "Van",
+  "vehicleClassTruckSmall": "Small truck",
+  "vehicleClassTruckMedium": "Medium truck",
+  "vehicleClassTruckLarge": "Large truck",
   "mobilityOfferLabel": "Offer",
   "mobilityRideLabel": "Active ride",
   "mobilityOfferDetailTitle": "Ride offer",

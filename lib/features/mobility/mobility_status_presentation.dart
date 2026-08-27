@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart' show Icons;
 import 'package:flutter/widgets.dart';
 
 import '../../core/api/generated/driver_models.generated.dart';
@@ -106,6 +107,8 @@ String rideServiceTypeLabel(
   return switch (serviceType) {
     MobilityRideDetailDtoServiceType.taxi => l10n.serviceTypeTaxi,
     MobilityRideDetailDtoServiceType.taxiMoto => l10n.serviceTypeTaxiMoto,
+    MobilityRideDetailDtoServiceType.courier => l10n.serviceTypeCourier,
+    MobilityRideDetailDtoServiceType.cargo => l10n.serviceTypeCargo,
     MobilityRideDetailDtoServiceType.unknown => l10n.errorUnknown,
   };
 }
@@ -117,6 +120,8 @@ String offerServiceTypeLabel(
   return switch (serviceType) {
     DriverMobilityOfferDtoServiceType.taxi => l10n.serviceTypeTaxi,
     DriverMobilityOfferDtoServiceType.taxiMoto => l10n.serviceTypeTaxiMoto,
+    DriverMobilityOfferDtoServiceType.courier => l10n.serviceTypeCourier,
+    DriverMobilityOfferDtoServiceType.cargo => l10n.serviceTypeCargo,
     DriverMobilityOfferDtoServiceType.unknown => l10n.errorUnknown,
   };
 }
@@ -129,8 +134,27 @@ String workFeedServiceTypeLabel(
     DriverWorkFeedItemDtoServiceType.delivery => l10n.workFeedTypeDelivery,
     DriverWorkFeedItemDtoServiceType.taxi => l10n.serviceTypeTaxi,
     DriverWorkFeedItemDtoServiceType.taxiMoto => l10n.serviceTypeTaxiMoto,
+    DriverWorkFeedItemDtoServiceType.courier => l10n.serviceTypeCourier,
+    DriverWorkFeedItemDtoServiceType.cargo => l10n.serviceTypeCargo,
     DriverWorkFeedItemDtoServiceType.unknown => l10n.errorUnknown,
   };
+}
+
+/// Shared active-ride icon by service type - kept alongside
+/// [rideServiceTypeLabel] so every screen that renders a ride (ride screen,
+/// in-app map, header) shows the same glyph for the same service.
+IconData rideServiceTypeIcon(MobilityRideDetailDtoServiceType serviceType) {
+  switch (serviceType) {
+    case MobilityRideDetailDtoServiceType.taxiMoto:
+      return Icons.moped_outlined;
+    case MobilityRideDetailDtoServiceType.cargo:
+      return Icons.local_shipping_outlined;
+    case MobilityRideDetailDtoServiceType.courier:
+      return Icons.inventory_2_outlined;
+    case MobilityRideDetailDtoServiceType.taxi:
+    case MobilityRideDetailDtoServiceType.unknown:
+      return Icons.local_taxi_outlined;
+  }
 }
 
 String mobilityIncidentTypeLabel(

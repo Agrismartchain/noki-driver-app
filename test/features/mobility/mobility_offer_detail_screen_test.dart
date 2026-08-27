@@ -57,4 +57,56 @@ void main() {
       expect(find.text('Ride'), findsOneWidget);
     },
   );
+
+  testWidgets(
+    'a CARGO work-feed offer renders as Cargo, not Unknown, with its real pickup/dropoff/fare',
+    (tester) async {
+      final item = DriverWorkFeedItemDto.fromJson(
+        sampleWorkFeedCargoOfferItem(),
+      );
+
+      await pumpWithProviders(
+        tester,
+        MobilityOfferDetailScreen.fromWorkFeedItem(item: item, scope: _scope),
+      );
+
+      expect(find.text('Cargo'), findsOneWidget);
+      expect(find.text('Unknown'), findsNothing);
+      expect(find.text('Zone Industrielle Ain Sebaa'), findsOneWidget);
+      expect(find.text('Route de Rabat'), findsOneWidget);
+      expect(find.text('350.00 MAD'), findsOneWidget);
+      expect(
+        find.widgetWithText(ElevatedButton, 'Accept offer'),
+        findsOneWidget,
+      );
+    },
+  );
+
+  testWidgets(
+    'accepting a CARGO offer works through the same canonical accept action as any other offer',
+    (tester) async {
+      final client = FakeDriverApiClient()
+        ..acceptMobilityOfferResponse = MobilityRideDetailDto.fromJson(
+          sampleMobilityRide(serviceType: 'CARGO'),
+        )
+        ..mobilityRideByIdResponse = MobilityRideDetailDto.fromJson(
+          sampleMobilityRide(serviceType: 'CARGO'),
+        );
+      final item = DriverWorkFeedItemDto.fromJson(
+        sampleWorkFeedCargoOfferItem(),
+      );
+
+      await pumpWithProviders(
+        tester,
+        MobilityOfferDetailScreen.fromWorkFeedItem(item: item, scope: _scope),
+        overrides: [driverApiClientProvider.overrideWithValue(client)],
+      );
+
+      await tester.tap(find.widgetWithText(ElevatedButton, 'Accept offer'));
+      await tester.pumpAndSettle();
+
+      expect(client.lastAcceptedOfferId, 'offer-cargo-1');
+      expect(find.text('Cargo'), findsOneWidget);
+    },
+  );
 }

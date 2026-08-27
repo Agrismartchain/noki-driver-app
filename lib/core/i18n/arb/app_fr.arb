@@ -130,6 +130,12 @@
 
   "serviceTypeTaxi": "Taxi",
   "serviceTypeTaxiMoto": "Taxi Moto",
+  "serviceTypeCourier": "Coursier",
+  "serviceTypeCargo": "Cargo",
+  "vehicleClassVan": "Camionnette",
+  "vehicleClassTruckSmall": "Petit camion",
+  "vehicleClassTruckMedium": "Camion moyen",
+  "vehicleClassTruckLarge": "Grand camion",
   "mobilityOfferLabel": "Offre",
   "mobilityRideLabel": "Course en cours",
   "mobilityOfferDetailTitle": "Offre de course",

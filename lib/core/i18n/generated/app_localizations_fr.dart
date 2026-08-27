@@ -432,6 +432,24 @@ class AppLocalizationsFr extends AppLocalizations {
   String get serviceTypeTaxiMoto => 'Taxi Moto';
 
   @override
+  String get serviceTypeCourier => 'Coursier';
+
+  @override
+  String get serviceTypeCargo => 'Cargo';
+
+  @override
+  String get vehicleClassVan => 'Camionnette';
+
+  @override
+  String get vehicleClassTruckSmall => 'Petit camion';
+
+  @override
+  String get vehicleClassTruckMedium => 'Camion moyen';
+
+  @override
+  String get vehicleClassTruckLarge => 'Grand camion';
+
+  @override
   String get mobilityOfferLabel => 'Offre';
 
   @override

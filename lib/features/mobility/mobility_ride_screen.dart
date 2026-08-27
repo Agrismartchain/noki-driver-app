@@ -125,9 +125,7 @@ class _MobilityRideScreenState extends ConsumerState<MobilityRideScreen> {
           Row(
             children: [
               Icon(
-                ride.serviceType == MobilityRideDetailDtoServiceType.taxiMoto
-                    ? Icons.moped_outlined
-                    : Icons.local_taxi_outlined,
+                rideServiceTypeIcon(ride.serviceType),
                 color: colors.actionPrimary,
                 size: 28,
               ),

@@ -207,6 +207,10 @@ String _serviceCapabilitiesLabel(
         labels.add(l10n.serviceTypeTaxi);
       case DriverContextProfileDtoServiceTypes.taxiMoto:
         labels.add(l10n.serviceTypeTaxiMoto);
+      case DriverContextProfileDtoServiceTypes.courier:
+        labels.add(l10n.serviceTypeCourier);
+      case DriverContextProfileDtoServiceTypes.cargo:
+        labels.add(l10n.serviceTypeCargo);
       case DriverContextProfileDtoServiceTypes.unknown:
         break;
     }

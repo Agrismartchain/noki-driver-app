@@ -40,9 +40,7 @@ class MobilityOfferDetailViewModel {
   ) {
     return MobilityOfferDetailViewModel(
       id: item.underlyingResource.resourceId,
-      serviceType: item.serviceType == DriverWorkFeedItemDtoServiceType.taxiMoto
-          ? DriverMobilityOfferDtoServiceType.taxiMoto
-          : DriverMobilityOfferDtoServiceType.taxi,
+      serviceType: _offerServiceTypeFromWorkFeed(item.serviceType),
       status: item.status,
       pickupAddressSnapshot:
           item.pickup?.addressLine1 ?? item.pickup?.label ?? '',
@@ -63,6 +61,42 @@ class MobilityOfferDetailViewModel {
   final String pickupAddressSnapshot;
   final String dropoffAddressSnapshot;
   final DriverWorkMoneySummaryDto? estimatedFare;
+}
+
+/// The Work Feed's `DriverWorkFeedItemDtoServiceType` also carries `DELIVERY`
+/// (a different work-item domain entirely, never routed through this
+/// screen) so the mapping can't be a plain enum cast. Real ride/cargo types
+/// map 1:1; anything else falls back to `taxi` rather than mislabeling a
+/// Cargo job as generic (mandate: CARGO must never present as Unknown/Taxi).
+DriverMobilityOfferDtoServiceType _offerServiceTypeFromWorkFeed(
+  DriverWorkFeedItemDtoServiceType type,
+) {
+  switch (type) {
+    case DriverWorkFeedItemDtoServiceType.taxiMoto:
+      return DriverMobilityOfferDtoServiceType.taxiMoto;
+    case DriverWorkFeedItemDtoServiceType.courier:
+      return DriverMobilityOfferDtoServiceType.courier;
+    case DriverWorkFeedItemDtoServiceType.cargo:
+      return DriverMobilityOfferDtoServiceType.cargo;
+    case DriverWorkFeedItemDtoServiceType.delivery:
+    case DriverWorkFeedItemDtoServiceType.taxi:
+    case DriverWorkFeedItemDtoServiceType.unknown:
+      return DriverMobilityOfferDtoServiceType.taxi;
+  }
+}
+
+IconData _offerServiceTypeIcon(DriverMobilityOfferDtoServiceType type) {
+  switch (type) {
+    case DriverMobilityOfferDtoServiceType.taxiMoto:
+      return Icons.moped_outlined;
+    case DriverMobilityOfferDtoServiceType.cargo:
+      return Icons.local_shipping_outlined;
+    case DriverMobilityOfferDtoServiceType.courier:
+      return Icons.inventory_2_outlined;
+    case DriverMobilityOfferDtoServiceType.taxi:
+    case DriverMobilityOfferDtoServiceType.unknown:
+      return Icons.local_taxi_outlined;
+  }
 }
 
 /// Resolves an offer id (all the Work Feed card has -
@@ -194,9 +228,7 @@ class _MobilityOfferDetailScreenState
           Row(
             children: [
               Icon(
-                offer.serviceType == DriverMobilityOfferDtoServiceType.taxiMoto
-                    ? Icons.moped_outlined
-                    : Icons.local_taxi_outlined,
+                _offerServiceTypeIcon(offer.serviceType),
                 color: colors.actionPrimary,
                 size: 28,
               ),

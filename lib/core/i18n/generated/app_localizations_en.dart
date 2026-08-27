@@ -430,6 +430,24 @@ class AppLocalizationsEn extends AppLocalizations {
   String get serviceTypeTaxiMoto => 'Taxi Moto';
 
   @override
+  String get serviceTypeCourier => 'Courier';
+
+  @override
+  String get serviceTypeCargo => 'Cargo';
+
+  @override
+  String get vehicleClassVan => 'Van';
+
+  @override
+  String get vehicleClassTruckSmall => 'Small truck';
+
+  @override
+  String get vehicleClassTruckMedium => 'Medium truck';
+
+  @override
+  String get vehicleClassTruckLarge => 'Large truck';
+
+  @override
   String get mobilityOfferLabel => 'Offer';
 
   @override

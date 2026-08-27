@@ -15,7 +15,10 @@ void main() {
       final profile = context.profiles.single;
       expect(profile.organizationId, 'org-1');
       expect(profile.countryCode, 'MA');
-      expect(profile.mobilityAvailabilityStatus, DriverContextProfileDtoMobilityAvailabilityStatus.offline);
+      expect(
+        profile.mobilityAvailabilityStatus,
+        DriverContextProfileDtoMobilityAvailabilityStatus.offline,
+      );
       expect(profile.serviceTypes, [DriverContextProfileDtoServiceTypes.taxi]);
 
       final vehicle = profile.assignedVehicle;
@@ -25,17 +28,25 @@ void main() {
       expect(vehicle.status, DriverContextVehicleSummaryDtoStatus.active);
     });
 
-    test('parses an actor with no Driver profile as an empty list, not an error', () {
-      final context = DriverContextResponseDto.fromJson(sampleDriverContext(withProfile: false));
-      expect(context.profiles, isEmpty);
-    });
+    test(
+      'parses an actor with no Driver profile as an empty list, not an error',
+      () {
+        final context = DriverContextResponseDto.fromJson(
+          sampleDriverContext(withProfile: false),
+        );
+        expect(context.profiles, isEmpty);
+      },
+    );
 
     test('round-trips through toJson', () {
       final original = sampleDriverContext();
       final context = DriverContextResponseDto.fromJson(original);
       final roundTripped = DriverContextResponseDto.fromJson(context.toJson());
       expect(roundTripped.actorId, context.actorId);
-      expect(roundTripped.profiles.single.countryCode, context.profiles.single.countryCode);
+      expect(
+        roundTripped.profiles.single.countryCode,
+        context.profiles.single.countryCode,
+      );
     });
   });
 
@@ -47,39 +58,55 @@ void main() {
       expect(vehicle.make, 'Dacia');
       expect(vehicle.model, 'Logan');
       expect(vehicle.status, DriverVehicleDtoStatus.active);
-      expect(vehicle.allowedServiceTypes, [DriverVehicleDtoAllowedServiceTypes.taxi]);
+      expect(vehicle.allowedServiceTypes, [
+        DriverVehicleDtoAllowedServiceTypes.taxi,
+      ]);
       expect(vehicle.year, 2021);
     });
   });
 
   group('DriverAvailabilityResponseDto.fromJson', () {
-    test('maps the mobility availability enum without remapping its values', () {
-      final availability = DriverAvailabilityResponseDto.fromJson(sampleAvailability(mobilityStatus: 'AVAILABLE'));
-      expect(
-        availability.mobilityAvailabilityStatus,
-        DriverAvailabilityResponseDtoMobilityAvailabilityStatus.available,
-      );
-      expect(availability.activeDeliveryMissionCount, 2);
-      expect(availability.activeMobilityRideCount, 1);
-    });
+    test(
+      'maps the mobility availability enum without remapping its values',
+      () {
+        final availability = DriverAvailabilityResponseDto.fromJson(
+          sampleAvailability(mobilityStatus: 'AVAILABLE'),
+        );
+        expect(
+          availability.mobilityAvailabilityStatus,
+          DriverAvailabilityResponseDtoMobilityAvailabilityStatus.available,
+        );
+        expect(availability.activeDeliveryMissionCount, 2);
+        expect(availability.activeMobilityRideCount, 1);
+      },
+    );
 
     test('an unrecognized enum value from the backend maps to unknown, never crashes', () {
-      final json = sampleAvailability()..['mobilityAvailabilityStatus'] = 'SOMETHING_NEW';
+      final json = sampleAvailability()
+        ..['mobilityAvailabilityStatus'] = 'SOMETHING_NEW';
       final availability = DriverAvailabilityResponseDto.fromJson(json);
-      expect(availability.mobilityAvailabilityStatus, DriverAvailabilityResponseDtoMobilityAvailabilityStatus.unknown);
+      expect(
+        availability.mobilityAvailabilityStatus,
+        DriverAvailabilityResponseDtoMobilityAvailabilityStatus.unknown,
+      );
     });
   });
 
   group('DriverWorkFeedItemDto.fromJson - work-feed foundation', () {
-    test('parses a DELIVERY work item without merging it into a Ride shape', () {
-      final item = DriverWorkFeedItemDto.fromJson(sampleWorkFeedDeliveryItem());
-      expect(item.workType, DriverWorkFeedItemDtoWorkType.delivery);
-      expect(item.serviceType, DriverWorkFeedItemDtoServiceType.delivery);
-      expect(item.underlyingResource.resourceType, 'DeliveryShipment');
-      expect(item.amount?.amount, '120.00');
-      expect(item.amount?.currencyCode, 'MAD');
-      expect(item.dropoff?.addressLine1, '4 Rue Zerktouni');
-    });
+    test(
+      'parses a DELIVERY work item without merging it into a Ride shape',
+      () {
+        final item = DriverWorkFeedItemDto.fromJson(
+          sampleWorkFeedDeliveryItem(),
+        );
+        expect(item.workType, DriverWorkFeedItemDtoWorkType.delivery);
+        expect(item.serviceType, DriverWorkFeedItemDtoServiceType.delivery);
+        expect(item.underlyingResource.resourceType, 'DeliveryShipment');
+        expect(item.amount?.amount, '120.00');
+        expect(item.amount?.currencyCode, 'MAD');
+        expect(item.dropoff?.addressLine1, '4 Rue Zerktouni');
+      },
+    );
 
     test('parses a RIDE work item, keeping its own resourceType distinct from Delivery', () {
       final item = DriverWorkFeedItemDto.fromJson(sampleWorkFeedRideItem());
@@ -90,13 +117,28 @@ void main() {
       expect(item.dropoff, isNull);
     });
 
-    test('a work feed list mixes DELIVERY and RIDE items under one boundary', () {
-      final list = DriverWorkFeedListResponseDto.fromJson(sampleWorkFeedList());
-      expect(list.items, hasLength(2));
-      expect(list.items.map((i) => i.workType), [
-        DriverWorkFeedItemDtoWorkType.delivery,
-        DriverWorkFeedItemDtoWorkType.ride,
-      ]);
+    test('parses a CARGO offer work item as CARGO, not unknown', () {
+      final item = DriverWorkFeedItemDto.fromJson(
+        sampleWorkFeedCargoOfferItem(),
+      );
+      expect(item.serviceType, DriverWorkFeedItemDtoServiceType.cargo);
+      expect(item.serviceType, isNot(DriverWorkFeedItemDtoServiceType.unknown));
+      expect(item.underlyingResource.resourceType, 'MobilityRideOffer');
+      expect(item.amount?.amount, '350.00');
     });
+
+    test(
+      'a work feed list mixes DELIVERY and RIDE items under one boundary',
+      () {
+        final list = DriverWorkFeedListResponseDto.fromJson(
+          sampleWorkFeedList(),
+        );
+        expect(list.items, hasLength(2));
+        expect(list.items.map((i) => i.workType), [
+          DriverWorkFeedItemDtoWorkType.delivery,
+          DriverWorkFeedItemDtoWorkType.ride,
+        ]);
+      },
+    );
   });
 }

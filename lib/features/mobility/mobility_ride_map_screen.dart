@@ -199,11 +199,7 @@ class _MobilityRideMapScreenState extends ConsumerState<MobilityRideMapScreen> {
                       if (ride != null)
                         NokiMapStatusChip(
                           label: rideServiceTypeLabel(l10n, ride.serviceType),
-                          icon:
-                              ride.serviceType ==
-                                  MobilityRideDetailDtoServiceType.taxiMoto
-                              ? Icons.moped_outlined
-                              : Icons.local_taxi_outlined,
+                          icon: rideServiceTypeIcon(ride.serviceType),
                           backgroundColor: context.nokiColors.actionPrimary,
                           foregroundColor: context.nokiColors.actionPrimaryInk,
                         ),
@@ -308,11 +304,7 @@ class _BottomSheet extends StatelessWidget {
               const SizedBox(width: AppSpacing.md),
               NokiMapStatusChip(
                 label: rideServiceTypeLabel(l10n, ride.serviceType),
-                icon:
-                    ride.serviceType ==
-                        MobilityRideDetailDtoServiceType.taxiMoto
-                    ? Icons.moped_outlined
-                    : Icons.local_taxi_outlined,
+                icon: rideServiceTypeIcon(ride.serviceType),
                 backgroundColor: background,
                 foregroundColor: foreground,
               ),
@@ -502,6 +494,10 @@ ComputeDriverRouteRequestDtoServiceType _navigationServiceType(
       return ComputeDriverRouteRequestDtoServiceType.taxi;
     case MobilityRideDetailDtoServiceType.taxiMoto:
       return ComputeDriverRouteRequestDtoServiceType.taxiMoto;
+    case MobilityRideDetailDtoServiceType.courier:
+      return ComputeDriverRouteRequestDtoServiceType.courier;
+    case MobilityRideDetailDtoServiceType.cargo:
+      return ComputeDriverRouteRequestDtoServiceType.cargo;
     case MobilityRideDetailDtoServiceType.unknown:
       return ComputeDriverRouteRequestDtoServiceType.taxi;
   }
