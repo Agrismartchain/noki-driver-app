@@ -116,6 +116,8 @@ class GpsPublisherController {
           latitude: position.latitude,
           longitude: position.longitude,
           accuracyMeters: position.accuracy,
+          headingDegrees: position.heading,
+          speedKph: position.speed * 3.6,
           recordedAt: recordedAt,
           shipmentId: shipmentId,
         ),

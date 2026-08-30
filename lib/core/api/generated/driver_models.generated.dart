@@ -2102,6 +2102,8 @@ class DeliveryLocationPointInputDto {
     required this.latitude,
     required this.longitude,
     this.accuracyMeters,
+    this.headingDegrees,
+    this.speedKph,
     required this.recordedAt,
     this.shipmentId,
   });
@@ -2109,6 +2111,8 @@ class DeliveryLocationPointInputDto {
   final num latitude;
   final num longitude;
   final num? accuracyMeters;
+  final num? headingDegrees;
+  final num? speedKph;
   final String recordedAt;
   final String? shipmentId;
 
@@ -2117,6 +2121,8 @@ class DeliveryLocationPointInputDto {
       latitude: (json["latitude"] as num?)!,
       longitude: (json["longitude"] as num?)!,
       accuracyMeters: (json["accuracyMeters"] as num?),
+      headingDegrees: (json["headingDegrees"] as num?),
+      speedKph: (json["speedKph"] as num?),
       recordedAt: json["recordedAt"] as String,
       shipmentId: json["shipmentId"] as String?,
     );
@@ -2127,6 +2133,8 @@ class DeliveryLocationPointInputDto {
       "latitude": latitude,
       "longitude": longitude,
       "accuracyMeters": ?accuracyMeters,
+      "headingDegrees": ?headingDegrees,
+      "speedKph": ?speedKph,
       "recordedAt": recordedAt,
       "shipmentId": ?shipmentId,
     };

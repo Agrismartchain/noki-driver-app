@@ -92,9 +92,11 @@ class FakeDriverApiClient implements DriverApiClient {
 
   MobilityDriverDto? submitMobilityLocationResponse;
   AppFailure? submitMobilityLocationFailure;
+  SubmitMobilityLocationDto? lastSubmitMobilityLocationRequest;
 
   SubmitDeliveryLocationResponseDto? submitDeliveryLocationResponse;
   AppFailure? submitDeliveryLocationFailure;
+  SubmitDeliveryLocationDto? lastSubmitDeliveryLocationRequest;
 
   ComputeDriverRouteResponseDto? computeRouteResponse;
   AppFailure? computeRouteFailure;
@@ -343,6 +345,7 @@ class FakeDriverApiClient implements DriverApiClient {
   Future<MobilityDriverDto> submitMobilityLocation(
     SubmitMobilityLocationDto body,
   ) async {
+    lastSubmitMobilityLocationRequest = body;
     if (submitMobilityLocationFailure != null) {
       throw submitMobilityLocationFailure!;
     }
@@ -353,6 +356,7 @@ class FakeDriverApiClient implements DriverApiClient {
   Future<SubmitDeliveryLocationResponseDto> submitDeliveryLocation(
     SubmitDeliveryLocationDto body,
   ) async {
+    lastSubmitDeliveryLocationRequest = body;
     if (submitDeliveryLocationFailure != null) {
       throw submitDeliveryLocationFailure!;
     }
