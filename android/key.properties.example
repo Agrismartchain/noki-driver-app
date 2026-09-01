@@ -1,0 +1,7 @@
+# Copy this file to `android/key.properties` (gitignored) and fill in the
+# real values, or set the equivalent NOKI_DRIVER_RELEASE_* environment
+# variables instead. Never commit real values.
+storeFile=/absolute/path/to/noki-driver-release.jks
+storePassword=CHANGE_ME
+keyAlias=CHANGE_ME
+keyPassword=CHANGE_ME

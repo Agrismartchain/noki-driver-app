@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- NOKI brand yellow, matched to the app launcher icon background. -->
+    <color name="noki_splash_background">#FCD104</color>
+</resources>

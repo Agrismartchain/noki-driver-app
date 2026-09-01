@@ -2,26 +2,92 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:noki_driver_app/core/config/app_environment.dart';
 
 void main() {
-  group('AppEnvironment.fromDefine', () {
-    test('parses development (including empty default)', () {
-      expect(AppEnvironment.fromDefine(''), AppEnvironment.development);
-      expect(AppEnvironment.fromDefine('development'), AppEnvironment.development);
-      expect(AppEnvironment.fromDefine('Development'), AppEnvironment.development);
-    });
+  test('defaults to development with the loopback placeholder', () {
+    final config = AppConfig.fromValues(
+      envRaw: 'development',
+      apiBaseUrlRaw: 'http://127.0.0.1:3000',
+    );
 
-    test('parses staging', () {
-      expect(AppEnvironment.fromDefine('staging'), AppEnvironment.staging);
-    });
+    expect(config.environment, AppEnvironment.development);
+    expect(config.apiBaseUrl, 'http://127.0.0.1:3000');
+  });
 
-    test('parses production and reports isProduction', () {
-      final env = AppEnvironment.fromDefine('production');
-      expect(env, AppEnvironment.production);
-      expect(env.isProduction, isTrue);
-      expect(AppEnvironment.development.isProduction, isFalse);
-    });
+  test('rejects an empty API base URL in staging', () {
+    expect(
+      () => AppConfig.fromValues(envRaw: 'staging', apiBaseUrlRaw: ''),
+      throwsStateError,
+    );
+  });
 
-    test('rejects an unknown environment name instead of silently defaulting', () {
-      expect(() => AppEnvironment.fromDefine('preprod'), throwsArgumentError);
-    });
+  test('rejects an empty API base URL in production', () {
+    expect(
+      () => AppConfig.fromValues(envRaw: 'production', apiBaseUrlRaw: ''),
+      throwsStateError,
+    );
+  });
+
+  test('rejects localhost as the API base URL in staging', () {
+    expect(
+      () => AppConfig.fromValues(
+        envRaw: 'staging',
+        apiBaseUrlRaw: 'https://localhost:3000',
+      ),
+      throwsStateError,
+    );
+  });
+
+  test('rejects 127.0.0.1 as the API base URL in production', () {
+    expect(
+      () => AppConfig.fromValues(
+        envRaw: 'production',
+        apiBaseUrlRaw: 'https://127.0.0.1:3000',
+      ),
+      throwsStateError,
+    );
+  });
+
+  test('rejects the Android emulator loopback host in production', () {
+    expect(
+      () => AppConfig.fromValues(
+        envRaw: 'production',
+        apiBaseUrlRaw: 'https://10.0.2.2:3000',
+      ),
+      throwsStateError,
+    );
+  });
+
+  test('rejects a plain-HTTP API base URL in staging', () {
+    expect(
+      () => AppConfig.fromValues(
+        envRaw: 'staging',
+        apiBaseUrlRaw: 'http://api.staging.noki.example.com',
+      ),
+      throwsStateError,
+    );
+  });
+
+  test('accepts a real HTTPS API base URL in production', () {
+    final config = AppConfig.fromValues(
+      envRaw: 'production',
+      apiBaseUrlRaw: 'https://api.noki.example.com',
+    );
+
+    expect(config.apiBaseUrl, 'https://api.noki.example.com');
+  });
+
+  test('still allows loopback and HTTP in development (safe dev mode)', () {
+    final config = AppConfig.fromValues(
+      envRaw: 'development',
+      apiBaseUrlRaw: 'http://10.0.2.2:3000',
+    );
+
+    expect(config.apiBaseUrl, 'http://10.0.2.2:3000');
+  });
+
+  test('rejects invalid environment names', () {
+    expect(
+      () => AppConfig.fromValues(envRaw: 'qa', apiBaseUrlRaw: ''),
+      throwsArgumentError,
+    );
   });
 }
