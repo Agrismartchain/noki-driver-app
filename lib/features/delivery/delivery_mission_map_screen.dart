@@ -96,6 +96,19 @@ class _DeliveryMissionMapScreenState
     final asyncMission = ref.watch(missionDetailProvider(widget.missionId));
     final asyncDriverContext = ref.watch(driverContextProvider);
 
+    // Stop publishing this mission's active-work location the instant the
+    // backend reports a terminal status, even if the driver stays on this
+    // screen instead of navigating away (dispose() alone only covers the
+    // navigate-away path). Reverts to idle/availability-based cadence, same
+    // as dispose() -- never leaves an active-work cadence running past
+    // mission completion.
+    ref.listen(missionDetailProvider(widget.missionId), (previous, next) {
+      final status = next.valueOrNull?.status;
+      if (status != null && _isTerminalMissionStatus(status)) {
+        _publisher?.updateContext(DriverTrackingContext(scope: widget.scope));
+      }
+    });
+
     // Entry points that don't already hold the Work Feed item in hand (e.g.
     // the Home "Continue delivery" reentry tile, which only knows the
     // mission id) leave [widget.feedItem] null - `DriverMissionResponseDto`
@@ -510,6 +523,22 @@ MapPoint? _deliveryNavigationDestination(
     case DriverMissionResponseDtoStatus.cancelled:
     case DriverMissionResponseDtoStatus.unknown:
       return null;
+  }
+}
+
+/// Real terminal states only -- `unknown` is a client-side parsing
+/// fallback, never treated as a signal to stop tracking.
+bool _isTerminalMissionStatus(DriverMissionResponseDtoStatus status) {
+  switch (status) {
+    case DriverMissionResponseDtoStatus.delivered:
+    case DriverMissionResponseDtoStatus.failed:
+    case DriverMissionResponseDtoStatus.cancelled:
+      return true;
+    case DriverMissionResponseDtoStatus.readyForDispatch:
+    case DriverMissionResponseDtoStatus.assigned:
+    case DriverMissionResponseDtoStatus.outForDelivery:
+    case DriverMissionResponseDtoStatus.unknown:
+      return false;
   }
 }
 
