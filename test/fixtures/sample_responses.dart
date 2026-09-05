@@ -19,6 +19,7 @@ Map<String, dynamic> sampleDriverContext({
   bool withProfile = true,
   bool withVehicle = true,
   String vehicleType = 'CAR',
+  String mobilityAvailabilityStatus = 'OFFLINE',
 }) => {
   'actorId': 'actor-1',
   'displayName': 'Amine Tazi',
@@ -37,7 +38,7 @@ Map<String, dynamic> sampleDriverContext({
             'mobilityProfileId': 'mobility-profile-1',
             'mobilityOnboardingStatus': 'APPROVED',
             'mobilityOperationalStatus': 'ACTIVE',
-            'mobilityAvailabilityStatus': 'OFFLINE',
+            'mobilityAvailabilityStatus': mobilityAvailabilityStatus,
             'serviceTypes': ['TAXI'],
             'assignedVehicle': withVehicle
                 ? {

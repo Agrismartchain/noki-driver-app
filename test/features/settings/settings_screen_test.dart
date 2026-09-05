@@ -5,6 +5,7 @@ import 'package:noki_driver_app/core/api/generated/driver_models.generated.dart'
 import 'package:noki_driver_app/core/storage/storage_providers.dart';
 import 'package:noki_driver_app/core/theme/app_colors.dart';
 import 'package:noki_driver_app/core/theme/app_theme.dart';
+import 'package:noki_driver_app/core/ui/noki_ui.dart';
 import 'package:noki_driver_app/features/settings/settings_screen.dart';
 
 import '../../fixtures/fake_driver_api_client.dart';
@@ -12,10 +13,14 @@ import '../../fixtures/fake_session_storage.dart';
 import '../../fixtures/sample_responses.dart';
 import '../../fixtures/test_harness.dart';
 
-Future<List<Object>> _authenticatedOverrides() async {
+Future<List<Object>> _authenticatedOverrides({
+  String mobilityAvailabilityStatus = 'OFFLINE',
+}) async {
   final client = FakeDriverApiClient()
     ..driverContextResponse = DriverContextResponseDto.fromJson(
-      sampleDriverContext(),
+      sampleDriverContext(
+        mobilityAvailabilityStatus: mobilityAvailabilityStatus,
+      ),
     );
   final storage = FakeSecureSessionStorage();
   await storage.writeAccessToken('access-token');
@@ -128,4 +133,39 @@ void main() {
     expect(find.text('Open vehicles'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
+
+  // Mandatory NOKI convention (mission mandate §8), kept consistent with the
+  // Home availability badge (see availability_card_test.dart): AVAILABLE is
+  // green, BUSY is red, OFFLINE is neutral grey.
+  for (final entry in {
+    'AVAILABLE': (NokiBadgeTone.success, 'Availability: Available'),
+    'BUSY': (NokiBadgeTone.danger, 'Availability: Busy'),
+    'OFFLINE': (NokiBadgeTone.offline, 'Availability: Offline'),
+  }.entries) {
+    testWidgets('renders the profile ${entry.key} availability badge with the mandated color tone', (tester) async {
+      final overrides = await _authenticatedOverrides(
+        mobilityAvailabilityStatus: entry.key,
+      );
+
+      await pumpWithProviders(
+        tester,
+        const SettingsScreen(),
+        overrides: overrides.cast(),
+      );
+
+      await tester.scrollUntilVisible(
+        find.text(entry.value.$2),
+        300,
+        scrollable: find.byType(Scrollable).first,
+      );
+
+      final badge = tester.widget<NokiBadge>(
+        find.ancestor(
+          of: find.text(entry.value.$2),
+          matching: find.byType(NokiBadge),
+        ),
+      );
+      expect(badge.tone, entry.value.$1);
+    });
+  }
 }

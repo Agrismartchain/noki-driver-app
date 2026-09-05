@@ -616,6 +616,10 @@ String _mobilityAvailabilityLabel(
   };
 }
 
+// Mandatory NOKI convention (mission mandate §8): AVAILABLE is always green,
+// BUSY is always red, OFFLINE is neutral grey - same rule applied to the
+// mobility summary badge on Home (see availability_card.dart's
+// `_summaryTone`), kept consistent here on Profile.
 NokiBadgeTone _mobilityAvailabilityTone(
   DriverContextProfileDtoMobilityAvailabilityStatus status,
 ) {
@@ -623,9 +627,9 @@ NokiBadgeTone _mobilityAvailabilityTone(
     DriverContextProfileDtoMobilityAvailabilityStatus.offline =>
       NokiBadgeTone.offline,
     DriverContextProfileDtoMobilityAvailabilityStatus.available =>
-      NokiBadgeTone.primary,
+      NokiBadgeTone.success,
     DriverContextProfileDtoMobilityAvailabilityStatus.busy =>
-      NokiBadgeTone.warning,
+      NokiBadgeTone.danger,
     DriverContextProfileDtoMobilityAvailabilityStatus.unknown =>
       NokiBadgeTone.neutral,
   };

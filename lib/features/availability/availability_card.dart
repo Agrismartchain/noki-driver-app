@@ -228,14 +228,20 @@ String _summaryLabel(
   };
 }
 
+// Mandatory NOKI convention (mission mandate §8): AVAILABLE is always green,
+// BUSY/active mission is always red, OFFLINE/UNAVAILABLE is neutral grey.
+// `NokiBadgeTone.primary` (brand yellow) and `.warning` (amber) are reused
+// elsewhere for brand emphasis and generic caution respectively - neither is
+// the mandated color for a driver status pill, so the driver-status mapping
+// must use `.success`/`.danger`/`.offline` specifically.
 NokiBadgeTone _summaryTone(
   DriverAvailabilityResponseDtoMobilityAvailabilityStatus? status,
 ) {
   return switch (status) {
     DriverAvailabilityResponseDtoMobilityAvailabilityStatus.available =>
-      NokiBadgeTone.primary,
+      NokiBadgeTone.success,
     DriverAvailabilityResponseDtoMobilityAvailabilityStatus.busy =>
-      NokiBadgeTone.warning,
+      NokiBadgeTone.danger,
     _ => NokiBadgeTone.offline,
   };
 }
