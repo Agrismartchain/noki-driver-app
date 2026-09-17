@@ -910,6 +910,34 @@ enum DriverMissionCompletionResponseDtoStatus {
   }
 }
 
+enum DriverMissionResponseDtoSourceDomain {
+  commerce,
+  food,
+  unknown;
+
+  static DriverMissionResponseDtoSourceDomain fromJson(String value) {
+    switch (value) {
+      case "COMMERCE":
+        return DriverMissionResponseDtoSourceDomain.commerce;
+      case "FOOD":
+        return DriverMissionResponseDtoSourceDomain.food;
+      default:
+        return DriverMissionResponseDtoSourceDomain.unknown;
+    }
+  }
+
+  String toJson() {
+    switch (this) {
+      case DriverMissionResponseDtoSourceDomain.commerce:
+        return "COMMERCE";
+      case DriverMissionResponseDtoSourceDomain.food:
+        return "FOOD";
+      case DriverMissionResponseDtoSourceDomain.unknown:
+        return "COMMERCE";
+    }
+  }
+}
+
 enum DriverMissionResponseDtoStatus {
   readyForDispatch,
   assigned,
@@ -1409,6 +1437,34 @@ enum MobilityIncidentDtoType {
   }
 }
 
+enum MobilityRideDetailDtoBookingFor {
+  self,
+  other,
+  unknown;
+
+  static MobilityRideDetailDtoBookingFor fromJson(String value) {
+    switch (value) {
+      case "SELF":
+        return MobilityRideDetailDtoBookingFor.self;
+      case "OTHER":
+        return MobilityRideDetailDtoBookingFor.other;
+      default:
+        return MobilityRideDetailDtoBookingFor.unknown;
+    }
+  }
+
+  String toJson() {
+    switch (this) {
+      case MobilityRideDetailDtoBookingFor.self:
+        return "SELF";
+      case MobilityRideDetailDtoBookingFor.other:
+        return "OTHER";
+      case MobilityRideDetailDtoBookingFor.unknown:
+        return "SELF";
+    }
+  }
+}
+
 enum MobilityRideDetailDtoServiceType {
   taxi,
   taxiMoto,
@@ -1491,6 +1547,87 @@ enum MobilityRideDetailDtoStatus {
         return "CANCELLED";
       case MobilityRideDetailDtoStatus.unknown:
         return "DRIVER_ASSIGNED";
+    }
+  }
+}
+
+enum MobilityRideOfferDtoServiceType {
+  taxi,
+  taxiMoto,
+  courier,
+  cargo,
+  unknown;
+
+  static MobilityRideOfferDtoServiceType fromJson(String value) {
+    switch (value) {
+      case "TAXI":
+        return MobilityRideOfferDtoServiceType.taxi;
+      case "TAXI_MOTO":
+        return MobilityRideOfferDtoServiceType.taxiMoto;
+      case "COURIER":
+        return MobilityRideOfferDtoServiceType.courier;
+      case "CARGO":
+        return MobilityRideOfferDtoServiceType.cargo;
+      default:
+        return MobilityRideOfferDtoServiceType.unknown;
+    }
+  }
+
+  String toJson() {
+    switch (this) {
+      case MobilityRideOfferDtoServiceType.taxi:
+        return "TAXI";
+      case MobilityRideOfferDtoServiceType.taxiMoto:
+        return "TAXI_MOTO";
+      case MobilityRideOfferDtoServiceType.courier:
+        return "COURIER";
+      case MobilityRideOfferDtoServiceType.cargo:
+        return "CARGO";
+      case MobilityRideOfferDtoServiceType.unknown:
+        return "TAXI";
+    }
+  }
+}
+
+enum MobilityRideOfferDtoStatus {
+  offered,
+  accepted,
+  declined,
+  expired,
+  superseded,
+  unknown;
+
+  static MobilityRideOfferDtoStatus fromJson(String value) {
+    switch (value) {
+      case "OFFERED":
+        return MobilityRideOfferDtoStatus.offered;
+      case "ACCEPTED":
+        return MobilityRideOfferDtoStatus.accepted;
+      case "DECLINED":
+        return MobilityRideOfferDtoStatus.declined;
+      case "EXPIRED":
+        return MobilityRideOfferDtoStatus.expired;
+      case "SUPERSEDED":
+        return MobilityRideOfferDtoStatus.superseded;
+      default:
+        return MobilityRideOfferDtoStatus.unknown;
+    }
+  }
+
+  String toJson() {
+    switch (this) {
+      case MobilityRideOfferDtoStatus.offered:
+        return "OFFERED";
+      case MobilityRideOfferDtoStatus.accepted:
+        return "ACCEPTED";
+      case MobilityRideOfferDtoStatus.declined:
+        return "DECLINED";
+      case MobilityRideOfferDtoStatus.expired:
+        return "EXPIRED";
+      case MobilityRideOfferDtoStatus.superseded:
+        return "SUPERSEDED";
+      case MobilityRideOfferDtoStatus.unknown:
+        return "OFFERED";
     }
   }
 }
@@ -2537,8 +2674,10 @@ class DriverMissionResponseDto {
   const DriverMissionResponseDto({
     required this.id,
     required this.shipmentId,
+    this.sourceDomain,
     required this.orderId,
     required this.fulfillmentTaskId,
+    this.foodOrderId,
     required this.assignedDriverProfileId,
     required this.status,
     required this.customerFullName,
@@ -2562,8 +2701,10 @@ class DriverMissionResponseDto {
 
   final String id;
   final String shipmentId;
+  final DriverMissionResponseDtoSourceDomain? sourceDomain;
   final String orderId;
   final String fulfillmentTaskId;
+  final String? foodOrderId;
   final String assignedDriverProfileId;
   final DriverMissionResponseDtoStatus status;
   final String customerFullName;
@@ -2588,8 +2729,10 @@ class DriverMissionResponseDto {
     return DriverMissionResponseDto(
       id: json["id"] as String,
       shipmentId: json["shipmentId"] as String,
+      sourceDomain: json["sourceDomain"] == null ? null : DriverMissionResponseDtoSourceDomain.fromJson(json["sourceDomain"] as String),
       orderId: json["orderId"] as String,
       fulfillmentTaskId: json["fulfillmentTaskId"] as String,
+      foodOrderId: json["foodOrderId"] as String?,
       assignedDriverProfileId: json["assignedDriverProfileId"] as String,
       status: DriverMissionResponseDtoStatus.fromJson(json["status"] as String),
       customerFullName: json["customerFullName"] as String,
@@ -2616,8 +2759,10 @@ class DriverMissionResponseDto {
     return {
       "id": id,
       "shipmentId": shipmentId,
+      "sourceDomain": ?sourceDomain?.toJson(),
       "orderId": orderId,
       "fulfillmentTaskId": fulfillmentTaskId,
+      "foodOrderId": ?foodOrderId,
       "assignedDriverProfileId": assignedDriverProfileId,
       "status": status.toJson(),
       "customerFullName": customerFullName,
@@ -3397,6 +3542,9 @@ class MobilityRideDetailDto {
     required this.status,
     required this.pickupAddressSnapshot,
     required this.dropoffAddressSnapshot,
+    required this.bookingFor,
+    this.passengerName,
+    this.passengerPhone,
     required this.driverDisplayName,
     required this.vehicleLabel,
     required this.fareAmount,
@@ -3424,6 +3572,9 @@ class MobilityRideDetailDto {
   final MobilityRideDetailDtoStatus status;
   final String pickupAddressSnapshot;
   final String dropoffAddressSnapshot;
+  final MobilityRideDetailDtoBookingFor bookingFor;
+  final String? passengerName;
+  final String? passengerPhone;
   final String driverDisplayName;
   final String vehicleLabel;
   final num fareAmount;
@@ -3452,6 +3603,9 @@ class MobilityRideDetailDto {
       status: MobilityRideDetailDtoStatus.fromJson(json["status"] as String),
       pickupAddressSnapshot: json["pickupAddressSnapshot"] as String,
       dropoffAddressSnapshot: json["dropoffAddressSnapshot"] as String,
+      bookingFor: MobilityRideDetailDtoBookingFor.fromJson(json["bookingFor"] as String),
+      passengerName: json["passengerName"] as String?,
+      passengerPhone: json["passengerPhone"] as String?,
       driverDisplayName: json["driverDisplayName"] as String,
       vehicleLabel: json["vehicleLabel"] as String,
       fareAmount: (json["fareAmount"] as num?)!,
@@ -3482,6 +3636,9 @@ class MobilityRideDetailDto {
       "status": status.toJson(),
       "pickupAddressSnapshot": pickupAddressSnapshot,
       "dropoffAddressSnapshot": dropoffAddressSnapshot,
+      "bookingFor": bookingFor.toJson(),
+      "passengerName": ?passengerName,
+      "passengerPhone": ?passengerPhone,
       "driverDisplayName": driverDisplayName,
       "vehicleLabel": vehicleLabel,
       "fareAmount": fareAmount,
@@ -3501,6 +3658,66 @@ class MobilityRideDetailDto {
       "track": track.map((e) => e.toJson()).toList(),
       "timeline": timeline.map((e) => e.toJson()).toList(),
       "cargoSummary": ?cargoSummary?.toJson(),
+    };
+  }
+}
+
+class MobilityRideOfferDto {
+  const MobilityRideOfferDto({
+    required this.id,
+    required this.rideRequestId,
+    required this.driverProfileId,
+    required this.status,
+    required this.offeredAt,
+    required this.expiresAt,
+    required this.serviceType,
+    required this.pickupAddressSnapshot,
+    required this.dropoffAddressSnapshot,
+    this.estimatedFareAmount,
+    this.geodesicDistanceKm,
+  });
+
+  final String id;
+  final String rideRequestId;
+  final String driverProfileId;
+  final MobilityRideOfferDtoStatus status;
+  final String offeredAt;
+  final String expiresAt;
+  final MobilityRideOfferDtoServiceType serviceType;
+  final String pickupAddressSnapshot;
+  final String dropoffAddressSnapshot;
+  final num? estimatedFareAmount;
+  final num? geodesicDistanceKm;
+
+  factory MobilityRideOfferDto.fromJson(Map<String, dynamic> json) {
+    return MobilityRideOfferDto(
+      id: json["id"] as String,
+      rideRequestId: json["rideRequestId"] as String,
+      driverProfileId: json["driverProfileId"] as String,
+      status: MobilityRideOfferDtoStatus.fromJson(json["status"] as String),
+      offeredAt: json["offeredAt"] as String,
+      expiresAt: json["expiresAt"] as String,
+      serviceType: MobilityRideOfferDtoServiceType.fromJson(json["serviceType"] as String),
+      pickupAddressSnapshot: json["pickupAddressSnapshot"] as String,
+      dropoffAddressSnapshot: json["dropoffAddressSnapshot"] as String,
+      estimatedFareAmount: (json["estimatedFareAmount"] as num?),
+      geodesicDistanceKm: (json["geodesicDistanceKm"] as num?),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "id": id,
+      "rideRequestId": rideRequestId,
+      "driverProfileId": driverProfileId,
+      "status": status.toJson(),
+      "offeredAt": offeredAt,
+      "expiresAt": expiresAt,
+      "serviceType": serviceType.toJson(),
+      "pickupAddressSnapshot": pickupAddressSnapshot,
+      "dropoffAddressSnapshot": dropoffAddressSnapshot,
+      "estimatedFareAmount": ?estimatedFareAmount,
+      "geodesicDistanceKm": ?geodesicDistanceKm,
     };
   }
 }

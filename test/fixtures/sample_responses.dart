@@ -367,6 +367,7 @@ Map<String, dynamic> sampleMobilityRide({
   'cargoSummary': cargoSummary,
   'pickupAddressSnapshot': 'Gare Casa-Voyageurs',
   'dropoffAddressSnapshot': 'Aéroport Mohammed V',
+  'bookingFor': 'SELF',
   'driverDisplayName': 'Amine Tazi',
   'vehicleLabel': 'Dacia Logan · 12345-A-6',
   'fareAmount': 85.0,

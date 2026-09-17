@@ -104,6 +104,11 @@ abstract class DriverApiClient {
   Future<MobilityIncidentDto> createMobilityIncident(
     CreateOwnMobilityIncidentRequestDto body,
   );
+  /// Bounded-polling discovery feed: the driver's currently pending
+  /// (unexpired, unclaimed) Mobility ride offers, straight from
+  /// `MobilityDriverController` - not the aggregation `DriverController`
+  /// used by [mobilityOffers] above.
+  Future<List<MobilityRideOfferDto>> listMobilityOffers();
   Future<MobilityRideDetailDto> acceptMobilityOffer(String offerId);
   Future<MobilityRideDetailDto> transitionMobilityRide(
     String rideId,
@@ -483,6 +488,14 @@ class DioDriverApiClient implements DriverApiClient {
       data: body.toJson(),
     );
     return MobilityIncidentDto.fromJson(response.data as Map<String, dynamic>);
+  });
+
+  @override
+  Future<List<MobilityRideOfferDto>> listMobilityOffers() => _guarded(() async {
+    final response = await _dio.get('/v1/mobility/driver/offers');
+    return (response.data as List<dynamic>)
+        .map((e) => MobilityRideOfferDto.fromJson(e as Map<String, dynamic>))
+        .toList();
   });
 
   @override

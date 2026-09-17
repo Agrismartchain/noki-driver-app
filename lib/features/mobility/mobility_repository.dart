@@ -50,6 +50,12 @@ class MobilityRepository {
     );
   }
 
+  /// Lean, purpose-built discovery feed for bounded polling (see
+  /// [MobilityOfferPollerController]) - distinct from [offers] above, which
+  /// hits the aggregation `DriverController` and returns paginated results
+  /// mixed in with other own-scoped Mobility reads.
+  Future<List<MobilityRideOfferDto>> pollPendingOffers() => _client.listMobilityOffers();
+
   Future<MobilityRideDetailDto> acceptOffer(String offerId) => _client.acceptMobilityOffer(offerId);
 
   Future<MobilityRideDetailDto> transitionRide(String rideId, TransitionMobilityRideDtoStatus status) {

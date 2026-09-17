@@ -12,6 +12,7 @@ import '../delivery/delivery_qr_scan_screen.dart';
 import '../delivery/delivery_work_card.dart';
 import '../driver_context/driver_context_repository.dart';
 import '../mobility/mobility_offer_detail_screen.dart';
+import '../mobility/mobility_offer_poller.dart';
 import '../mobility/mobility_ride_screen.dart';
 import '../mobility/mobility_work_card.dart';
 import 'work_feed_repository.dart';
@@ -35,6 +36,35 @@ class WorkFeedScreen extends ConsumerStatefulWidget {
 
 class _WorkFeedScreenState extends ConsumerState<WorkFeedScreen> {
   _WorkFeedFilter _filter = _WorkFeedFilter.all;
+
+  // Captured once so `dispose()` can stop the timer without touching `ref`
+  // (Riverpod forbids `ref.read`/`ref.watch` once the element is being
+  // unmounted).
+  late final MobilityOfferPollerController _offerPoller;
+
+  @override
+  void initState() {
+    super.initState();
+    // Automatic Mobility offer discovery (in addition to pull-to-refresh
+    // below): start bounded polling as soon as the Work screen is mounted,
+    // tied to this screen's own lifecycle - see mobility_offer_poller.dart.
+    _offerPoller = ref.read(mobilityOfferPollerControllerProvider);
+    _offerPoller.start(widget.scope);
+  }
+
+  @override
+  void didUpdateWidget(covariant WorkFeedScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.scope != widget.scope) {
+      _offerPoller.start(widget.scope);
+    }
+  }
+
+  @override
+  void dispose() {
+    _offerPoller.stop();
+    super.dispose();
+  }
 
   List<DriverWorkFeedItemDto> _applyFilter(List<DriverWorkFeedItemDto> items) {
     switch (_filter) {

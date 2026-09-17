@@ -8,6 +8,7 @@ import '../core/theme/app_theme.dart';
 import '../features/auth/auth_providers.dart';
 import '../features/driver_context/driver_context_repository.dart';
 import '../features/driver_context/home_screen.dart';
+import '../features/mobility/mobility_offer_poller.dart';
 import '../features/settings/settings_screen.dart';
 import '../features/work_feed/work_feed_screen.dart';
 
@@ -42,18 +43,23 @@ class _HomeShellState extends ConsumerState<HomeShell>
 
   // GPS publishing is foreground-only this phase (mandate §10/§35) - no
   // duplicate stream survives a background/foreground cycle, and nothing is
-  // sent while the app isn't visible to the driver.
+  // sent while the app isn't visible to the driver. Mobility offer polling
+  // (DRIVER-APP offer auto-discovery) follows the exact same rule - this is
+  // the one place that pauses/resumes both.
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     final publisher = ref.read(gpsPublisherControllerProvider);
+    final offerPoller = ref.read(mobilityOfferPollerControllerProvider);
     switch (state) {
       case AppLifecycleState.resumed:
         publisher.resumeForForeground();
+        offerPoller.resumeForForeground();
       case AppLifecycleState.paused:
       case AppLifecycleState.detached:
       case AppLifecycleState.inactive:
       case AppLifecycleState.hidden:
         publisher.pauseForBackground();
+        offerPoller.pauseForBackground();
     }
   }
 

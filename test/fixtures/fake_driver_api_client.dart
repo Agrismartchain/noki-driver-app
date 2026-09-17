@@ -69,6 +69,11 @@ class FakeDriverApiClient implements DriverApiClient {
   DriverMobilityOfferListResponseDto? mobilityOffersResponse;
   AppFailure? mobilityOffersFailure;
 
+  List<MobilityRideOfferDto>? listMobilityOffersResponse;
+  Object? listMobilityOffersError;
+  Duration? listMobilityOffersDelay;
+  int listMobilityOffersCallCount = 0;
+
   MobilityRideDetailDto? currentMobilityRideResponse;
   AppFailure? currentMobilityRideFailure;
 
@@ -280,6 +285,16 @@ class FakeDriverApiClient implements DriverApiClient {
   }) async {
     if (mobilityOffersFailure != null) throw mobilityOffersFailure!;
     return mobilityOffersResponse!;
+  }
+
+  @override
+  Future<List<MobilityRideOfferDto>> listMobilityOffers() async {
+    listMobilityOffersCallCount++;
+    if (listMobilityOffersDelay != null) {
+      await Future<void>.delayed(listMobilityOffersDelay!);
+    }
+    if (listMobilityOffersError != null) throw listMobilityOffersError!;
+    return listMobilityOffersResponse ?? const [];
   }
 
   int currentMobilityRideCallCount = 0;
