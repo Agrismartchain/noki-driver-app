@@ -1,0 +1,9 @@
+{
+  "_comment_1": "Template for a real production dart-defines file. Copy this to dart_defines/production.json (gitignored) and fill in the real values - never commit the filled-in file.",
+  "_comment_2": "Consume with: flutter build apk --release --dart-define-from-file=dart_defines/production.json",
+  "_comment_3": "NOKI_ENV must be exactly 'production' - AppConfig.fromValues() (lib/core/config/app_environment.dart) throws if NOKI_API_BASE_URL resolves to a loopback host (localhost/127.0.0.1/10.0.2.2/::1) or a non-HTTPS scheme whenever NOKI_ENV is 'staging' or 'production'. That guard only runs when NOKI_ENV is set to staging/production - see README.md 'Production builds' for why NOKI_ENV must always be passed explicitly.",
+  "NOKI_ENV": "production",
+
+  "_comment_4": "PENDING: no production/pilot API host is confirmed provisioned or live as of this writing. noki-infra/docs/PILOT_DEPLOYMENT_RUNBOOK.md (section 26, 'Mobile connectivity target') names https://api-pilot.noki-services.com as the forward-looking value for Customer/Driver future RC builds once DNS/hosting for that host is live - it explicitly states 'No APK build in this phase'. Do NOT copy that hostname in here as-is until it is confirmed live; replace the placeholder below with the real, confirmed HTTPS host when infra provisioning is complete.",
+  "NOKI_API_BASE_URL": "https://<PENDING-INFRA-PROVISIONING>.noki-services.com"
+}

@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart' show kReleaseMode;
+
 /// The three environments the Driver App can be built for.
 ///
 /// Selected at build time via `--dart-define=NOKI_ENV=development|staging|production`
@@ -58,6 +60,23 @@ class AppConfig {
   factory AppConfig.fromDefines() {
     const envRaw = String.fromEnvironment('NOKI_ENV', defaultValue: 'development');
     const apiBaseUrl = String.fromEnvironment('NOKI_API_BASE_URL', defaultValue: _defaultApiBaseUrl);
+
+    // `NOKI_ENV` silently defaults to "development" when no --dart-define is
+    // passed at all, which would otherwise let a `flutter build apk --release`
+    // run with zero dart-defines compile and ship pointed at a loopback host
+    // (the staging/production guard below never runs, because it never sees
+    // "staging"/"production"). Release builds must always declare NOKI_ENV
+    // explicitly - see README.md "Production builds".
+    const hasExplicitEnv = bool.hasEnvironment('NOKI_ENV');
+    if (kReleaseMode && !hasExplicitEnv) {
+      throw StateError(
+        'NOKI_ENV was not passed via --dart-define (or '
+        '--dart-define-from-file) for this release build. Release builds '
+        'must always declare NOKI_ENV explicitly - see README.md '
+        '"Production builds" - otherwise the build silently defaults to '
+        '"development" and may ship pointed at a loopback API host.',
+      );
+    }
 
     return AppConfig.fromValues(envRaw: envRaw, apiBaseUrlRaw: apiBaseUrl);
   }

@@ -1632,6 +1632,94 @@ enum MobilityRideOfferDtoStatus {
   }
 }
 
+enum MobilityRideRatingSnapshotDtoTags {
+  vehicleClean,
+  pleasantDriving,
+  driverPolite,
+  respectful,
+  pleasantMusic,
+  punctual,
+  carefulDelivery,
+  tooTalkative,
+  dangerousDriving,
+  dirtyVehicle,
+  impolite,
+  badBehavior,
+  significantDelay,
+  askedForExtraMoney,
+  unknown;
+
+  static MobilityRideRatingSnapshotDtoTags fromJson(String value) {
+    switch (value) {
+      case "VEHICLE_CLEAN":
+        return MobilityRideRatingSnapshotDtoTags.vehicleClean;
+      case "PLEASANT_DRIVING":
+        return MobilityRideRatingSnapshotDtoTags.pleasantDriving;
+      case "DRIVER_POLITE":
+        return MobilityRideRatingSnapshotDtoTags.driverPolite;
+      case "RESPECTFUL":
+        return MobilityRideRatingSnapshotDtoTags.respectful;
+      case "PLEASANT_MUSIC":
+        return MobilityRideRatingSnapshotDtoTags.pleasantMusic;
+      case "PUNCTUAL":
+        return MobilityRideRatingSnapshotDtoTags.punctual;
+      case "CAREFUL_DELIVERY":
+        return MobilityRideRatingSnapshotDtoTags.carefulDelivery;
+      case "TOO_TALKATIVE":
+        return MobilityRideRatingSnapshotDtoTags.tooTalkative;
+      case "DANGEROUS_DRIVING":
+        return MobilityRideRatingSnapshotDtoTags.dangerousDriving;
+      case "DIRTY_VEHICLE":
+        return MobilityRideRatingSnapshotDtoTags.dirtyVehicle;
+      case "IMPOLITE":
+        return MobilityRideRatingSnapshotDtoTags.impolite;
+      case "BAD_BEHAVIOR":
+        return MobilityRideRatingSnapshotDtoTags.badBehavior;
+      case "SIGNIFICANT_DELAY":
+        return MobilityRideRatingSnapshotDtoTags.significantDelay;
+      case "ASKED_FOR_EXTRA_MONEY":
+        return MobilityRideRatingSnapshotDtoTags.askedForExtraMoney;
+      default:
+        return MobilityRideRatingSnapshotDtoTags.unknown;
+    }
+  }
+
+  String toJson() {
+    switch (this) {
+      case MobilityRideRatingSnapshotDtoTags.vehicleClean:
+        return "VEHICLE_CLEAN";
+      case MobilityRideRatingSnapshotDtoTags.pleasantDriving:
+        return "PLEASANT_DRIVING";
+      case MobilityRideRatingSnapshotDtoTags.driverPolite:
+        return "DRIVER_POLITE";
+      case MobilityRideRatingSnapshotDtoTags.respectful:
+        return "RESPECTFUL";
+      case MobilityRideRatingSnapshotDtoTags.pleasantMusic:
+        return "PLEASANT_MUSIC";
+      case MobilityRideRatingSnapshotDtoTags.punctual:
+        return "PUNCTUAL";
+      case MobilityRideRatingSnapshotDtoTags.carefulDelivery:
+        return "CAREFUL_DELIVERY";
+      case MobilityRideRatingSnapshotDtoTags.tooTalkative:
+        return "TOO_TALKATIVE";
+      case MobilityRideRatingSnapshotDtoTags.dangerousDriving:
+        return "DANGEROUS_DRIVING";
+      case MobilityRideRatingSnapshotDtoTags.dirtyVehicle:
+        return "DIRTY_VEHICLE";
+      case MobilityRideRatingSnapshotDtoTags.impolite:
+        return "IMPOLITE";
+      case MobilityRideRatingSnapshotDtoTags.badBehavior:
+        return "BAD_BEHAVIOR";
+      case MobilityRideRatingSnapshotDtoTags.significantDelay:
+        return "SIGNIFICANT_DELAY";
+      case MobilityRideRatingSnapshotDtoTags.askedForExtraMoney:
+        return "ASKED_FOR_EXTRA_MONEY";
+      case MobilityRideRatingSnapshotDtoTags.unknown:
+        return "VEHICLE_CLEAN";
+    }
+  }
+}
+
 enum RouteGeometryDtoType {
   linestring,
   unknown;
@@ -3564,6 +3652,7 @@ class MobilityRideDetailDto {
     required this.track,
     required this.timeline,
     this.cargoSummary,
+    this.currentCustomerRating,
   });
 
   final String id;
@@ -3594,6 +3683,7 @@ class MobilityRideDetailDto {
   final List<MobilityTrackPointDto> track;
   final List<MobilityRideTimelineEntryDto> timeline;
   final DriverCargoSummaryDto? cargoSummary;
+  final MobilityRideRatingSnapshotDto? currentCustomerRating;
 
   factory MobilityRideDetailDto.fromJson(Map<String, dynamic> json) {
     return MobilityRideDetailDto(
@@ -3625,6 +3715,7 @@ class MobilityRideDetailDto {
       track: (json["track"] as List<dynamic>).map((e) => MobilityTrackPointDto.fromJson(e as Map<String, dynamic>)).toList(),
       timeline: (json["timeline"] as List<dynamic>).map((e) => MobilityRideTimelineEntryDto.fromJson(e as Map<String, dynamic>)).toList(),
       cargoSummary: json["cargoSummary"] == null ? null : DriverCargoSummaryDto.fromJson(json["cargoSummary"] as Map<String, dynamic>),
+      currentCustomerRating: json["currentCustomerRating"] == null ? null : MobilityRideRatingSnapshotDto.fromJson(json["currentCustomerRating"] as Map<String, dynamic>),
     );
   }
 
@@ -3658,6 +3749,7 @@ class MobilityRideDetailDto {
       "track": track.map((e) => e.toJson()).toList(),
       "timeline": timeline.map((e) => e.toJson()).toList(),
       "cargoSummary": ?cargoSummary?.toJson(),
+      "currentCustomerRating": ?currentCustomerRating?.toJson(),
     };
   }
 }
@@ -3718,6 +3810,42 @@ class MobilityRideOfferDto {
       "dropoffAddressSnapshot": dropoffAddressSnapshot,
       "estimatedFareAmount": ?estimatedFareAmount,
       "geodesicDistanceKm": ?geodesicDistanceKm,
+    };
+  }
+}
+
+class MobilityRideRatingSnapshotDto {
+  const MobilityRideRatingSnapshotDto({
+    required this.id,
+    required this.stars,
+    required this.tags,
+    this.comment,
+    required this.createdAt,
+  });
+
+  final String id;
+  final num stars;
+  final List<MobilityRideRatingSnapshotDtoTags> tags;
+  final String? comment;
+  final String createdAt;
+
+  factory MobilityRideRatingSnapshotDto.fromJson(Map<String, dynamic> json) {
+    return MobilityRideRatingSnapshotDto(
+      id: json["id"] as String,
+      stars: (json["stars"] as num?)!,
+      tags: (json["tags"] as List<dynamic>).map((e) => MobilityRideRatingSnapshotDtoTags.fromJson(e as String)).toList(),
+      comment: json["comment"] as String?,
+      createdAt: json["createdAt"] as String,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "id": id,
+      "stars": stars,
+      "tags": tags.map((e) => e.toJson()).toList(),
+      "comment": ?comment,
+      "createdAt": createdAt,
     };
   }
 }

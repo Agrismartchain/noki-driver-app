@@ -56,3 +56,8 @@ app.*.map.json
 *.mobileprovision
 key.properties
 
+# Filled-in build-time dart-defines (real API hosts/config) - only the
+# checked-in *.json.example templates under dart_defines/ are committed.
+/dart_defines/*.json
+!/dart_defines/*.json.example
+

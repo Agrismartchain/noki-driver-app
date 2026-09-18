@@ -114,12 +114,16 @@ node tool/generate_api_models.mjs --check  # fail if generated output is stale (
 
 ```json
 {
-  "apiHead": "8888eb9dfbb7a7f5269cc31ee87dd157abd21f7e",
-  "contractsVersion": "0.44.0",
-  "openapiChecksum": "45429a359e1d2dd78c06810a1b20f595e4d87a75ffdd0b93a819b8b037dee0ba",
+  "apiHead": "7ba6b292d97b7abd7128837ce8674518a3bc8bee",
+  "contractsVersion": "0.73.0",
+  "openapiChecksum": "78aa9e58226ef3774b15e31d6e72645680b65d1ade60718eb42d3f3351688ec5",
   "includedOperationIds": ["AuthController_login", "...", "DriverController_workFeed"]
 }
 ```
+
+(Illustrative shape only - always read the checked-in `contract/lock.json` for
+the current, real values; this snippet goes stale the moment the lock is
+regenerated again.)
 
 No token, credential or credentialed URL is ever stored here or anywhere
 else in this repo. `generatorVersion` is a manual semver for the generator
@@ -138,6 +142,39 @@ flutter run \
 `NOKI_ENV` is one of `development` / `staging` / `production` (see
 `lib/core/config/app_environment.dart`). No environment's URL, token or
 credential is checked into this repository.
+
+### Production builds
+
+**There is no production/staging environment provisioned or live for this
+app yet.** `dart_defines/production.json.example` is a template for the
+dart-defines a real production build will need - copy it to
+`dart_defines/production.json` (gitignored, never commit the filled-in
+file) once a real production API host is confirmed, fill in the real
+`NOKI_API_BASE_URL`, and build with:
+
+```bash
+flutter build apk --release --dart-define-from-file=dart_defines/production.json
+```
+
+The API host in the template is an explicit placeholder
+(`https://<PENDING-INFRA-PROVISIONING>.noki-services.com`), not a real
+value: `noki-infra/docs/PILOT_DEPLOYMENT_RUNBOOK.md` (section 26, "Mobile
+connectivity target") names `https://api-pilot.noki-services.com` as the
+*forward-looking* value for "Customer/Driver future RC builds" once DNS/
+hosting for that host is live, and states explicitly "No APK build in this
+phase" - so it must not be treated as ready to ship against today.
+
+**Critical footgun:** `AppConfig.fromValues()` only rejects a loopback host
+/ non-HTTPS `NOKI_API_BASE_URL` (see `_guardAgainstUnsafeBaseUrl`,
+`lib/core/config/app_environment.dart`) when `NOKI_ENV` is `staging` or
+`production`. `NOKI_ENV` defaults to `development` when not passed at all
+- so running `flutter build apk --release` with **no dart-defines**
+compiles and installs successfully, and silently ships a release APK
+pointed at `http://127.0.0.1:3000` (the loopback dev default), because the
+safety guard is keyed off `NOKI_ENV`, not Flutter's debug/profile/release
+build mode. **CI/release tooling must always pass `NOKI_ENV` explicitly**
+(e.g. via `--dart-define-from-file`) for any build that is meant to reach a
+real device outside local development - never rely on the default.
 
 ## Authentication
 
