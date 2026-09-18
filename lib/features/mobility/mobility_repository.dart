@@ -20,17 +20,34 @@ class MobilityRepository {
   final DriverApiClient _client;
 
   Future<DriverMobilityOfferListResponseDto> offers(DriverScope scope) {
-    return _client.mobilityOffers(organizationId: scope.organizationId, countryCode: scope.countryCode);
+    return _client.mobilityOffers(
+      organizationId: scope.organizationId,
+      countryCode: scope.countryCode,
+    );
   }
 
   Future<MobilityRideDetailDto?> currentRide(DriverScope scope) {
-    return _client.currentMobilityRide(organizationId: scope.organizationId, countryCode: scope.countryCode);
+    return _client.currentMobilityRide(
+      organizationId: scope.organizationId,
+      countryCode: scope.countryCode,
+    );
   }
 
-  Future<MobilityRideDetailDto> rideById(String rideId) => _client.mobilityRideById(rideId);
+  Future<List<MobilityRideDetailDto>> history(DriverScope scope) {
+    return _client.mobilityRideHistory(
+      organizationId: scope.organizationId,
+      countryCode: scope.countryCode,
+    );
+  }
+
+  Future<MobilityRideDetailDto> rideById(String rideId) =>
+      _client.mobilityRideById(rideId);
 
   Future<DriverMobilityIncidentListResponseDto> incidents(DriverScope scope) {
-    return _client.mobilityIncidents(organizationId: scope.organizationId, countryCode: scope.countryCode);
+    return _client.mobilityIncidents(
+      organizationId: scope.organizationId,
+      countryCode: scope.countryCode,
+    );
   }
 
   Future<MobilityIncidentDto> createIncident(
@@ -54,12 +71,20 @@ class MobilityRepository {
   /// [MobilityOfferPollerController]) - distinct from [offers] above, which
   /// hits the aggregation `DriverController` and returns paginated results
   /// mixed in with other own-scoped Mobility reads.
-  Future<List<MobilityRideOfferDto>> pollPendingOffers() => _client.listMobilityOffers();
+  Future<List<MobilityRideOfferDto>> pollPendingOffers() =>
+      _client.listMobilityOffers();
 
-  Future<MobilityRideDetailDto> acceptOffer(String offerId) => _client.acceptMobilityOffer(offerId);
+  Future<MobilityRideDetailDto> acceptOffer(String offerId) =>
+      _client.acceptMobilityOffer(offerId);
 
-  Future<MobilityRideDetailDto> transitionRide(String rideId, TransitionMobilityRideDtoStatus status) {
-    return _client.transitionMobilityRide(rideId, TransitionMobilityRideDto(status: status));
+  Future<MobilityRideDetailDto> transitionRide(
+    String rideId,
+    TransitionMobilityRideDtoStatus status,
+  ) {
+    return _client.transitionMobilityRide(
+      rideId,
+      TransitionMobilityRideDto(status: status),
+    );
   }
 }
 
@@ -67,18 +92,27 @@ final mobilityRepositoryProvider = Provider<MobilityRepository>((ref) {
   return MobilityRepository(ref.watch(driverApiClientProvider));
 });
 
-final mobilityOffersProvider = FutureProvider.autoDispose.family<DriverMobilityOfferListResponseDto, DriverScope>(
-  (ref, scope) => ref.watch(mobilityRepositoryProvider).offers(scope),
-);
+final mobilityOffersProvider = FutureProvider.autoDispose
+    .family<DriverMobilityOfferListResponseDto, DriverScope>(
+      (ref, scope) => ref.watch(mobilityRepositoryProvider).offers(scope),
+    );
 
-final currentRideProvider = FutureProvider.autoDispose.family<MobilityRideDetailDto?, DriverScope>(
-  (ref, scope) => ref.watch(mobilityRepositoryProvider).currentRide(scope),
-);
+final currentRideProvider = FutureProvider.autoDispose
+    .family<MobilityRideDetailDto?, DriverScope>(
+      (ref, scope) => ref.watch(mobilityRepositoryProvider).currentRide(scope),
+    );
 
-final rideByIdProvider = FutureProvider.autoDispose.family<MobilityRideDetailDto, String>(
-  (ref, rideId) => ref.watch(mobilityRepositoryProvider).rideById(rideId),
-);
+final mobilityRideHistoryProvider = FutureProvider.autoDispose
+    .family<List<MobilityRideDetailDto>, DriverScope>(
+      (ref, scope) => ref.watch(mobilityRepositoryProvider).history(scope),
+    );
 
-final mobilityIncidentsProvider = FutureProvider.autoDispose.family<DriverMobilityIncidentListResponseDto, DriverScope>(
-  (ref, scope) => ref.watch(mobilityRepositoryProvider).incidents(scope),
-);
+final rideByIdProvider = FutureProvider.autoDispose
+    .family<MobilityRideDetailDto, String>(
+      (ref, rideId) => ref.watch(mobilityRepositoryProvider).rideById(rideId),
+    );
+
+final mobilityIncidentsProvider = FutureProvider.autoDispose
+    .family<DriverMobilityIncidentListResponseDto, DriverScope>(
+      (ref, scope) => ref.watch(mobilityRepositoryProvider).incidents(scope),
+    );

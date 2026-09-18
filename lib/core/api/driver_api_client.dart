@@ -94,6 +94,12 @@ abstract class DriverApiClient {
     required String organizationId,
     required String countryCode,
   });
+  Future<List<MobilityRideDetailDto>> mobilityRideHistory({
+    required String organizationId,
+    required String countryCode,
+    int page = 1,
+    int pageSize = 25,
+  });
   Future<MobilityRideDetailDto> mobilityRideById(String rideId);
   Future<DriverMobilityIncidentListResponseDto> mobilityIncidents({
     required String organizationId,
@@ -104,6 +110,7 @@ abstract class DriverApiClient {
   Future<MobilityIncidentDto> createMobilityIncident(
     CreateOwnMobilityIncidentRequestDto body,
   );
+
   /// Bounded-polling discovery feed: the driver's currently pending
   /// (unexpired, unclaimed) Mobility ride offers, straight from
   /// `MobilityDriverController` - not the aggregation `DriverController`
@@ -448,6 +455,30 @@ class DioDriverApiClient implements DriverApiClient {
       throw AppFailure.fromDioException(e);
     }
   }
+
+  @override
+  Future<List<MobilityRideDetailDto>> mobilityRideHistory({
+    required String organizationId,
+    required String countryCode,
+    int page = 1,
+    int pageSize = 25,
+  }) => _guarded(() async {
+    final response = await _dio.get(
+      '/v1/driver/mobility/rides/history',
+      queryParameters: {
+        'organizationId': organizationId,
+        'countryCode': countryCode,
+        'page': page,
+        'pageSize': pageSize,
+      },
+    );
+    final items =
+        (response.data as Map<String, dynamic>)['items'] as List<dynamic>? ??
+        const [];
+    return items
+        .map((e) => MobilityRideDetailDto.fromJson(e as Map<String, dynamic>))
+        .toList();
+  });
 
   @override
   Future<MobilityRideDetailDto> mobilityRideById(String rideId) =>

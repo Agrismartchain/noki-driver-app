@@ -11,6 +11,7 @@ import '../../core/ui/noki_ui.dart';
 import '../auth/auth_providers.dart';
 import '../delivery/delivery_history_screen.dart';
 import '../driver_context/driver_context_repository.dart';
+import '../mobility/mobility_history_screen.dart';
 import '../vehicles/vehicles_screen.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -399,14 +400,29 @@ class _OperationalActivityCard extends StatelessWidget {
             const SizedBox(height: AppSpacing.lg),
             Align(
               alignment: AlignmentDirectional.centerStart,
-              child: FilledButton.icon(
-                onPressed: () => Navigator.of(context).push(
-                  MaterialPageRoute(
-                    builder: (_) => DeliveryHistoryScreen(scope: scope!),
+              child: Wrap(
+                spacing: AppSpacing.sm,
+                runSpacing: AppSpacing.sm,
+                children: [
+                  FilledButton.icon(
+                    onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => DeliveryHistoryScreen(scope: scope!),
+                      ),
+                    ),
+                    icon: const Icon(Icons.history),
+                    label: Text(l10n.profileOpenHistory),
                   ),
-                ),
-                icon: const Icon(Icons.history),
-                label: Text(l10n.profileOpenHistory),
+                  OutlinedButton.icon(
+                    onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => MobilityHistoryScreen(scope: scope!),
+                      ),
+                    ),
+                    icon: const Icon(Icons.route_outlined),
+                    label: const Text('Historique Mobility'),
+                  ),
+                ],
               ),
             ),
           ],

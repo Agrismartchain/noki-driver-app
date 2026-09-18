@@ -77,6 +77,9 @@ class FakeDriverApiClient implements DriverApiClient {
   MobilityRideDetailDto? currentMobilityRideResponse;
   AppFailure? currentMobilityRideFailure;
 
+  List<MobilityRideDetailDto>? mobilityRideHistoryResponse;
+  AppFailure? mobilityRideHistoryFailure;
+
   MobilityRideDetailDto? mobilityRideByIdResponse;
   AppFailure? mobilityRideByIdFailure;
 
@@ -307,6 +310,17 @@ class FakeDriverApiClient implements DriverApiClient {
     currentMobilityRideCallCount++;
     if (currentMobilityRideFailure != null) throw currentMobilityRideFailure!;
     return currentMobilityRideResponse;
+  }
+
+  @override
+  Future<List<MobilityRideDetailDto>> mobilityRideHistory({
+    required String organizationId,
+    required String countryCode,
+    int page = 1,
+    int pageSize = 25,
+  }) async {
+    if (mobilityRideHistoryFailure != null) throw mobilityRideHistoryFailure!;
+    return mobilityRideHistoryResponse ?? const [];
   }
 
   @override
