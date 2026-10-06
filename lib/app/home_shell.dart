@@ -41,9 +41,12 @@ class _HomeShellState extends ConsumerState<HomeShell>
     super.dispose();
   }
 
-  // GPS publishing is foreground-only this phase (mandate §10/§35) - no
-  // duplicate stream survives a background/foreground cycle, and nothing is
-  // sent while the app isn't visible to the driver. Mobility offer polling
+  // Idle (available) GPS publishing is foreground-only (mandate §10/§35): no
+  // duplicate stream survives a background/foreground cycle and nothing is
+  // sent while the app isn't visible - EXCEPT tracking for an accepted
+  // ride/mission, which GpsPublisherController keeps alive in the background
+  // (B4/DRV-05) so the customer's live tracking survives a locked screen.
+  // Mobility offer polling
   // (DRIVER-APP offer auto-discovery) follows the exact same rule - this is
   // the one place that pauses/resumes both.
   @override

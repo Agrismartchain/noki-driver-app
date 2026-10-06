@@ -488,6 +488,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mobilityAcceptOfferCta => 'Accept offer';
 
   @override
+  String get mobilityDeclineOfferCta => 'Decline';
+
+  @override
   String get mobilityRideDetailTitle => 'Ride';
 
   @override

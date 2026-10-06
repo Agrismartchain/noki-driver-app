@@ -2194,6 +2194,26 @@ class CreateOwnMobilityIncidentRequestDto {
   }
 }
 
+class DeclineMobilityOfferDto {
+  const DeclineMobilityOfferDto({
+    this.reason,
+  });
+
+  final String? reason;
+
+  factory DeclineMobilityOfferDto.fromJson(Map<String, dynamic> json) {
+    return DeclineMobilityOfferDto(
+      reason: json["reason"] as String?,
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "reason": ?reason,
+    };
+  }
+}
+
 class DeliveryHandoffOtpChallengeResponseDto {
   const DeliveryHandoffOtpChallengeResponseDto({
     required this.challengeId,

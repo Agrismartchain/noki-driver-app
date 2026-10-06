@@ -92,6 +92,8 @@ class FakeDriverApiClient implements DriverApiClient {
 
   MobilityRideDetailDto? acceptMobilityOfferResponse;
   AppFailure? acceptMobilityOfferFailure;
+  String? lastDeclinedOfferId;
+  AppFailure? declineMobilityOfferFailure;
   String? lastAcceptedOfferId;
 
   MobilityRideDetailDto? transitionMobilityRideResponse;
@@ -99,6 +101,7 @@ class FakeDriverApiClient implements DriverApiClient {
   TransitionMobilityRideDto? lastTransitionMobilityRideBody;
 
   MobilityDriverDto? submitMobilityLocationResponse;
+  int submitMobilityLocationCalls = 0;
   AppFailure? submitMobilityLocationFailure;
   SubmitMobilityLocationDto? lastSubmitMobilityLocationRequest;
 
@@ -352,6 +355,23 @@ class FakeDriverApiClient implements DriverApiClient {
   }
 
   @override
+  Future<MobilityRideOfferDto> declineMobilityOffer(String offerId) async {
+    lastDeclinedOfferId = offerId;
+    if (declineMobilityOfferFailure != null) throw declineMobilityOfferFailure!;
+    return MobilityRideOfferDto.fromJson({
+      'id': offerId,
+      'rideRequestId': 'request-1',
+      'driverProfileId': 'driver-1',
+      'status': 'DECLINED',
+      'offeredAt': '2026-01-01T00:00:00.000Z',
+      'expiresAt': '2026-01-01T00:01:00.000Z',
+      'serviceType': 'TAXI',
+      'pickupAddressSnapshot': 'A',
+      'dropoffAddressSnapshot': 'B',
+    });
+  }
+
+  @override
   Future<MobilityRideDetailDto> acceptMobilityOffer(String offerId) async {
     lastAcceptedOfferId = offerId;
     if (acceptMobilityOfferFailure != null) throw acceptMobilityOfferFailure!;
@@ -375,10 +395,11 @@ class FakeDriverApiClient implements DriverApiClient {
     SubmitMobilityLocationDto body,
   ) async {
     lastSubmitMobilityLocationRequest = body;
+    submitMobilityLocationCalls += 1;
     if (submitMobilityLocationFailure != null) {
       throw submitMobilityLocationFailure!;
     }
-    return submitMobilityLocationResponse!;
+    return submitMobilityLocationResponse ?? _defaultMobilityDriver;
   }
 
   @override
@@ -403,4 +424,21 @@ class FakeDriverApiClient implements DriverApiClient {
     if (computeRouteFailure != null) throw computeRouteFailure!;
     return computeRouteResponse!;
   }
+
+  static final MobilityDriverDto _defaultMobilityDriver =
+      MobilityDriverDto.fromJson({
+        'id': 'driver-1',
+        'code': 'DRV-1',
+        'displayName': 'Test Driver',
+        'organizationName': 'Org',
+        'countryCode': 'CG',
+        'onboardingStatus': 'APPROVED',
+        'operationalStatus': 'ACTIVE',
+        'availabilityStatus': 'AVAILABLE',
+        'allowedServiceTypes': <String>[],
+        'operatingZoneIds': <String>[],
+        'ratingCount': 0,
+        'ridesCount': 0,
+        'updatedAt': '2026-01-01T00:00:00.000Z',
+      });
 }

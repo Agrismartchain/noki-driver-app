@@ -928,6 +928,12 @@ abstract class AppLocalizations {
   /// **'Accept offer'**
   String get mobilityAcceptOfferCta;
 
+  /// No description provided for @mobilityDeclineOfferCta.
+  ///
+  /// In en, this message translates to:
+  /// **'Decline'**
+  String get mobilityDeclineOfferCta;
+
   /// No description provided for @mobilityRideDetailTitle.
   ///
   /// In en, this message translates to:

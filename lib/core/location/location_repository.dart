@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 
@@ -31,9 +32,52 @@ class LocationRepository {
   /// A live position stream. [distanceFilterMeters] avoids emitting on every
   /// tiny GPS jitter - see [GpsPublishPolicy] for the cadence this phase
   /// actually uses per driver work state.
-  Stream<Position> positionStream({required int distanceFilterMeters}) {
+  ///
+  /// [keepAliveInBackground] is only ever requested while the driver is on
+  /// ACTIVE work (an accepted ride / mission): it keeps the location updates
+  /// alive when the screen is locked or another app (e.g. a call) is in front,
+  /// so the customer's live tracking and dispatch keep a fresh fix. On Android
+  /// this runs as a visible foreground-service notification; on iOS it shows
+  /// the system background-location indicator. Idle "available" tracking stays
+  /// foreground-only (offers are only discoverable in the foreground anyway).
+  Stream<Position> positionStream({
+    required int distanceFilterMeters,
+    bool keepAliveInBackground = false,
+  }) {
     return Geolocator.getPositionStream(
-      locationSettings: LocationSettings(accuracy: LocationAccuracy.high, distanceFilter: distanceFilterMeters),
+      locationSettings: _settings(distanceFilterMeters, keepAliveInBackground),
+    );
+  }
+
+  LocationSettings _settings(
+    int distanceFilterMeters,
+    bool keepAliveInBackground,
+  ) {
+    if (keepAliveInBackground &&
+        defaultTargetPlatform == TargetPlatform.android) {
+      return AndroidSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: distanceFilterMeters,
+        foregroundNotificationConfig: const ForegroundNotificationConfig(
+          notificationTitle: 'NOKI Livreur',
+          notificationText:
+              'Course en cours : partage de votre position avec le client.',
+          enableWakeLock: true,
+        ),
+      );
+    }
+    if (keepAliveInBackground && defaultTargetPlatform == TargetPlatform.iOS) {
+      return AppleSettings(
+        accuracy: LocationAccuracy.high,
+        distanceFilter: distanceFilterMeters,
+        pauseLocationUpdatesAutomatically: false,
+        showBackgroundLocationIndicator: true,
+        allowBackgroundLocationUpdates: true,
+      );
+    }
+    return LocationSettings(
+      accuracy: LocationAccuracy.high,
+      distanceFilter: distanceFilterMeters,
     );
   }
 
@@ -53,8 +97,11 @@ class LocationRepository {
   }
 }
 
-final locationRepositoryProvider = Provider<LocationRepository>((ref) => LocationRepository());
-
-final locationPermissionStateProvider = FutureProvider.autoDispose<LocationPermissionState>(
-  (ref) => ref.watch(locationRepositoryProvider).permissionState(),
+final locationRepositoryProvider = Provider<LocationRepository>(
+  (ref) => LocationRepository(),
 );
+
+final locationPermissionStateProvider =
+    FutureProvider.autoDispose<LocationPermissionState>(
+      (ref) => ref.watch(locationRepositoryProvider).permissionState(),
+    );

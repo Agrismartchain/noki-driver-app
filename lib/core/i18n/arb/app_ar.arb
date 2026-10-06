@@ -149,6 +149,7 @@
   "mobilityOfferNoLongerAvailable": "هذا العرض لم يعد متاحًا",
   "mobilityEstimatedFareLabel": "الأجرة المقدّرة",
   "mobilityAcceptOfferCta": "قبول العرض",
+  "mobilityDeclineOfferCta": "رفض",
   "mobilityRideDetailTitle": "الرحلة",
   "mobilityFareLabel": "الأجرة",
   "mobilityTimelineTitle": "السجل الزمني",

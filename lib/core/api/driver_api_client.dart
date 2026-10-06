@@ -117,6 +117,7 @@ abstract class DriverApiClient {
   /// used by [mobilityOffers] above.
   Future<List<MobilityRideOfferDto>> listMobilityOffers();
   Future<MobilityRideDetailDto> acceptMobilityOffer(String offerId);
+  Future<MobilityRideOfferDto> declineMobilityOffer(String offerId);
   Future<MobilityRideDetailDto> transitionMobilityRide(
     String rideId,
     TransitionMobilityRideDto body,
@@ -536,6 +537,18 @@ class DioDriverApiClient implements DriverApiClient {
           '/v1/mobility/driver/offers/$offerId/accept',
         );
         return MobilityRideDetailDto.fromJson(
+          response.data as Map<String, dynamic>,
+        );
+      });
+
+  @override
+  Future<MobilityRideOfferDto> declineMobilityOffer(String offerId) =>
+      _guarded(() async {
+        final response = await _dio.post(
+          '/v1/mobility/driver/offers/$offerId/decline',
+          data: const DeclineMobilityOfferDto().toJson(),
+        );
+        return MobilityRideOfferDto.fromJson(
           response.data as Map<String, dynamic>,
         );
       });

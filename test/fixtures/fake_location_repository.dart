@@ -22,12 +22,27 @@ class FakeLocationRepository implements LocationRepository {
   }
 
   @override
-  Future<Position> currentPosition() async => position ?? _fixedPosition;
+  Future<Position> currentPosition() async {
+    currentPositionCalls += 1;
+    return position ?? _fixedPosition;
+  }
 
   @override
-  Stream<Position> positionStream({required int distanceFilterMeters}) {
+  Stream<Position> positionStream({
+    required int distanceFilterMeters,
+    bool keepAliveInBackground = false,
+  }) {
+    streamRequests.add((
+      distanceFilterMeters: distanceFilterMeters,
+      keepAliveInBackground: keepAliveInBackground,
+    ));
     return Stream.value(position ?? _fixedPosition);
   }
+
+  /// Every stream the publisher asked for (to assert cadence / background keep-alive decisions).
+  final List<({int distanceFilterMeters, bool keepAliveInBackground})>
+  streamRequests = [];
+  int currentPositionCalls = 0;
 
   @override
   Future<bool> openAppSettings() async {

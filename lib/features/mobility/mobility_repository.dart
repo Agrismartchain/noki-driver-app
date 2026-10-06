@@ -77,6 +77,11 @@ class MobilityRepository {
   Future<MobilityRideDetailDto> acceptOffer(String offerId) =>
       _client.acceptMobilityOffer(offerId);
 
+  /// Declines the driver's OWN live offer. The ride request itself stays
+  /// alive on the server and is redispatched to the next eligible driver.
+  Future<MobilityRideOfferDto> declineOffer(String offerId) =>
+      _client.declineMobilityOffer(offerId);
+
   Future<MobilityRideDetailDto> transitionRide(
     String rideId,
     TransitionMobilityRideDtoStatus status,

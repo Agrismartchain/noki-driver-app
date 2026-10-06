@@ -3,11 +3,16 @@
          permissions are added in the lots that implement the features that
          need them (see README "Limitations of DRIVER-APP-01"). -->
     <uses-permission android:name="android.permission.INTERNET" />
-    <!-- Foreground-only location (mandate DRIVER-APP-03 §6/§49) - no
-         ACCESS_BACKGROUND_LOCATION, since background tracking is explicitly
-         deferred this phase (BACKGROUND_GPS=DEFERRED, see final report). -->
+    <!-- Location while the app is in use. No ACCESS_BACKGROUND_LOCATION: the
+         only background tracking is a visible foreground service started while
+         the app is on screen, and only during an accepted ride / mission
+         (B4/DRV-05, see GpsPublisherController). The service itself is
+         declared by the geolocator plugin (foregroundServiceType=location). -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <!-- QR camera scanning (mandate DRIVER-APP-04 §19) - requested by
          mobile_scanner only when DeliveryQrScanScreen actually starts the
          camera, never at app launch. -->

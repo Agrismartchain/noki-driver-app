@@ -190,6 +190,7 @@ class MobilityOfferDetailScreen extends ConsumerStatefulWidget {
 class _MobilityOfferDetailScreenState
     extends ConsumerState<MobilityOfferDetailScreen> {
   bool _accepting = false;
+  bool _declining = false;
   AppFailure? _failure;
 
   Future<void> _accept() async {
@@ -213,9 +214,34 @@ class _MobilityOfferDetailScreenState
         ),
       );
     } on AppFailure catch (failure) {
+      // Typically "offer no longer available" (expired / cancelled / taken):
+      // refresh so the stale offer disappears from the feed.
+      ref.invalidate(mobilityOffersProvider(widget.scope));
+      ref.invalidate(workFeedProvider(widget.scope));
       if (mounted) setState(() => _failure = failure);
     } finally {
       if (mounted) setState(() => _accepting = false);
+    }
+  }
+
+  Future<void> _decline() async {
+    if (_declining || _accepting) return;
+    setState(() {
+      _declining = true;
+      _failure = null;
+    });
+    try {
+      await ref.read(mobilityRepositoryProvider).declineOffer(widget.offer.id);
+      ref.invalidate(mobilityOffersProvider(widget.scope));
+      ref.invalidate(workFeedProvider(widget.scope));
+      if (!mounted) return;
+      Navigator.of(context).pop();
+    } on AppFailure catch (failure) {
+      ref.invalidate(mobilityOffersProvider(widget.scope));
+      ref.invalidate(workFeedProvider(widget.scope));
+      if (mounted) setState(() => _failure = failure);
+    } finally {
+      if (mounted) setState(() => _declining = false);
     }
   }
 
@@ -284,7 +310,7 @@ class _MobilityOfferDetailScreenState
           ],
           const SizedBox(height: AppSpacing.xl),
           ElevatedButton(
-            onPressed: _accepting ? null : _accept,
+            onPressed: (_accepting || _declining) ? null : _accept,
             child: _accepting
                 ? SizedBox(
                     height: 18,
@@ -295,6 +321,17 @@ class _MobilityOfferDetailScreenState
                     ),
                   )
                 : Text(l10n.mobilityAcceptOfferCta),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          OutlinedButton(
+            onPressed: (_accepting || _declining) ? null : _decline,
+            child: _declining
+                ? const SizedBox(
+                    height: 18,
+                    width: 18,
+                    child: CircularProgressIndicator(strokeWidth: 2),
+                  )
+                : Text(l10n.mobilityDeclineOfferCta),
           ),
           if (_failure != null) ...[
             const SizedBox(height: AppSpacing.md),

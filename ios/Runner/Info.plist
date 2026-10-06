@@ -49,10 +49,14 @@
 	</dict>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
-	<!-- Foreground-only location (DRIVER-APP-03 §6/§50) - no "Always"
-	     usage string, since background tracking is explicitly deferred
-	     this phase. Real iOS device QA remains deferred; this keeps the
-	     iOS build valid. -->
+	<!-- "When in use" location only - no "Always" usage string. Background
+	     updates are enabled solely for an accepted ride / mission (B4/DRV-05;
+	     system background-location indicator is shown). Real iOS device QA
+	     remains deferred; this keeps the iOS build valid. -->
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>location</string>
+	</array>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>NOKI Driver uses your location to show it on the map alongside your active delivery or ride, and to keep dispatch updated on where you are while you're available.</string>
 	<!-- QR camera scanning (DRIVER-APP-04 §19) - requested only when the

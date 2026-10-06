@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:noki_driver_app/core/api/api_providers.dart';
 import 'package:noki_driver_app/core/api/generated/driver_models.generated.dart';
+import 'package:noki_driver_app/core/errors/app_failure.dart';
 import 'package:noki_driver_app/features/driver_context/driver_context_repository.dart';
 import 'package:noki_driver_app/features/mobility/mobility_offer_detail_screen.dart';
 
@@ -133,6 +134,60 @@ void main() {
 
       expect(client.lastAcceptedOfferId, 'offer-cargo-1');
       expect(find.text('Cargo'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'declining calls the real decline endpoint for THIS offer and leaves the screen',
+    (tester) async {
+      final client = FakeDriverApiClient();
+      final item = DriverWorkFeedItemDto.fromJson(sampleWorkFeedOfferItem());
+
+      await pumpWithProviders(
+        tester,
+        Navigator(
+          onGenerateRoute: (_) => MaterialPageRoute<void>(
+            builder: (_) => MobilityOfferDetailScreen.fromWorkFeedItem(
+              item: item,
+              scope: _scope,
+            ),
+          ),
+        ),
+        overrides: [driverApiClientProvider.overrideWithValue(client)],
+      );
+
+      await tester.tap(find.widgetWithText(OutlinedButton, 'Decline'));
+      await tester.pumpAndSettle();
+
+      expect(client.lastDeclinedOfferId, 'offer-1');
+      expect(client.lastAcceptedOfferId, isNull);
+    },
+  );
+
+  testWidgets(
+    'a failed decline (offer already gone) shows the failure and does not pretend success',
+    (tester) async {
+      final client = FakeDriverApiClient()
+        ..declineMobilityOfferFailure = const AppFailure(
+          AppFailureType.unknown,
+        );
+      final item = DriverWorkFeedItemDto.fromJson(sampleWorkFeedOfferItem());
+
+      await pumpWithProviders(
+        tester,
+        MobilityOfferDetailScreen.fromWorkFeedItem(item: item, scope: _scope),
+        overrides: [driverApiClientProvider.overrideWithValue(client)],
+      );
+
+      await tester.tap(find.widgetWithText(OutlinedButton, 'Decline'));
+      await tester.pumpAndSettle();
+
+      expect(client.lastDeclinedOfferId, 'offer-1');
+      // Still on the offer screen, accept remains available.
+      expect(
+        find.widgetWithText(ElevatedButton, 'Accept offer'),
+        findsOneWidget,
+      );
     },
   );
 }

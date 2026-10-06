@@ -28,38 +28,49 @@ Position _realDevicePosition() => Position(
 
 void main() {
   group('GpsPublisherController delivery ping telemetry', () {
-    test('sends real device heading and speed alongside coordinates and accuracy', () async {
-      final client = FakeDriverApiClient()
-        ..submitDeliveryLocationResponse = const SubmitDeliveryLocationResponseDto(accepted: 1, lastLocationAt: '2026-01-01T00:00:00.000Z');
-      final locationRepository = FakeLocationRepository()..position = _realDevicePosition();
-      final container = ProviderContainer(
-        overrides: [
-          driverApiClientProvider.overrideWithValue(client),
-          locationRepositoryProvider.overrideWithValue(locationRepository),
-        ],
-      );
-      addTearDown(container.dispose);
+    test(
+      'sends real device heading and speed alongside coordinates and accuracy',
+      () async {
+        final client = FakeDriverApiClient()
+          ..submitDeliveryLocationResponse =
+              const SubmitDeliveryLocationResponseDto(
+                accepted: 1,
+                lastLocationAt: '2026-01-01T00:00:00.000Z',
+              );
+        final locationRepository = FakeLocationRepository()
+          ..position = _realDevicePosition();
+        final container = ProviderContainer(
+          overrides: [
+            driverApiClientProvider.overrideWithValue(client),
+            locationRepositoryProvider.overrideWithValue(locationRepository),
+          ],
+        );
+        addTearDown(container.dispose);
 
-      final controller = container.read(gpsPublisherControllerProvider);
-      controller.updateContext(
-        const DriverTrackingContext(scope: _scope, activeMissionId: 'mission-1'),
-      );
-      // The position stream emits synchronously but _onPosition is async;
-      // let its microtasks/await chain settle.
-      await Future<void>.delayed(Duration.zero);
-      await Future<void>.delayed(Duration.zero);
+        final controller = container.read(gpsPublisherControllerProvider);
+        controller.updateContext(
+          const DriverTrackingContext(
+            scope: _scope,
+            activeMissionId: 'mission-1',
+          ),
+        );
+        // The position stream emits synchronously but _onPosition is async;
+        // let its microtasks/await chain settle.
+        await Future<void>.delayed(Duration.zero);
+        await Future<void>.delayed(Duration.zero);
 
-      final request = client.lastSubmitDeliveryLocationRequest;
-      expect(request, isNotNull);
-      final point = request!.points.single;
-      expect(point.latitude, -4.2634);
-      expect(point.longitude, 15.2429);
-      expect(point.accuracyMeters, 8);
-      expect(point.headingDegrees, 214.75);
-      // geolocator reports speed in m/s; the wire contract is km/h.
-      expect(point.speedKph, closeTo(22.5, 0.01));
-      expect(point.shipmentId, 'mission-1');
-    });
+        final request = client.lastSubmitDeliveryLocationRequest;
+        expect(request, isNotNull);
+        final point = request!.points.single;
+        expect(point.latitude, -4.2634);
+        expect(point.longitude, 15.2429);
+        expect(point.accuracyMeters, 8);
+        expect(point.headingDegrees, 214.75);
+        // geolocator reports speed in m/s; the wire contract is km/h.
+        expect(point.speedKph, closeTo(22.5, 0.01));
+        expect(point.shipmentId, 'mission-1');
+      },
+    );
 
     test('still sends mobility telemetry unaffected by the delivery payload change', () async {
       final client = FakeDriverApiClient()
@@ -78,7 +89,8 @@ void main() {
           'ridesCount': 0,
           'updatedAt': '2026-01-01T00:00:00.000Z',
         });
-      final locationRepository = FakeLocationRepository()..position = _realDevicePosition();
+      final locationRepository = FakeLocationRepository()
+        ..position = _realDevicePosition();
       final container = ProviderContainer(
         overrides: [
           driverApiClientProvider.overrideWithValue(client),
@@ -99,6 +111,120 @@ void main() {
       expect(request!.headingDegrees, 214.75);
       expect(request.speedKph, closeTo(22.5, 0.01));
       expect(request.rideId, 'ride-1');
+    });
+  });
+
+  group('GpsPublisherController B4 dispatch freshness (DRV-05)', () {
+    var fakeNow = DateTime(2026, 1, 1, 12);
+    ProviderContainer build(
+      FakeDriverApiClient client,
+      FakeLocationRepository repo,
+    ) {
+      fakeNow = DateTime(2026, 1, 1, 12);
+      final container = ProviderContainer(
+        overrides: [
+          driverApiClientProvider.overrideWithValue(client),
+          locationRepositoryProvider.overrideWithValue(repo),
+          gpsClockProvider.overrideWithValue(() => fakeNow),
+        ],
+      );
+      addTearDown(container.dispose);
+      return container;
+    }
+
+    testWidgets(
+      'heartbeat: a stationary available driver (stream silent) keeps re-publishing so the server fix never ages out',
+      (tester) async {
+        final client = FakeDriverApiClient();
+        final repo = FakeLocationRepository()..position = _realDevicePosition();
+        final controller = build(
+          client,
+          repo,
+        ).read(gpsPublisherControllerProvider);
+        controller.updateContext(
+          const DriverTrackingContext(scope: _scope, mobilityAvailable: true),
+        );
+        await tester.pump();
+        final afterStream = client.submitMobilityLocationCalls;
+        expect(afterStream, 1);
+
+        // Idle cadence is 60s; the server drops fixes older than 120s. No stream events arrive
+        // (stationary) but the heartbeat must keep publishing at least once per ~minute.
+        fakeNow = fakeNow.add(const Duration(seconds: 61));
+        await tester.pump(const Duration(seconds: 61));
+        fakeNow = fakeNow.add(const Duration(seconds: 61));
+        await tester.pump(const Duration(seconds: 61));
+        await tester.pump();
+        expect(
+          client.submitMobilityLocationCalls,
+          greaterThanOrEqualTo(afterStream + 2),
+        );
+        expect(repo.currentPositionCalls, greaterThanOrEqualTo(2));
+        controller.updateContext(DriverTrackingContext.offline);
+      },
+    );
+
+    testWidgets(
+      'heartbeat stops with the tracking context (offline driver is never polled for GPS)',
+      (tester) async {
+        final client = FakeDriverApiClient();
+        final repo = FakeLocationRepository();
+        final controller = build(
+          client,
+          repo,
+        ).read(gpsPublisherControllerProvider);
+        controller.updateContext(
+          const DriverTrackingContext(scope: _scope, mobilityAvailable: true),
+        );
+        await tester.pump();
+        controller.updateContext(DriverTrackingContext.offline);
+        final calls = repo.currentPositionCalls;
+        await tester.pump(const Duration(minutes: 5));
+        expect(repo.currentPositionCalls, calls);
+      },
+    );
+
+    test('background keep-alive is requested ONLY for active work, and idle tracking still stops on pause', () async {
+      final client = FakeDriverApiClient();
+      final repo = FakeLocationRepository();
+      final controller = build(
+        client,
+        repo,
+      ).read(gpsPublisherControllerProvider);
+
+      controller.updateContext(
+        const DriverTrackingContext(scope: _scope, mobilityAvailable: true),
+      );
+      expect(repo.streamRequests.last.keepAliveInBackground, isFalse);
+      controller.pauseForBackground();
+      // Idle -> stream stopped: resuming asks for a new one.
+      final idleRequests = repo.streamRequests.length;
+      controller.resumeForForeground();
+      expect(repo.streamRequests.length, idleRequests + 1);
+
+      controller.updateContext(
+        const DriverTrackingContext(
+          scope: _scope,
+          mobilityAvailable: true,
+          activeRideId: 'ride-1',
+        ),
+      );
+      expect(repo.streamRequests.last.keepAliveInBackground, isTrue);
+      expect(
+        repo.streamRequests.last.distanceFilterMeters,
+        GpsPublishPolicy.active.distanceFilterMeters,
+      );
+      final activeRequests = repo.streamRequests.length;
+      controller.pauseForBackground();
+      controller.resumeForForeground();
+      // Active work: the background stream was NOT torn down, so resume does not restart it.
+      expect(repo.streamRequests.length, activeRequests);
+
+      // Ride ends -> back to idle, keep-alive dropped.
+      controller.updateContext(
+        const DriverTrackingContext(scope: _scope, mobilityAvailable: true),
+      );
+      expect(repo.streamRequests.last.keepAliveInBackground, isFalse);
     });
   });
 }

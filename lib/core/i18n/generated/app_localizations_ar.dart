@@ -482,6 +482,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get mobilityAcceptOfferCta => 'قبول العرض';
 
   @override
+  String get mobilityDeclineOfferCta => 'رفض';
+
+  @override
   String get mobilityRideDetailTitle => 'الرحلة';
 
   @override

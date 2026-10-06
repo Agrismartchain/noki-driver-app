@@ -149,6 +149,7 @@
   "mobilityOfferNoLongerAvailable": "Cette offre n'est plus disponible",
   "mobilityEstimatedFareLabel": "Tarif estimé",
   "mobilityAcceptOfferCta": "Accepter l'offre",
+  "mobilityDeclineOfferCta": "Refuser",
   "mobilityRideDetailTitle": "Course",
   "mobilityFareLabel": "Tarif",
   "mobilityTimelineTitle": "Chronologie",
