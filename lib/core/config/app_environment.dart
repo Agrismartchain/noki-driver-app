@@ -20,7 +20,11 @@ enum AppEnvironment {
       case '':
         return AppEnvironment.development;
       default:
-        throw ArgumentError.value(raw, 'NOKI_ENV', 'Unknown environment. Use development, staging or production.');
+        throw ArgumentError.value(
+          raw,
+          'NOKI_ENV',
+          'Unknown environment. Use development, staging or production.',
+        );
     }
   }
 
@@ -58,8 +62,14 @@ class AppConfig {
   final Duration sendTimeout;
 
   factory AppConfig.fromDefines() {
-    const envRaw = String.fromEnvironment('NOKI_ENV', defaultValue: 'development');
-    const apiBaseUrl = String.fromEnvironment('NOKI_API_BASE_URL', defaultValue: _defaultApiBaseUrl);
+    const envRaw = String.fromEnvironment(
+      'NOKI_ENV',
+      defaultValue: 'development',
+    );
+    const apiBaseUrl = String.fromEnvironment(
+      'NOKI_API_BASE_URL',
+      defaultValue: _defaultApiBaseUrl,
+    );
 
     // `NOKI_ENV` silently defaults to "development" when no --dart-define is
     // passed at all, which would otherwise let a `flutter build apk --release`
@@ -78,7 +88,11 @@ class AppConfig {
       );
     }
 
-    return AppConfig.fromValues(envRaw: envRaw, apiBaseUrlRaw: apiBaseUrl);
+    return AppConfig.fromValues(
+      envRaw: envRaw,
+      apiBaseUrlRaw: apiBaseUrl,
+      isRelease: kReleaseMode,
+    );
   }
 
   /// Same resolution as [fromDefines] but from plain values, so build-time
@@ -87,8 +101,17 @@ class AppConfig {
   factory AppConfig.fromValues({
     required String envRaw,
     required String apiBaseUrlRaw,
+    bool isRelease = false,
   }) {
     final environment = AppEnvironment.fromDefine(envRaw);
+
+    // Release builds never run against development defaults (loopback, HTTP).
+    if (isRelease && environment == AppEnvironment.development) {
+      throw StateError(
+        'Release builds must be built with NOKI_ENV=staging or production '
+        '(got development).',
+      );
+    }
 
     _guardAgainstUnsafeBaseUrl(apiBaseUrlRaw, environment);
 
@@ -106,12 +129,7 @@ class AppConfig {
   // Every real environment must set NOKI_API_BASE_URL explicitly at build time.
   static const String _defaultApiBaseUrl = 'http://127.0.0.1:3000';
 
-  static const _loopbackHosts = {
-    'localhost',
-    '127.0.0.1',
-    '10.0.2.2',
-    '::1',
-  };
+  static const _loopbackHosts = {'localhost', '127.0.0.1', '10.0.2.2', '::1'};
 
   /// For staging/production, a field/release build must never be able to
   /// point at a loopback host, and must use HTTPS. development remains the

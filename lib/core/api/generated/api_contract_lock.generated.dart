@@ -8,9 +8,9 @@
 // to detect drift in CI.
 
 class ApiContractLock {
-  static const String apiHead = "6524ea6b7996382b5d6d1342988a89ec321bc075";
-  static const String contractsVersion = "0.93.0";
-  static const String openapiChecksum = "2a5f6dd7f49e54daa0cbcbd2af357d0428309a2c0548de09e7212734bf865d6e";
+  static const String apiHead = "33242a7609edba937e795d81904d8e4f8d853fe1";
+  static const String contractsVersion = "0.95.0";
+  static const String openapiChecksum = "86b9bfbbecf1527b6475beac22b664cbea2755033d0491e6ce6f7bd873cd240b";
   static const String generator = "tool/generate_api_models.mjs (in-repo, deterministic)";
   static const String generatorVersion = "1.0.0";
 }

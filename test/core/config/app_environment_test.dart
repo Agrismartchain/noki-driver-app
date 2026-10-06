@@ -2,6 +2,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:noki_driver_app/core/config/app_environment.dart';
 
 void main() {
+  releaseConfigTests();
+
   test('defaults to development with the loopback placeholder', () {
     final config = AppConfig.fromValues(
       envRaw: 'development',
@@ -89,5 +91,51 @@ void main() {
       () => AppConfig.fromValues(envRaw: 'qa', apiBaseUrlRaw: ''),
       throwsArgumentError,
     );
+  });
+}
+
+void releaseConfigTests() {
+  group('release configuration fails closed', () {
+    test('refuses NOKI_ENV=development in a release build', () {
+      expect(
+        () => AppConfig.fromValues(
+          envRaw: 'development',
+          apiBaseUrlRaw: 'http://127.0.0.1:3000',
+          isRelease: true,
+        ),
+        throwsStateError,
+      );
+    });
+
+    test('refuses an unset NOKI_ENV in a release build', () {
+      expect(
+        () => AppConfig.fromValues(
+          envRaw: '',
+          apiBaseUrlRaw: 'http://127.0.0.1:3000',
+          isRelease: true,
+        ),
+        throwsStateError,
+      );
+    });
+
+    test('refuses production with the loopback default URL', () {
+      expect(
+        () => AppConfig.fromValues(
+          envRaw: 'production',
+          apiBaseUrlRaw: 'http://127.0.0.1:3000',
+          isRelease: true,
+        ),
+        throwsStateError,
+      );
+    });
+
+    test('accepts production with an explicit https host', () {
+      final config = AppConfig.fromValues(
+        envRaw: 'production',
+        apiBaseUrlRaw: 'https://api.noki.example.org',
+        isRelease: true,
+      );
+      expect(config.environment, AppEnvironment.production);
+    });
   });
 }
