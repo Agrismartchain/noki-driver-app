@@ -8,6 +8,25 @@ import 'map_chrome.dart';
 import 'map_markers.dart';
 import 'map_point.dart';
 
+const String _tileUrlDefine = String.fromEnvironment('NOKI_MAP_TILE_URL');
+const String _envDefine = String.fromEnvironment('NOKI_ENV');
+
+/// Tile source for the map. Production/staging builds must supply their own OSM-compatible tile server
+/// (`--dart-define=NOKI_MAP_TILE_URL=https://tiles.../{z}/{x}/{y}.png`): the public tile.openstreetmap.org servers are
+/// not a production backend (OSM tile usage policy). Without the define a staging/production build draws NO tiles
+/// (markers/route on a blank base) instead of silently hitting the public servers; development keeps the public default.
+String? resolveTileUrlTemplate({String define = _tileUrlDefine, String env = _envDefine}) {
+  final configured = define.trim();
+  if (configured.isNotEmpty) {
+    return configured;
+  }
+  final normalized = env.trim().toLowerCase();
+  if (normalized == 'staging' || normalized == 'production') {
+    return null;
+  }
+  return 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
+}
+
 /// The one place `flutter_map`'s types are used directly (mandate §5).
 /// Business screens hand in plain [MapPoint]s; this widget owns tiles,
 /// markers, camera fit/follow and the recenter action.
@@ -221,12 +240,18 @@ class _NokiMapViewState extends State<NokiMapView> {
     );
   }
 
-  Widget _tileLayer() => TileLayer(
-    urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-    userAgentPackageName: 'com.noki.driver_app',
-    maxZoom: 19,
-    tileProvider: widget.tileProvider,
-  );
+  Widget _tileLayer() {
+    final template = resolveTileUrlTemplate();
+    if (template == null) {
+      return const SizedBox.shrink();
+    }
+    return TileLayer(
+      urlTemplate: template,
+      userAgentPackageName: 'com.noki.driver_app',
+      maxZoom: 19,
+      tileProvider: widget.tileProvider,
+    );
+  }
 
   @override
   void dispose() {
