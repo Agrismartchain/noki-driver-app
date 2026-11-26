@@ -611,7 +611,7 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get profileActivityBody =>
-      'Les livraisons terminées sont disponibles aujourd\'hui. L\'historique mobilité nécessite encore le backend.';
+      'Les livraisons terminées et les courses Mobility sont toutes deux disponibles aujourd\'hui.';
 
   @override
   String get profileNotificationsBackendRequired =>
@@ -625,6 +625,15 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get profileOpenHistory => 'Ouvrir l\'historique des livraisons';
+
+  @override
+  String get profileOpenMobilityHistory => 'Ouvrir l\'historique Mobility';
+
+  @override
+  String get mobilityHistoryTitle => 'Historique Mobility';
+
+  @override
+  String get mobilityHistoryEmpty => 'Aucune course Mobility terminée';
 
   @override
   String get profileVehicleUnavailable =>

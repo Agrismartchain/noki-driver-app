@@ -603,7 +603,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get profileActivityBody =>
-      'سجل التوصيلات المكتملة متاح اليوم. سجل الرحلات ما زال يحتاج إلى دعم من الواجهة الخلفية.';
+      'سجل التوصيلات المكتملة وسجل رحلات التنقل متاحان كلاهما اليوم.';
 
   @override
   String get profileNotificationsBackendRequired =>
@@ -617,6 +617,15 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get profileOpenHistory => 'فتح سجل التوصيلات';
+
+  @override
+  String get profileOpenMobilityHistory => 'فتح سجل التنقل';
+
+  @override
+  String get mobilityHistoryTitle => 'سجل التنقل';
+
+  @override
+  String get mobilityHistoryEmpty => 'لا توجد رحلات تنقل مكتملة بعد';
 
   @override
   String get profileVehicleUnavailable => 'لا توجد مركبة مخصصة بعد';

@@ -1165,7 +1165,7 @@ abstract class AppLocalizations {
   /// No description provided for @profileActivityBody.
   ///
   /// In en, this message translates to:
-  /// **'Completed deliveries are available today. Mobility trip history still requires backend support.'**
+  /// **'Completed deliveries and Mobility rides are both available today.'**
   String get profileActivityBody;
 
   /// No description provided for @profileNotificationsBackendRequired.
@@ -1191,6 +1191,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open delivery history'**
   String get profileOpenHistory;
+
+  /// No description provided for @profileOpenMobilityHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Mobility history'**
+  String get profileOpenMobilityHistory;
+
+  /// No description provided for @mobilityHistoryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Mobility history'**
+  String get mobilityHistoryTitle;
+
+  /// No description provided for @mobilityHistoryEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No completed Mobility rides yet'**
+  String get mobilityHistoryEmpty;
 
   /// No description provided for @profileVehicleUnavailable.
   ///

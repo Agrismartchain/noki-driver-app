@@ -420,7 +420,7 @@ class _OperationalActivityCard extends StatelessWidget {
                       ),
                     ),
                     icon: const Icon(Icons.route_outlined),
-                    label: const Text('Historique Mobility'),
+                    label: Text(l10n.profileOpenMobilityHistory),
                   ),
                 ],
               ),

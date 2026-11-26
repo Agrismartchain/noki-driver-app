@@ -22,8 +22,9 @@ class MobilityHistoryScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final asyncRides = ref.watch(mobilityRideHistoryProvider(scope));
 
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
-      appBar: AppBar(title: const Text('Historique Mobility')),
+      appBar: AppBar(title: Text(l10n.mobilityHistoryTitle)),
       body: NokiScreenBackground(
         child: asyncRides.when(
           loading: () => const LoadingView(),
@@ -35,9 +36,9 @@ class MobilityHistoryScreen extends ConsumerWidget {
           ),
           data: (rides) {
             if (rides.isEmpty) {
-              return const EmptyView(
+              return EmptyView(
                 icon: Icons.history,
-                title: 'Aucune course Mobility terminee',
+                title: l10n.mobilityHistoryEmpty,
               );
             }
             return ListView.separated(
