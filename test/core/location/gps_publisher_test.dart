@@ -101,4 +101,88 @@ void main() {
       expect(request.rideId, 'ride-1');
     });
   });
+
+  group('GpsPublisherController foreground-only lifecycle', () {
+    // Mirrors MobilityOfferPollerController's own pause/resume test
+    // (mobility_offer_poller_test.dart) - HomeShell drives both controllers
+    // from the exact same didChangeAppLifecycleState hook, but until now
+    // only the offer poller side of that contract had any direct coverage.
+    test(
+      'pauseForBackground stops the position stream; resumeForForeground '
+      're-subscribes and picks up the driver\'s current position',
+      () async {
+        final client = FakeDriverApiClient()
+          ..submitDeliveryLocationResponse = const SubmitDeliveryLocationResponseDto(
+            accepted: 1,
+            lastLocationAt: '2026-01-01T00:00:00.000Z',
+          );
+        final locationRepository = FakeLocationRepository()
+          ..position = _realDevicePosition();
+        final container = ProviderContainer(
+          overrides: [
+            driverApiClientProvider.overrideWithValue(client),
+            locationRepositoryProvider.overrideWithValue(locationRepository),
+          ],
+        );
+        addTearDown(container.dispose);
+
+        // A fixed, test-controlled clock: the real GpsPublishPolicy cadence
+        // floor (20s for active work) must not force this test to actually
+        // wait 20 real seconds just to prove resumeForForeground publishes
+        // again - see GpsPublisherController.nowFn's doc comment.
+        var now = DateTime(2026, 1, 1, 12, 0, 0);
+        final controller = container.read(gpsPublisherControllerProvider)
+          ..nowFn = () => now;
+        controller.updateContext(
+          const DriverTrackingContext(scope: _scope, activeMissionId: 'mission-1'),
+        );
+        await Future<void>.delayed(Duration.zero);
+        await Future<void>.delayed(Duration.zero);
+        expect(client.lastSubmitDeliveryLocationRequest, isNotNull);
+        expect(client.lastSubmitDeliveryLocationRequest!.points.single.latitude, -4.2634);
+
+        // Background: the app is no longer foreground, so the stream must
+        // actually stop - not merely withhold a publish.
+        controller.pauseForBackground();
+        client.lastSubmitDeliveryLocationRequest = null;
+
+        // The driver kept moving while backgrounded (foreground-only
+        // tracking per mandate - never published while paused).
+        locationRepository.position = Position(
+          latitude: -4.3000,
+          longitude: 15.3000,
+          timestamp: DateTime(2026, 1, 1),
+          accuracy: 8,
+          altitude: 0,
+          altitudeAccuracy: 0,
+          heading: 90,
+          headingAccuracy: 0,
+          speed: 0,
+          speedAccuracy: 0,
+        );
+
+        // The driver was away long enough for the cadence floor to clear -
+        // a real background/foreground cycle is rarely faster than the
+        // active-work floor (20s) anyway.
+        now = now.add(const Duration(seconds: 25));
+
+        // Foreground again: must re-subscribe and publish the driver's
+        // *current* position, not something stale from before pausing - if
+        // pauseForBackground had been a no-op, this call would see an
+        // unchanged cadence and skip re-subscribing entirely, and the
+        // assertion below would correctly fail.
+        controller.resumeForForeground();
+        await Future<void>.delayed(Duration.zero);
+        await Future<void>.delayed(Duration.zero);
+
+        expect(client.lastSubmitDeliveryLocationRequest, isNotNull);
+        expect(
+          client.lastSubmitDeliveryLocationRequest!.points.single.latitude,
+          -4.3000,
+          reason: 'resumeForForeground must re-subscribe to live position, '
+              'not replay a stale pre-pause value',
+        );
+      },
+    );
+  });
 }
