@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../theme/app_spacing.dart';
 import '../theme/app_theme.dart';
+import '../theme/motion.dart';
 
 enum NokiBadgeTone {
   neutral,
@@ -131,7 +132,7 @@ class NokiSurfaceCard extends StatelessWidget {
         : colors.border;
 
     final card = AnimatedContainer(
-      duration: const Duration(milliseconds: 180),
+      duration: NokiMotion.duration(context, const Duration(milliseconds: 180)),
       curve: Curves.easeOutCubic,
       decoration: BoxDecoration(
         color: surfaceColor,

@@ -5,6 +5,7 @@ import '../core/i18n/generated/app_localizations.dart';
 import '../core/location/gps_publisher.dart';
 import '../core/theme/app_spacing.dart';
 import '../core/theme/app_theme.dart';
+import '../core/theme/motion.dart';
 import '../features/auth/auth_providers.dart';
 import '../features/driver_context/driver_context_repository.dart';
 import '../features/driver_context/home_screen.dart';
@@ -179,7 +180,10 @@ class _ShellDestination extends StatelessWidget {
                 ),
                 const SizedBox(height: AppSpacing.xs),
                 AnimatedContainer(
-                  duration: const Duration(milliseconds: 180),
+                  duration: NokiMotion.duration(
+                    context,
+                    const Duration(milliseconds: 180),
+                  ),
                   curve: Curves.easeOutCubic,
                   width: selected ? 8 : 4,
                   height: 4,
