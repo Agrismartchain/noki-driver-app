@@ -5,6 +5,7 @@ import '../../core/i18n/generated/app_localizations.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/ui/noki_finance.dart';
+import '../../core/ui/noki_ui.dart';
 import 'cargo_summary_card.dart';
 import 'mobility_status_presentation.dart';
 
@@ -26,76 +27,66 @@ class MobilityWorkCard extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final colors = context.nokiColors;
 
-    return Card(
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(AppRadius.md),
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(
-                _serviceTypeIcon(item.serviceType),
-                color: colors.actionPrimary,
-              ),
-              const SizedBox(width: AppSpacing.md),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '${workFeedServiceTypeLabel(l10n, item.serviceType)} · ${isOffer ? l10n.mobilityOfferLabel : l10n.mobilityRideLabel}',
-                      style: Theme.of(context).textTheme.labelSmall
-                          ?.copyWith(color: colors.textMuted),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    const SizedBox(height: AppSpacing.sm),
-                    // addressLine1 is the real address when present; the
-                    // backend's `label` on Mobility work items is always a
-                    // generic 'Pickup'/'Dropoff' placeholder, never the
-                    // actual address.
-                    if (item.pickup?.addressLine1 != null ||
-                        item.pickup?.label != null)
-                      _RouteLine(
-                        icon: Icons.trip_origin,
-                        label: item.pickup!.addressLine1 ?? item.pickup!.label!,
-                        color: colors.textMuted,
-                      ),
-                    if (item.dropoff?.addressLine1 != null ||
-                        item.dropoff?.label != null) ...[
-                      const SizedBox(height: AppSpacing.xs),
-                      _RouteLine(
-                        icon: Icons.place_outlined,
-                        label:
-                            item.dropoff!.addressLine1 ?? item.dropoff!.label!,
-                        color: colors.textPrimary,
-                      ),
-                    ],
-                    if (item.cargoSummary != null) ...[
-                      const SizedBox(height: AppSpacing.sm),
-                      CargoSummaryLine(cargo: item.cargoSummary!),
-                    ],
-                    if (item.amount != null) ...[
-                      const SizedBox(height: AppSpacing.sm),
-                      NokiFinanceCallout(
-                        label: l10n.financeEstimatedFareLabel,
-                        amount: item.amount!.amount,
-                        currencyCode: item.amount!.currencyCode,
-                        caption: isOffer
-                            ? l10n.mobilityOfferLabel
-                            : l10n.mobilityRideLabel,
-                        icon: Icons.payments_outlined,
-                      ),
-                    ],
-                  ],
+    return NokiSurfaceCard(
+      onTap: onTap,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(_serviceTypeIcon(item.serviceType), color: colors.actionPrimary),
+          const SizedBox(width: AppSpacing.md),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  '${workFeedServiceTypeLabel(l10n, item.serviceType)} · ${isOffer ? l10n.mobilityOfferLabel : l10n.mobilityRideLabel}',
+                  style: Theme.of(context).textTheme.labelSmall
+                      ?.copyWith(color: colors.textMuted),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-              ),
-              Icon(Icons.chevron_right, color: colors.textMuted),
-            ],
+                const SizedBox(height: AppSpacing.sm),
+                // addressLine1 is the real address when present; the
+                // backend's `label` on Mobility work items is always a
+                // generic 'Pickup'/'Dropoff' placeholder, never the
+                // actual address.
+                if (item.pickup?.addressLine1 != null ||
+                    item.pickup?.label != null)
+                  _RouteLine(
+                    icon: Icons.trip_origin,
+                    label: item.pickup!.addressLine1 ?? item.pickup!.label!,
+                    color: colors.textMuted,
+                  ),
+                if (item.dropoff?.addressLine1 != null ||
+                    item.dropoff?.label != null) ...[
+                  const SizedBox(height: AppSpacing.xs),
+                  _RouteLine(
+                    icon: Icons.place_outlined,
+                    label: item.dropoff!.addressLine1 ?? item.dropoff!.label!,
+                    color: colors.textPrimary,
+                  ),
+                ],
+                if (item.cargoSummary != null) ...[
+                  const SizedBox(height: AppSpacing.sm),
+                  CargoSummaryLine(cargo: item.cargoSummary!),
+                ],
+                if (item.amount != null) ...[
+                  const SizedBox(height: AppSpacing.sm),
+                  NokiFinanceCallout(
+                    label: l10n.financeEstimatedFareLabel,
+                    amount: item.amount!.amount,
+                    currencyCode: item.amount!.currencyCode,
+                    caption: isOffer
+                        ? l10n.mobilityOfferLabel
+                        : l10n.mobilityRideLabel,
+                    icon: Icons.payments_outlined,
+                  ),
+                ],
+              ],
+            ),
           ),
-        ),
+          Icon(Icons.chevron_right, color: colors.textMuted),
+        ],
       ),
     );
   }
