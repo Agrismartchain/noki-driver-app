@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/api/generated/driver_models.generated.dart';
+import '../../core/connectivity/offline_banner.dart';
 import '../../core/errors/app_failure.dart';
 import '../../core/errors/error_view.dart';
 import '../../core/errors/failure_localizer.dart';
@@ -244,6 +245,7 @@ class _DeliveryMissionDetailScreenState
       child: ListView(
         padding: const EdgeInsets.all(AppSpacing.lg),
         children: [
+          const OfflineBanner(),
           _Header(mission: mission),
           const SizedBox(height: AppSpacing.lg),
           _Section(title: l10n.missionSectionPickup, child: _pickupContent()),

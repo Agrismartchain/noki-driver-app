@@ -3,6 +3,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/api/generated/driver_models.generated.dart';
+import '../../core/connectivity/offline_banner.dart';
 import '../../core/errors/app_failure.dart';
 import '../../core/errors/failure_localizer.dart';
 import '../../core/location/location_permission_state.dart';
@@ -204,6 +205,7 @@ class _MobilityRideMapScreenState extends ConsumerState<MobilityRideMapScreen> {
                           foregroundColor: context.nokiColors.actionPrimaryInk,
                         ),
                       _GpsChip(asyncPosition: asyncPosition),
+                      const NetworkStatusChip(),
                       ...navigationStatusChips(
                         context,
                         route: navState?.route,

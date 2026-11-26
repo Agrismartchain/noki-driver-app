@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/api/generated/driver_models.generated.dart';
+import '../../core/connectivity/offline_banner.dart';
 import '../../core/location/location_permission_state.dart';
 import '../../core/location/gps_publish_policy.dart';
 import '../../core/location/gps_publisher.dart';
@@ -239,6 +240,7 @@ class _DeliveryMissionMapScreenState
                         foregroundColor: context.nokiColors.actionPrimaryInk,
                       ),
                       _GpsChip(asyncPosition: asyncPosition),
+                      const NetworkStatusChip(),
                       ...navigationStatusChips(
                         context,
                         route: navState?.route,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/api/generated/driver_models.generated.dart';
+import '../../core/connectivity/offline_banner.dart';
 import '../../core/errors/app_failure.dart';
 import '../../core/errors/error_view.dart';
 import '../../core/errors/failure_localizer.dart';
@@ -123,6 +124,7 @@ class _MobilityRideScreenState extends ConsumerState<MobilityRideScreen> {
       child: ListView(
         padding: const EdgeInsets.all(AppSpacing.lg),
         children: [
+          const OfflineBanner(),
           Row(
             children: [
               Icon(

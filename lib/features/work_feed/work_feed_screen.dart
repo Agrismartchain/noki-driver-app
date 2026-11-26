@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/api/generated/driver_models.generated.dart';
+import '../../core/connectivity/offline_banner.dart';
 import '../../core/errors/app_failure.dart';
 import '../../core/errors/error_view.dart';
 import '../../core/i18n/generated/app_localizations.dart';
@@ -165,6 +166,12 @@ class _WorkFeedScreenState extends ConsumerState<WorkFeedScreen> {
       ),
       body: Column(
         children: [
+          // A driver mid-shift relying on this screen to see a new offer or
+          // mission needs to know when connectivity itself is the reason
+          // nothing new is showing up - not just Home (mandate: network-loss
+          // recovery must be visible wherever a driver is waiting on live
+          // data, not only the landing screen).
+          const OfflineBanner(),
           Padding(
             padding: const EdgeInsets.symmetric(
               horizontal: AppSpacing.lg,
