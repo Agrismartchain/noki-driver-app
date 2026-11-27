@@ -9,11 +9,30 @@ import 'package:noki_driver_app/core/storage/storage_providers.dart';
 import 'package:noki_driver_app/core/theme/app_colors.dart';
 import 'package:noki_driver_app/core/theme/app_theme.dart';
 import 'package:noki_driver_app/features/auth/auth_providers.dart';
+import 'package:noki_driver_app/features/auth/auth_state.dart';
 import 'package:noki_driver_app/features/auth/mfa_enroll_screen.dart';
 
 import '../../fixtures/fake_driver_api_client.dart';
 import '../../fixtures/fake_session_storage.dart';
 import '../../fixtures/sample_responses.dart';
+
+/// Pumps frames until the no-token bootstrap genuinely settles into
+/// `unauthenticated` (polling the real state rather than guessing at a
+/// microtask count) before returning - calling `login()` while bootstrap is
+/// still in flight races the two state transitions against each other, and
+/// whichever finishes last silently overwrites the other. `auth_controller_test.dart`
+/// avoids this with a plain `Future.delayed(Duration.zero)` (`_settle`),
+/// which works there because bare `test()` blocks run on the real event
+/// loop; inside `testWidgets`' fake-async clock, a bare `Future.delayed`
+/// never fires without an explicit `tester.pump()` to advance it, so this
+/// polls via pumps instead. Requires a widget already mounted (pumps a
+/// trivial placeholder first).
+Future<void> _settleBootstrap(WidgetTester tester, ProviderContainer container) async {
+  await tester.pumpWidget(const SizedBox.shrink());
+  while (container.read(authControllerProvider).status == AuthStatus.bootstrapping) {
+    await tester.pump();
+  }
+}
 
 /// Drives the real [AuthController] into `AuthStatus.mfaEnrollRequired`
 /// before mounting [MfaEnrollScreen] - the screen itself never fabricates
@@ -30,10 +49,7 @@ Future<ProviderContainer> _loginToEnrollRequired(
   );
   addTearDown(container.dispose);
   container.read(authControllerProvider); // triggers build() / bootstrap
-  // Lets the no-token bootstrap settle into `unauthenticated` first - racing
-  // it against login() below would let the bootstrap overwrite login's own
-  // state transition (see auth_controller_test.dart's `_settle` helper).
-  await Future<void>.delayed(Duration.zero);
+  await _settleBootstrap(tester, container);
   await container.read(authControllerProvider.notifier).login(email: 'a@b.test', password: 'secret');
 
   await tester.pumpWidget(
@@ -75,7 +91,16 @@ void main() {
 
     await tester.enterText(find.byType(TextFormField), '123456');
     await tester.tap(find.text('Confirm'));
-    await tester.pumpAndSettle();
+    // Not pumpAndSettle(): a successful confirm moves AuthStatus to
+    // mfaRecoveryCodesPending, which clears mfaChallenge entirely. Routed
+    // through the real app, go_router navigates away from this screen the
+    // moment that happens; pumped in isolation here (no router), the same
+    // screen stays mounted with no enrollment secret left to show and would
+    // render its indeterminate loading spinner forever, which pumpAndSettle
+    // can never settle past. A few bounded pumps are enough to observe the
+    // call this test actually cares about.
+    await tester.pump();
+    await tester.pump();
 
     expect(client.lastMfaEnrollConfirmCode, '123456');
   });
