@@ -46,6 +46,85 @@ class AppLocalizationsAr extends AppLocalizations {
   String get loginSubheadline => 'استخدم الحساب الذي زوّدتك به منظمتك.';
 
   @override
+  String get mfaEnrollHeadline => 'إعداد المصادقة الثنائية';
+
+  @override
+  String get mfaEnrollInstructions =>
+      'يتطلب حسابك خطوة أمان إضافية. افتح تطبيق مصادقة (مثل Google Authenticator أو Authy) وأضف هذا الحساب باستخدام المفتاح أدناه.';
+
+  @override
+  String get mfaEnrollSecretLabel => 'مفتاح الإعداد';
+
+  @override
+  String get mfaEnrollCopySecret => 'نسخ';
+
+  @override
+  String get mfaEnrollSecretCopied => 'تم نسخ مفتاح الإعداد';
+
+  @override
+  String get mfaEnrollCodeLabel => 'رمز مكوّن من 6 أرقام';
+
+  @override
+  String get mfaEnrollCodeRequired =>
+      'أدخل الرمز المكوّن من 6 أرقام من تطبيق المصادقة';
+
+  @override
+  String get mfaEnrollCodeInvalidFormat =>
+      'أدخل الأرقام الستة المعروضة في تطبيقك';
+
+  @override
+  String get mfaEnrollSubmit => 'تأكيد';
+
+  @override
+  String get mfaEnrollLoadingSecret => 'جارٍ تحضير إعداد المصادقة الثنائية…';
+
+  @override
+  String get mfaRecoveryCodesHeadline => 'احفظ رموز الاسترداد الخاصة بك';
+
+  @override
+  String get mfaRecoveryCodesWarning =>
+      'يمكن استخدام كل رمز مرة واحدة فقط إذا فقدت الوصول إلى تطبيق المصادقة. لن تُعرض مرة أخرى - احفظها الآن في مكان آمن.';
+
+  @override
+  String get mfaRecoveryCodesCopyAll => 'نسخ الكل';
+
+  @override
+  String get mfaRecoveryCodesCopied => 'تم نسخ رموز الاسترداد';
+
+  @override
+  String get mfaRecoveryCodesAcknowledge => 'لقد حفظت هذه الرموز';
+
+  @override
+  String get mfaVerifyHeadline => 'أدخل رمز المصادقة الخاص بك';
+
+  @override
+  String get mfaVerifyInstructions => 'افتح تطبيق المصادقة وأدخل الرمز الحالي.';
+
+  @override
+  String get mfaVerifyCodeLabel => 'رمز مكوّن من 6 أرقام';
+
+  @override
+  String get mfaVerifyCodeRequired =>
+      'أدخل الرمز المكوّن من 6 أرقام من تطبيق المصادقة';
+
+  @override
+  String get mfaVerifySubmit => 'تحقق';
+
+  @override
+  String get mfaVerifyUseRecoveryCode => 'استخدام رمز استرداد بدلاً من ذلك';
+
+  @override
+  String get mfaVerifyUseAuthenticatorCode =>
+      'استخدام رمز المصادقة بدلاً من ذلك';
+
+  @override
+  String get mfaVerifyRecoveryCodeLabel => 'رمز الاسترداد';
+
+  @override
+  String get mfaVerifyRecoveryCodeRequired =>
+      'أدخل أحد رموز الاسترداد الخاصة بك';
+
+  @override
   String get navHome => 'الرئيسية';
 
   @override
@@ -717,6 +796,17 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get errorUnknown => 'حدث خطأ ما.';
+
+  @override
+  String get errorMfaCodeInvalid => 'هذا الرمز غير صالح. حاول مرة أخرى.';
+
+  @override
+  String get errorMfaChallengeExpired =>
+      'انتهت صلاحية خطوة تسجيل الدخول هذه. سجّل الدخول مرة أخرى.';
+
+  @override
+  String get errorMfaLocked =>
+      'عدد كبير جدًا من الرموز غير الصحيحة. انتظر بضع دقائق ثم حاول مرة أخرى.';
 
   @override
   String get actionRetry => 'إعادة المحاولة';

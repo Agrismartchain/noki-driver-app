@@ -47,6 +47,88 @@ class AppLocalizationsFr extends AppLocalizations {
       'Utilisez le compte fourni par votre organisation.';
 
   @override
+  String get mfaEnrollHeadline =>
+      'Configurer l\'authentification à deux facteurs';
+
+  @override
+  String get mfaEnrollInstructions =>
+      'Votre compte nécessite une étape de sécurité supplémentaire. Ouvrez une application d\'authentification (comme Google Authenticator ou Authy) et ajoutez ce compte avec la clé ci-dessous.';
+
+  @override
+  String get mfaEnrollSecretLabel => 'Clé de configuration';
+
+  @override
+  String get mfaEnrollCopySecret => 'Copier';
+
+  @override
+  String get mfaEnrollSecretCopied => 'Clé de configuration copiée';
+
+  @override
+  String get mfaEnrollCodeLabel => 'Code à 6 chiffres';
+
+  @override
+  String get mfaEnrollCodeRequired =>
+      'Saisissez le code à 6 chiffres de votre application d\'authentification';
+
+  @override
+  String get mfaEnrollCodeInvalidFormat =>
+      'Saisissez les 6 chiffres affichés dans votre application';
+
+  @override
+  String get mfaEnrollSubmit => 'Confirmer';
+
+  @override
+  String get mfaEnrollLoadingSecret => 'Préparation de la configuration…';
+
+  @override
+  String get mfaRecoveryCodesHeadline =>
+      'Enregistrez vos codes de récupération';
+
+  @override
+  String get mfaRecoveryCodesWarning =>
+      'Chaque code ne peut être utilisé qu\'une fois, si vous perdez un jour l\'accès à votre application d\'authentification. Ils ne seront plus jamais affichés - enregistrez-les en lieu sûr dès maintenant.';
+
+  @override
+  String get mfaRecoveryCodesCopyAll => 'Tout copier';
+
+  @override
+  String get mfaRecoveryCodesCopied => 'Codes de récupération copiés';
+
+  @override
+  String get mfaRecoveryCodesAcknowledge => 'J\'ai enregistré ces codes';
+
+  @override
+  String get mfaVerifyHeadline => 'Saisissez votre code d\'authentification';
+
+  @override
+  String get mfaVerifyInstructions =>
+      'Ouvrez votre application d\'authentification et saisissez le code actuel.';
+
+  @override
+  String get mfaVerifyCodeLabel => 'Code à 6 chiffres';
+
+  @override
+  String get mfaVerifyCodeRequired =>
+      'Saisissez le code à 6 chiffres de votre application d\'authentification';
+
+  @override
+  String get mfaVerifySubmit => 'Vérifier';
+
+  @override
+  String get mfaVerifyUseRecoveryCode => 'Utiliser un code de récupération';
+
+  @override
+  String get mfaVerifyUseAuthenticatorCode =>
+      'Utiliser mon code d\'authentification';
+
+  @override
+  String get mfaVerifyRecoveryCodeLabel => 'Code de récupération';
+
+  @override
+  String get mfaVerifyRecoveryCodeRequired =>
+      'Saisissez l\'un de vos codes de récupération';
+
+  @override
   String get navHome => 'Accueil';
 
   @override
@@ -730,6 +812,17 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get errorUnknown => 'Une erreur est survenue.';
+
+  @override
+  String get errorMfaCodeInvalid => 'Ce code n\'est pas valide. Réessayez.';
+
+  @override
+  String get errorMfaChallengeExpired =>
+      'Cette étape de connexion a expiré. Reconnectez-vous.';
+
+  @override
+  String get errorMfaLocked =>
+      'Trop de codes incorrects. Patientez quelques minutes puis réessayez.';
 
   @override
   String get actionRetry => 'Réessayer';

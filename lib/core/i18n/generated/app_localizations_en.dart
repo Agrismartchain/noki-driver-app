@@ -47,6 +47,86 @@ class AppLocalizationsEn extends AppLocalizations {
       'Use the account provided by your organization.';
 
   @override
+  String get mfaEnrollHeadline => 'Set up two-factor authentication';
+
+  @override
+  String get mfaEnrollInstructions =>
+      'Your account requires an extra security step. Open an authenticator app (such as Google Authenticator or Authy) and add this account using the key below.';
+
+  @override
+  String get mfaEnrollSecretLabel => 'Setup key';
+
+  @override
+  String get mfaEnrollCopySecret => 'Copy';
+
+  @override
+  String get mfaEnrollSecretCopied => 'Setup key copied';
+
+  @override
+  String get mfaEnrollCodeLabel => '6-digit code';
+
+  @override
+  String get mfaEnrollCodeRequired =>
+      'Enter the 6-digit code from your authenticator app';
+
+  @override
+  String get mfaEnrollCodeInvalidFormat =>
+      'Enter the 6 digits shown in your app';
+
+  @override
+  String get mfaEnrollSubmit => 'Confirm';
+
+  @override
+  String get mfaEnrollLoadingSecret => 'Preparing two-factor setup…';
+
+  @override
+  String get mfaRecoveryCodesHeadline => 'Save your recovery codes';
+
+  @override
+  String get mfaRecoveryCodesWarning =>
+      'Each code can be used once if you ever lose access to your authenticator app. They will not be shown again - save them somewhere safe now.';
+
+  @override
+  String get mfaRecoveryCodesCopyAll => 'Copy all';
+
+  @override
+  String get mfaRecoveryCodesCopied => 'Recovery codes copied';
+
+  @override
+  String get mfaRecoveryCodesAcknowledge => 'I\'ve saved these codes';
+
+  @override
+  String get mfaVerifyHeadline => 'Enter your authenticator code';
+
+  @override
+  String get mfaVerifyInstructions =>
+      'Open your authenticator app and enter the current code.';
+
+  @override
+  String get mfaVerifyCodeLabel => '6-digit code';
+
+  @override
+  String get mfaVerifyCodeRequired =>
+      'Enter the 6-digit code from your authenticator app';
+
+  @override
+  String get mfaVerifySubmit => 'Verify';
+
+  @override
+  String get mfaVerifyUseRecoveryCode => 'Use a recovery code instead';
+
+  @override
+  String get mfaVerifyUseAuthenticatorCode =>
+      'Use my authenticator code instead';
+
+  @override
+  String get mfaVerifyRecoveryCodeLabel => 'Recovery code';
+
+  @override
+  String get mfaVerifyRecoveryCodeRequired =>
+      'Enter one of your recovery codes';
+
+  @override
   String get navHome => 'Home';
 
   @override
@@ -724,6 +804,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorUnknown => 'Something went wrong.';
+
+  @override
+  String get errorMfaCodeInvalid => 'That code isn\'t valid. Try again.';
+
+  @override
+  String get errorMfaChallengeExpired =>
+      'This sign-in step expired. Sign in again.';
+
+  @override
+  String get errorMfaLocked =>
+      'Too many incorrect codes. Wait a few minutes and try again.';
 
   @override
   String get actionRetry => 'Retry';

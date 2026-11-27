@@ -172,6 +172,150 @@ abstract class AppLocalizations {
   /// **'Use the account provided by your organization.'**
   String get loginSubheadline;
 
+  /// No description provided for @mfaEnrollHeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Set up two-factor authentication'**
+  String get mfaEnrollHeadline;
+
+  /// No description provided for @mfaEnrollInstructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account requires an extra security step. Open an authenticator app (such as Google Authenticator or Authy) and add this account using the key below.'**
+  String get mfaEnrollInstructions;
+
+  /// No description provided for @mfaEnrollSecretLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Setup key'**
+  String get mfaEnrollSecretLabel;
+
+  /// No description provided for @mfaEnrollCopySecret.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get mfaEnrollCopySecret;
+
+  /// No description provided for @mfaEnrollSecretCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Setup key copied'**
+  String get mfaEnrollSecretCopied;
+
+  /// No description provided for @mfaEnrollCodeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'6-digit code'**
+  String get mfaEnrollCodeLabel;
+
+  /// No description provided for @mfaEnrollCodeRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the 6-digit code from your authenticator app'**
+  String get mfaEnrollCodeRequired;
+
+  /// No description provided for @mfaEnrollCodeInvalidFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the 6 digits shown in your app'**
+  String get mfaEnrollCodeInvalidFormat;
+
+  /// No description provided for @mfaEnrollSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get mfaEnrollSubmit;
+
+  /// No description provided for @mfaEnrollLoadingSecret.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing two-factor setup…'**
+  String get mfaEnrollLoadingSecret;
+
+  /// No description provided for @mfaRecoveryCodesHeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Save your recovery codes'**
+  String get mfaRecoveryCodesHeadline;
+
+  /// No description provided for @mfaRecoveryCodesWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Each code can be used once if you ever lose access to your authenticator app. They will not be shown again - save them somewhere safe now.'**
+  String get mfaRecoveryCodesWarning;
+
+  /// No description provided for @mfaRecoveryCodesCopyAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy all'**
+  String get mfaRecoveryCodesCopyAll;
+
+  /// No description provided for @mfaRecoveryCodesCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Recovery codes copied'**
+  String get mfaRecoveryCodesCopied;
+
+  /// No description provided for @mfaRecoveryCodesAcknowledge.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'ve saved these codes'**
+  String get mfaRecoveryCodesAcknowledge;
+
+  /// No description provided for @mfaVerifyHeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your authenticator code'**
+  String get mfaVerifyHeadline;
+
+  /// No description provided for @mfaVerifyInstructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Open your authenticator app and enter the current code.'**
+  String get mfaVerifyInstructions;
+
+  /// No description provided for @mfaVerifyCodeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'6-digit code'**
+  String get mfaVerifyCodeLabel;
+
+  /// No description provided for @mfaVerifyCodeRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the 6-digit code from your authenticator app'**
+  String get mfaVerifyCodeRequired;
+
+  /// No description provided for @mfaVerifySubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify'**
+  String get mfaVerifySubmit;
+
+  /// No description provided for @mfaVerifyUseRecoveryCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Use a recovery code instead'**
+  String get mfaVerifyUseRecoveryCode;
+
+  /// No description provided for @mfaVerifyUseAuthenticatorCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Use my authenticator code instead'**
+  String get mfaVerifyUseAuthenticatorCode;
+
+  /// No description provided for @mfaVerifyRecoveryCodeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Recovery code'**
+  String get mfaVerifyRecoveryCodeLabel;
+
+  /// No description provided for @mfaVerifyRecoveryCodeRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter one of your recovery codes'**
+  String get mfaVerifyRecoveryCodeRequired;
+
   /// No description provided for @navHome.
   ///
   /// In en, this message translates to:
@@ -1383,6 +1527,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Something went wrong.'**
   String get errorUnknown;
+
+  /// No description provided for @errorMfaCodeInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'That code isn\'t valid. Try again.'**
+  String get errorMfaCodeInvalid;
+
+  /// No description provided for @errorMfaChallengeExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'This sign-in step expired. Sign in again.'**
+  String get errorMfaChallengeExpired;
+
+  /// No description provided for @errorMfaLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many incorrect codes. Wait a few minutes and try again.'**
+  String get errorMfaLocked;
 
   /// No description provided for @actionRetry.
   ///

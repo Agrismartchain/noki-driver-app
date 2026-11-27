@@ -6,6 +6,9 @@ import '../../app/root_gate.dart';
 import '../../features/auth/access_denied_screen.dart';
 import '../../features/auth/auth_state.dart';
 import '../../features/auth/login_screen.dart';
+import '../../features/auth/mfa_enroll_screen.dart';
+import '../../features/auth/mfa_recovery_codes_screen.dart';
+import '../../features/auth/mfa_verify_screen.dart';
 
 /// A plain, Riverpod-independent [Listenable] go_router's `redirect`
 /// re-evaluates against. Deliberately *not* constructed by calling
@@ -48,16 +51,33 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         case AuthStatus.unauthenticated:
         case AuthStatus.authenticating:
           return path == '/login' ? null : '/login';
+        case AuthStatus.mfaEnrollRequired:
+          return path == '/mfa/enroll' ? null : '/mfa/enroll';
+        case AuthStatus.mfaRecoveryCodesPending:
+          return path == '/mfa/recovery-codes' ? null : '/mfa/recovery-codes';
+        case AuthStatus.mfaVerifyRequired:
+          return path == '/mfa/verify' ? null : '/mfa/verify';
         case AuthStatus.accessDenied:
           return path == '/access-denied' ? null : '/access-denied';
         case AuthStatus.authenticated:
-          return (path == '/login' || path == '/access-denied') ? '/' : null;
+          return _mfaOrLoginPaths.contains(path) ? '/' : null;
       }
     },
     routes: [
       GoRoute(path: '/', builder: (context, state) => const RootGate()),
       GoRoute(path: '/login', builder: (context, state) => const LoginScreen()),
+      GoRoute(path: '/mfa/enroll', builder: (context, state) => const MfaEnrollScreen()),
+      GoRoute(path: '/mfa/recovery-codes', builder: (context, state) => const MfaRecoveryCodesScreen()),
+      GoRoute(path: '/mfa/verify', builder: (context, state) => const MfaVerifyScreen()),
       GoRoute(path: '/access-denied', builder: (context, state) => const AccessDeniedScreen()),
     ],
   );
 });
+
+const _mfaOrLoginPaths = {
+  '/login',
+  '/mfa/enroll',
+  '/mfa/recovery-codes',
+  '/mfa/verify',
+  '/access-denied',
+};
