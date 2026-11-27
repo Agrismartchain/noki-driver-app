@@ -121,7 +121,7 @@ Marker dropoffMarker(MapPoint point, NokiColorScheme colors) {
                   height: 8,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: colors.textInverse,
+                    color: colors.chromeInk,
                   ),
                 ),
               ),

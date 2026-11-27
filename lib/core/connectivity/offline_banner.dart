@@ -56,7 +56,7 @@ class NetworkStatusChip extends ConsumerWidget {
       label: l10n.offlineBannerMessage,
       icon: Icons.wifi_off,
       backgroundColor: colors.chromeSurface,
-      foregroundColor: colors.textInverse,
+      foregroundColor: colors.chromeInk,
     );
   }
 }

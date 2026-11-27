@@ -60,120 +60,198 @@ class _MfaEnrollScreenState extends ConsumerState<MfaEnrollScreen> {
     }
 
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       body: NokiScreenBackground(
         child: SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(AppSpacing.page),
+          child: LayoutBuilder(
+            builder: (context, constraints) => SingleChildScrollView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.page,
+                AppSpacing.lg,
+                AppSpacing.page,
+                AppSpacing.xxl,
+              ),
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 460),
-                child: NokiSurfaceCard(
-                  tone: NokiSurfaceTone.inverse,
-                  padding: const EdgeInsets.all(AppSpacing.xl),
-                  child: enrollment == null
-                      ? _LoadingBody(message: l10n.mfaEnrollLoadingSecret, colors: colors)
-                      : Form(
-                          key: _formKey,
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Semantics(
-                                header: true,
-                                child: Text(
-                                  l10n.mfaEnrollHeadline,
-                                  style: Theme.of(context).textTheme.headlineSmall
-                                      ?.copyWith(color: colors.textInverse),
-                                ),
-                              ),
-                              const SizedBox(height: AppSpacing.sm),
-                              Text(
-                                l10n.mfaEnrollInstructions,
-                                style: Theme.of(context).textTheme.bodyMedium
-                                    ?.copyWith(color: colors.textSecondary),
-                              ),
-                              const SizedBox(height: AppSpacing.xl),
-                              Text(
-                                l10n.mfaEnrollSecretLabel,
-                                style: Theme.of(context).textTheme.labelMedium
-                                    ?.copyWith(color: colors.textSecondary),
-                              ),
-                              const SizedBox(height: AppSpacing.xs),
-                              Row(
+                constraints: BoxConstraints(
+                  minHeight: (constraints.maxHeight - AppSpacing.xxxl).clamp(
+                    0,
+                    double.infinity,
+                  ),
+                ),
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 460),
+                    child: NokiSurfaceCard(
+                      tone: NokiSurfaceTone.defaultTone,
+                      padding: const EdgeInsets.all(AppSpacing.xl),
+                      child: enrollment == null
+                          ? _LoadingBody(
+                              message: l10n.mfaEnrollLoadingSecret,
+                              colors: colors,
+                            )
+                          : Form(
+                              key: _formKey,
+                              autovalidateMode:
+                                  AutovalidateMode.onUserInteraction,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
-                                  Expanded(
-                                    child: SelectableText(
-                                      enrollment.secretBase32,
-                                      style: Theme.of(context).textTheme.titleMedium
-                                          ?.copyWith(
-                                            color: colors.textInverse,
-                                            fontFeatures: const [FontFeature.tabularFigures()],
-                                          ),
+                                  Semantics(
+                                    header: true,
+                                    child: Text(
+                                      l10n.mfaEnrollHeadline,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .headlineSmall
+                                          ?.copyWith(color: colors.textPrimary),
                                     ),
                                   ),
-                                  IconButton(
-                                    icon: const Icon(Icons.copy_outlined),
-                                    tooltip: l10n.mfaEnrollCopySecret,
-                                    color: colors.textInverse,
-                                    onPressed: () async {
-                                      await Clipboard.setData(
-                                        ClipboardData(text: enrollment.secretBase32),
-                                      );
-                                      if (context.mounted) {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          SnackBar(content: Text(l10n.mfaEnrollSecretCopied)),
-                                        );
+                                  const SizedBox(height: AppSpacing.sm),
+                                  Text(
+                                    l10n.mfaEnrollInstructions,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(color: colors.textSecondary),
+                                  ),
+                                  const SizedBox(height: AppSpacing.xl),
+                                  Text(
+                                    l10n.mfaEnrollSecretLabel,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .labelMedium
+                                        ?.copyWith(color: colors.textSecondary),
+                                  ),
+                                  const SizedBox(height: AppSpacing.xs),
+                                  Container(
+                                    key: const Key('mfa-enroll-secret-box'),
+                                    padding: const EdgeInsetsDirectional.fromSTEB(
+                                      AppSpacing.md,
+                                      AppSpacing.sm,
+                                      AppSpacing.xs,
+                                      AppSpacing.sm,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: colors.surfaceSubtle,
+                                      borderRadius: BorderRadius.circular(
+                                        AppRadius.md,
+                                      ),
+                                      border: Border.all(
+                                        color: colors.borderStrong,
+                                      ),
+                                    ),
+                                    child: Row(
+                                      children: [
+                                        Expanded(
+                                          child: SelectableText(
+                                            enrollment.secretBase32,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .titleMedium
+                                                ?.copyWith(
+                                                  color: colors.textPrimary,
+                                                  letterSpacing: 1.1,
+                                                  fontFeatures: const [
+                                                    FontFeature.tabularFigures(),
+                                                  ],
+                                                ),
+                                          ),
+                                        ),
+                                        IconButton(
+                                          icon: const Icon(Icons.copy_outlined),
+                                          tooltip: l10n.mfaEnrollCopySecret,
+                                          color: colors.textPrimary,
+                                          onPressed: () async {
+                                            await Clipboard.setData(
+                                              ClipboardData(
+                                                text: enrollment.secretBase32,
+                                              ),
+                                            );
+                                            if (context.mounted) {
+                                              ScaffoldMessenger.of(
+                                                context,
+                                              ).showSnackBar(
+                                                SnackBar(
+                                                  content: Text(
+                                                    l10n.mfaEnrollSecretCopied,
+                                                  ),
+                                                ),
+                                              );
+                                            }
+                                          },
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(height: AppSpacing.xl),
+                                  TextFormField(
+                                    controller: _codeController,
+                                    keyboardType: TextInputType.number,
+                                    textInputAction: TextInputAction.done,
+                                    autofillHints: const [
+                                      AutofillHints.oneTimeCode,
+                                    ],
+                                    enabled: !isSubmitting,
+                                    maxLength: 6,
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .titleMedium
+                                        ?.copyWith(
+                                          color: colors.textPrimary,
+                                          letterSpacing: 3,
+                                          fontFeatures: const [
+                                            FontFeature.tabularFigures(),
+                                          ],
+                                        ),
+                                    onFieldSubmitted: (_) => _submit(),
+                                    decoration: InputDecoration(
+                                      labelText: l10n.mfaEnrollCodeLabel,
+                                      counterText: '',
+                                    ),
+                                    validator: (value) {
+                                      final v = value?.trim() ?? '';
+                                      if (v.isEmpty) {
+                                        return l10n.mfaEnrollCodeRequired;
                                       }
+                                      if (!RegExp(r'^\d{6}$').hasMatch(v)) {
+                                        return l10n.mfaEnrollCodeInvalidFormat;
+                                      }
+                                      return null;
                                     },
+                                  ),
+                                  if (authState.failure != null) ...[
+                                    const SizedBox(height: AppSpacing.lg),
+                                    Text(
+                                      localizeFailure(
+                                        context,
+                                        authState.failure!,
+                                      ),
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .bodyMedium
+                                          ?.copyWith(color: colors.danger),
+                                    ),
+                                  ],
+                                  const SizedBox(height: AppSpacing.xl),
+                                  ElevatedButton(
+                                    onPressed: isSubmitting ? null : _submit,
+                                    child: isSubmitting
+                                        ? SizedBox(
+                                            height: 18,
+                                            width: 18,
+                                            child: CircularProgressIndicator(
+                                              strokeWidth: 2,
+                                              color: colors.actionPrimaryInk,
+                                            ),
+                                          )
+                                        : Text(l10n.mfaEnrollSubmit),
                                   ),
                                 ],
                               ),
-                              const SizedBox(height: AppSpacing.xxl),
-                              TextFormField(
-                                controller: _codeController,
-                                keyboardType: TextInputType.number,
-                                textInputAction: TextInputAction.done,
-                                enabled: !isSubmitting,
-                                maxLength: 6,
-                                onFieldSubmitted: (_) => _submit(),
-                                decoration: InputDecoration(
-                                  labelText: l10n.mfaEnrollCodeLabel,
-                                  counterText: '',
-                                ),
-                                validator: (value) {
-                                  final v = value?.trim() ?? '';
-                                  if (v.isEmpty) return l10n.mfaEnrollCodeRequired;
-                                  if (!RegExp(r'^\d{6}$').hasMatch(v)) {
-                                    return l10n.mfaEnrollCodeInvalidFormat;
-                                  }
-                                  return null;
-                                },
-                              ),
-                              if (authState.failure != null) ...[
-                                const SizedBox(height: AppSpacing.lg),
-                                Text(
-                                  localizeFailure(context, authState.failure!),
-                                  style: Theme.of(context).textTheme.bodyMedium
-                                      ?.copyWith(color: colors.danger),
-                                ),
-                              ],
-                              const SizedBox(height: AppSpacing.xxl),
-                              ElevatedButton(
-                                onPressed: isSubmitting ? null : _submit,
-                                child: isSubmitting
-                                    ? SizedBox(
-                                        height: 18,
-                                        width: 18,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          color: colors.actionPrimaryInk,
-                                        ),
-                                      )
-                                    : Text(l10n.mfaEnrollSubmit),
-                              ),
-                            ],
-                          ),
-                        ),
+                            ),
+                    ),
+                  ),
                 ),
               ),
             ),
@@ -196,12 +274,14 @@ class _LoadingBody extends StatelessWidget {
       padding: const EdgeInsets.symmetric(vertical: AppSpacing.xxl),
       child: Column(
         children: [
-          CircularProgressIndicator(color: colors.textInverse),
+          CircularProgressIndicator(color: colors.actionPrimary),
           const SizedBox(height: AppSpacing.lg),
           Text(
             message,
             textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: colors.textSecondary),
+            style: Theme.of(
+              context,
+            ).textTheme.bodyMedium?.copyWith(color: colors.textSecondary),
           ),
         ],
       ),

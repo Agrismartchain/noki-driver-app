@@ -912,4 +912,63 @@ class AppLocalizationsEn extends AppLocalizations {
   String navigationNextManeuverLabel(String distance, String instruction) {
     return 'In $distance: $instruction';
   }
+
+  @override
+  String homeMapServiceZone(String zone) {
+    return 'Service area: $zone';
+  }
+
+  @override
+  String get homeMapPositionLive => 'Live GPS position';
+
+  @override
+  String get homeMapWaitingGps => 'Waiting for GPS fix';
+
+  @override
+  String get locationOpenLocationSettings => 'Enable GPS';
+
+  @override
+  String get profileStatusNotEnabled => 'Not enabled';
+
+  @override
+  String get profileStatusUnavailable => 'Unavailable';
+
+  @override
+  String get workFeedFilterTaxi => 'Taxi';
+
+  @override
+  String get workFeedFilterTaxiMoto => 'Taxi Moto';
+
+  @override
+  String get workFeedFilterParcel => 'Parcel';
+
+  @override
+  String get workFeedFilterCargo => 'Cargo';
+
+  @override
+  String get workFeedFilterEmptyTitle => 'No matching items';
+
+  @override
+  String get workFeedFilterReset => 'Show all';
+
+  @override
+  String get workFeedAccessUnavailableTitle => 'Work feed unavailable';
+
+  @override
+  String get workFeedAccessUnavailableBody =>
+      'Your account does not have access to this work feed in this organization.';
+
+  @override
+  String get deliveryHistoryUnavailableTitle => 'Delivery history unavailable';
+
+  @override
+  String get deliveryHistoryUnavailableBody =>
+      'Delivery missions are not enabled on your driver profile for this organization.';
+
+  @override
+  String get mobilityHistoryUnavailableTitle => 'Mobility history unavailable';
+
+  @override
+  String get mobilityHistoryUnavailableBody =>
+      'Completed Mobility ride history is not yet available for your account on this server.';
 }

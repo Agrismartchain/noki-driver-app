@@ -98,6 +98,7 @@ class AppFailure implements Exception {
           statusCode: statusCode,
           code: code,
         );
+      case 400:
       case 422:
         return AppFailure(
           AppFailureType.validation,

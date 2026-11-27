@@ -1,5 +1,4 @@
 import 'package:flutter/widgets.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:noki_driver_app/core/connectivity/connectivity_status.dart';
 import 'package:noki_driver_app/core/connectivity/offline_banner.dart';

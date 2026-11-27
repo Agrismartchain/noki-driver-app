@@ -263,7 +263,7 @@ class _DeliveryMissionMapScreenState
                 Positioned(
                   left: AppSpacing.lg,
                   right: AppSpacing.lg,
-                  bottom: AppSpacing.lg,
+                  bottom: AppSpacing.lg + MediaQuery.paddingOf(context).bottom,
                   child: asyncMission.maybeWhen(
                     data: (mission) => _BottomSheet(
                       mission: mission,

@@ -291,5 +291,24 @@
   "navigationRetryAction": "إعادة المحاولة",
   "navigationEtaLabel": "الوصول المقدر الساعة {time}",
   "navigationDistanceRemainingLabel": "{distance} متبقية",
-  "navigationNextManeuverLabel": "خلال {distance}: {instruction}"
+  "navigationNextManeuverLabel": "خلال {distance}: {instruction}",
+
+  "homeMapServiceZone": "منطقة الخدمة: {zone}",
+  "homeMapPositionLive": "الموقع المباشر عبر GPS",
+  "homeMapWaitingGps": "بانتظار إشارة GPS",
+  "locationOpenLocationSettings": "تفعيل GPS",
+  "profileStatusNotEnabled": "غير مفعّل",
+  "profileStatusUnavailable": "غير متاح",
+  "workFeedFilterTaxi": "تاكسي",
+  "workFeedFilterTaxiMoto": "تاكسي موتو",
+  "workFeedFilterParcel": "طرود",
+  "workFeedFilterCargo": "شحن",
+  "workFeedFilterEmptyTitle": "لا توجد عناصر مطابقة لهذا الفلتر",
+  "workFeedFilterReset": "عرض الكل",
+  "workFeedAccessUnavailableTitle": "قائمة العمل غير متاحة",
+  "workFeedAccessUnavailableBody": "ليس لدى حسابك صلاحية الوصول إلى قائمة العمل في هذه الجهة.",
+  "deliveryHistoryUnavailableTitle": "سجل التوصيلات غير متاح",
+  "deliveryHistoryUnavailableBody": "خدمة التوصيل غير مفعّلة في ملف السائق الخاص بك لهذه الجهة.",
+  "mobilityHistoryUnavailableTitle": "سجل التنقل غير متاح",
+  "mobilityHistoryUnavailableBody": "سجل رحلات التنقل المكتملة غير متاح بعد لحسابك على هذا الخادم."
 }

@@ -6,13 +6,14 @@ import '../theme/app_spacing.dart';
 import '../theme/app_theme.dart';
 import '../ui/noki_state_views.dart';
 import '../ui/noki_ui.dart';
+import 'live_position_provider.dart';
 import 'location_permission_state.dart';
 import 'location_repository.dart';
 
 /// Shown before any map/tracking UI. Handles every [LocationPermissionState]
 /// without crashing or re-prompting a permanently-denied driver in a loop
-/// (mandate §6). [builder] only ever runs once permission is genuinely
-/// granted.
+/// (mandate §6). Re-checks permission and GPS state automatically whenever
+/// the app returns to foreground (e.g. after opening device Settings).
 class LocationPermissionGate extends ConsumerStatefulWidget {
   const LocationPermissionGate({super.key, required this.builder});
 
@@ -23,29 +24,48 @@ class LocationPermissionGate extends ConsumerStatefulWidget {
       _LocationPermissionGateState();
 }
 
-class _LocationPermissionGateState
-    extends ConsumerState<LocationPermissionGate> {
+class _LocationPermissionGateState extends ConsumerState<LocationPermissionGate>
+    with WidgetsBindingObserver {
   bool _requesting = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      ref.invalidate(locationPermissionStateProvider);
+      ref.invalidate(livePositionProvider);
+    }
+  }
 
   Future<void> _request() async {
     setState(() => _requesting = true);
     await ref.read(locationRepositoryProvider).requestPermission();
     ref.invalidate(locationPermissionStateProvider);
+    ref.invalidate(livePositionProvider);
     if (mounted) setState(() => _requesting = false);
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final asyncState = ref.watch(locationPermissionStateProvider);
     return asyncState.when(
-      loading: () => const NokiScreenBackground(
-        showMapGrid: true,
-        child: NokiLoadingState(),
-      ),
+      loading: () => const NokiScreenBackground(child: NokiLoadingState()),
       error: (_, _) => _StateMessage(
         icon: Icons.location_disabled_outlined,
-        message: AppLocalizations.of(context).locationErrorGeneric,
-        actionLabel: AppLocalizations.of(context).actionRetry,
+        message: l10n.locationErrorGeneric,
+        actionLabel: l10n.actionRetry,
         onAction: () => ref.invalidate(locationPermissionStateProvider),
       ),
       data: (state) {
@@ -55,24 +75,24 @@ class _LocationPermissionGateState
           case LocationPermissionState.serviceDisabled:
             return _StateMessage(
               icon: Icons.location_off_outlined,
-              message: AppLocalizations.of(context).locationServiceDisabled,
-              actionLabel: AppLocalizations.of(context).locationOpenSettings,
+              message: l10n.locationServiceDisabled,
+              actionLabel: l10n.locationOpenLocationSettings,
               onAction: () =>
-                  ref.read(locationRepositoryProvider).openAppSettings(),
+                  ref.read(locationRepositoryProvider).openLocationSettings(),
             );
           case LocationPermissionState.deniedForever:
             return _StateMessage(
               icon: Icons.location_off_outlined,
-              message: AppLocalizations.of(context).locationDeniedForever,
-              actionLabel: AppLocalizations.of(context).locationOpenSettings,
+              message: l10n.locationDeniedForever,
+              actionLabel: l10n.locationOpenSettings,
               onAction: () =>
                   ref.read(locationRepositoryProvider).openAppSettings(),
             );
           case LocationPermissionState.deniedOnce:
             return _StateMessage(
               icon: Icons.my_location_outlined,
-              message: AppLocalizations.of(context).locationPermissionRationale,
-              actionLabel: AppLocalizations.of(context).locationGrantAction,
+              message: l10n.locationPermissionRationale,
+              actionLabel: l10n.locationGrantAction,
               onAction: _requesting ? null : _request,
               loading: _requesting,
             );
@@ -101,9 +121,10 @@ class _StateMessage extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = context.nokiColors;
     return NokiScreenBackground(
-      showMapGrid: true,
+      safeTop: true,
+      safeBottom: true,
       child: Center(
-        child: Padding(
+        child: SingleChildScrollView(
           padding: const EdgeInsets.all(AppSpacing.xl),
           child: NokiSurfaceCard(
             padding: const EdgeInsets.all(AppSpacing.xl),

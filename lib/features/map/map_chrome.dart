@@ -62,53 +62,51 @@ class NokiMapStatusChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.nokiColors;
-    final bg = backgroundColor ?? colors.surface.withValues(alpha: 0.9);
+    final bg = backgroundColor ?? colors.surfaceElevated;
     final fg = foregroundColor ?? colors.textPrimary;
-    final maxChipWidth = MediaQuery.sizeOf(context).width - (AppSpacing.lg * 2);
+    final availableWidth =
+        MediaQuery.sizeOf(context).width - (AppSpacing.lg * 2);
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(AppRadius.full),
-      child: BackdropFilter.grouped(
-        filter: ImageFilter.blur(sigmaX: 12, sigmaY: 12),
-        child: ConstrainedBox(
-          constraints: BoxConstraints(maxWidth: maxChipWidth),
-          child: Container(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.md,
-              vertical: AppSpacing.sm,
-            ),
-            decoration: BoxDecoration(
-              color: bg,
-              borderRadius: BorderRadius.circular(AppRadius.full),
-              border: Border.all(color: colors.border),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(top: 1),
-                  child: Icon(icon, size: 16, color: fg),
-                ),
-                const SizedBox(width: AppSpacing.xs),
-                Flexible(
-                  child: Text(
-                    label,
-                    softWrap: true,
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      color: fg,
-                      fontWeight: FontWeight.w700,
-                      height: 1.2,
-                    ),
-                  ),
-                ),
-              ],
+    final chip = Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
+      ),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(AppRadius.full),
+        border: Border.all(color: colors.border),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 1),
+            child: Icon(icon, size: 16, color: fg),
+          ),
+          const SizedBox(width: AppSpacing.xs),
+          Flexible(
+            child: Text(
+              label,
+              softWrap: true,
+              maxLines: 3,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                color: fg,
+                fontWeight: FontWeight.w700,
+                height: 1.2,
+              ),
             ),
           ),
-        ),
+        ],
       ),
+    );
+
+    if (availableWidth <= 0) return chip;
+    return ConstrainedBox(
+      constraints: BoxConstraints(maxWidth: availableWidth),
+      child: chip,
     );
   }
 }

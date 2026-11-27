@@ -291,5 +291,24 @@
   "navigationRetryAction": "Réessayer",
   "navigationEtaLabel": "Arrivée estimée à {time}",
   "navigationDistanceRemainingLabel": "{distance} restants",
-  "navigationNextManeuverLabel": "Dans {distance} : {instruction}"
+  "navigationNextManeuverLabel": "Dans {distance} : {instruction}",
+
+  "homeMapServiceZone": "Zone de service : {zone}",
+  "homeMapPositionLive": "Position GPS en direct",
+  "homeMapWaitingGps": "En attente du signal GPS",
+  "locationOpenLocationSettings": "Activer le GPS",
+  "profileStatusNotEnabled": "Non activé",
+  "profileStatusUnavailable": "Indisponible",
+  "workFeedFilterTaxi": "Taxi",
+  "workFeedFilterTaxiMoto": "Taxi Moto",
+  "workFeedFilterParcel": "Colis",
+  "workFeedFilterCargo": "Cargo",
+  "workFeedFilterEmptyTitle": "Aucun résultat pour ce filtre",
+  "workFeedFilterReset": "Tout afficher",
+  "workFeedAccessUnavailableTitle": "Fil de travail indisponible",
+  "workFeedAccessUnavailableBody": "Votre compte n'a pas accès à ce fil de travail dans cette organisation.",
+  "deliveryHistoryUnavailableTitle": "Historique des livraisons indisponible",
+  "deliveryHistoryUnavailableBody": "Le service Livraison n'est pas activé sur votre profil chauffeur pour cette organisation.",
+  "mobilityHistoryUnavailableTitle": "Historique Mobility indisponible",
+  "mobilityHistoryUnavailableBody": "L'historique des courses Mobility n'est pas encore disponible pour votre compte sur ce serveur."
 }

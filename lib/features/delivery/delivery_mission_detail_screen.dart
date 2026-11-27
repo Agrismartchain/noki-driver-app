@@ -237,14 +237,22 @@ class _DeliveryMissionDetailScreenState
 
   Widget _buildContent(DriverMissionResponseDto mission) {
     final l10n = AppLocalizations.of(context);
-    return RefreshIndicator(
-      onRefresh: () async {
-        ref.invalidate(missionDetailProvider(widget.missionId));
-        ref.invalidate(missionIncidentsProvider(widget.missionId));
-      },
-      child: ListView(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        children: [
+    return SafeArea(
+      top: false,
+      child: RefreshIndicator(
+        onRefresh: () async {
+          ref.invalidate(missionDetailProvider(widget.missionId));
+          ref.invalidate(missionIncidentsProvider(widget.missionId));
+        },
+        child: ListView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            AppSpacing.lg,
+            AppSpacing.lg,
+            AppSpacing.xxl,
+          ),
+          children: [
           const OfflineBanner(),
           _Header(mission: mission),
           const SizedBox(height: AppSpacing.lg),
@@ -276,7 +284,8 @@ class _DeliveryMissionDetailScreenState
           ),
           const SizedBox(height: AppSpacing.lg),
           _actionsContent(mission),
-        ],
+          ],
+        ),
       ),
     );
   }

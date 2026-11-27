@@ -33,14 +33,29 @@ class DeliveryHistoryScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: Text(l10n.deliveryHistoryTitle)),
       body: NokiScreenBackground(
+        safeBottom: true,
         child: asyncMissions.when(
           loading: () => const LoadingView(),
-          error: (error, _) => ErrorView(
-            failure: error is AppFailure
+          error: (error, _) {
+            final failure = error is AppFailure
                 ? error
-                : const AppFailure(AppFailureType.unknown),
-            onRetry: () => ref.invalidate(missionListByStatusProvider(key)),
-          ),
+                : const AppFailure(AppFailureType.unknown);
+            // `GET /v1/delivery/missions` returns 404 ("Driver mission profile
+            // not found") or 403 when the driver does not have an active
+            // Delivery profile in this scope (e.g. a Mobility-only driver).
+            if (failure.type == AppFailureType.notFound ||
+                failure.type == AppFailureType.forbidden) {
+              return EmptyView(
+                icon: Icons.local_shipping_outlined,
+                title: l10n.deliveryHistoryUnavailableTitle,
+                body: l10n.deliveryHistoryUnavailableBody,
+              );
+            }
+            return ErrorView(
+              failure: failure,
+              onRetry: () => ref.invalidate(missionListByStatusProvider(key)),
+            );
+          },
           data: (list) {
             if (list.items.isEmpty) {
               return EmptyView(
@@ -49,7 +64,12 @@ class DeliveryHistoryScreen extends ConsumerWidget {
               );
             }
             return ListView.separated(
-              padding: const EdgeInsets.all(AppSpacing.lg),
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.lg,
+                AppSpacing.lg,
+                AppSpacing.lg,
+                AppSpacing.xxl,
+              ),
               itemCount: list.items.length,
               separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.md),
               itemBuilder: (context, index) {

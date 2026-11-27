@@ -122,7 +122,13 @@ class _MobilityRideScreenState extends ConsumerState<MobilityRideScreen> {
     return RefreshIndicator(
       onRefresh: () async => ref.invalidate(rideByIdProvider(widget.rideId)),
       child: ListView(
-        padding: const EdgeInsets.all(AppSpacing.lg),
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        padding: EdgeInsets.fromLTRB(
+          AppSpacing.lg,
+          AppSpacing.lg,
+          AppSpacing.lg,
+          AppSpacing.xxl + MediaQuery.paddingOf(context).bottom,
+        ),
         children: [
           const OfflineBanner(),
           Row(

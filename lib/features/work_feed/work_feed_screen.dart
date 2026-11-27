@@ -18,14 +18,23 @@ import '../mobility/mobility_ride_screen.dart';
 import '../mobility/mobility_work_card.dart';
 import 'work_feed_repository.dart';
 
-enum _WorkFeedFilter { all, delivery, rides, active, pending }
+enum _WorkFeedFilter {
+  all,
+  delivery,
+  taxi,
+  taxiMoto,
+  parcel,
+  cargo,
+  active,
+  pending,
+}
 
 /// The unified operational Work screen: real Delivery and Mobility items
 /// from `/v1/driver/work-feed`, rendered with typed, visually distinct
 /// cards and routed to the correct domain-specific detail screen on tap -
-/// never merged into a single generic "order" shape (mandate §3/§12/§13).
+/// never merged into a single generic "order" shape.
 /// Filters operate on the already-loaded page only; no server filtering
-/// parameter is invented (§16).
+/// parameter is invented.
 class WorkFeedScreen extends ConsumerStatefulWidget {
   const WorkFeedScreen({super.key, required this.scope});
 
@@ -46,9 +55,6 @@ class _WorkFeedScreenState extends ConsumerState<WorkFeedScreen> {
   @override
   void initState() {
     super.initState();
-    // Automatic Mobility offer discovery (in addition to pull-to-refresh
-    // below): start bounded polling as soon as the Work screen is mounted,
-    // tied to this screen's own lifecycle - see mobility_offer_poller.dart.
     _offerPoller = ref.read(mobilityOfferPollerControllerProvider);
     _offerPoller.start(widget.scope);
   }
@@ -75,9 +81,30 @@ class _WorkFeedScreenState extends ConsumerState<WorkFeedScreen> {
         return items
             .where((i) => i.workType == DriverWorkFeedItemDtoWorkType.delivery)
             .toList();
-      case _WorkFeedFilter.rides:
+      case _WorkFeedFilter.taxi:
         return items
-            .where((i) => i.workType == DriverWorkFeedItemDtoWorkType.ride)
+            .where((i) => i.serviceType == DriverWorkFeedItemDtoServiceType.taxi)
+            .toList();
+      case _WorkFeedFilter.taxiMoto:
+        return items
+            .where(
+              (i) => i.serviceType == DriverWorkFeedItemDtoServiceType.taxiMoto,
+            )
+            .toList();
+      case _WorkFeedFilter.parcel:
+        return items
+            .where(
+              (i) =>
+                  i.serviceType == DriverWorkFeedItemDtoServiceType.courier ||
+                  i.serviceType == DriverWorkFeedItemDtoServiceType.delivery ||
+                  i.workType == DriverWorkFeedItemDtoWorkType.delivery,
+            )
+            .toList();
+      case _WorkFeedFilter.cargo:
+        return items
+            .where(
+              (i) => i.serviceType == DriverWorkFeedItemDtoServiceType.cargo,
+            )
             .toList();
       case _WorkFeedFilter.active:
         return items
@@ -166,56 +193,95 @@ class _WorkFeedScreenState extends ConsumerState<WorkFeedScreen> {
       ),
       body: Column(
         children: [
-          // A driver mid-shift relying on this screen to see a new offer or
-          // mission needs to know when connectivity itself is the reason
-          // nothing new is showing up - not just Home (mandate: network-loss
-          // recovery must be visible wherever a driver is waiting on live
-          // data, not only the landing screen).
           const OfflineBanner(),
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.lg,
-              vertical: AppSpacing.sm,
-            ),
-            child: SingleChildScrollView(
+          SizedBox(
+            height: 56,
+            child: ListView.separated(
+              key: const Key('work-feed-filter-bar'),
               scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  for (final filter in _WorkFeedFilter.values) ...[
-                    ChoiceChip(
-                      label: Text(_filterLabel(l10n, filter)),
-                      selected: _filter == filter,
-                      onSelected: (_) => setState(() => _filter = filter),
-                    ),
-                    const SizedBox(width: AppSpacing.sm),
-                  ],
-                ],
+              padding: const EdgeInsetsDirectional.symmetric(
+                horizontal: AppSpacing.lg,
+                vertical: AppSpacing.sm,
               ),
+              itemCount: _WorkFeedFilter.values.length,
+              separatorBuilder: (_, _) => const SizedBox(width: AppSpacing.sm),
+              itemBuilder: (context, index) {
+                final filter = _WorkFeedFilter.values[index];
+                final label = _filterLabel(l10n, filter);
+                return Semantics(
+                  button: true,
+                  selected: _filter == filter,
+                  label: label,
+                  child: ChoiceChip(
+                    key: Key('work-filter-${filter.name}'),
+                    label: Text(label),
+                    selected: _filter == filter,
+                    onSelected: (_) => setState(() => _filter = filter),
+                  ),
+                );
+              },
             ),
           ),
           Expanded(
             child: asyncFeed.when(
               loading: () => const LoadingView(),
-              error: (error, _) => ErrorView(
-                failure: error is AppFailure
+              error: (error, _) {
+                final failure = error is AppFailure
                     ? error
-                    : const AppFailure(AppFailureType.unknown),
-                onRetry: () => ref.invalidate(workFeedProvider(widget.scope)),
-              ),
+                    : const AppFailure(AppFailureType.unknown);
+                if (failure.type == AppFailureType.forbidden) {
+                  return EmptyView(
+                    icon: Icons.lock_outline,
+                    title: l10n.workFeedAccessUnavailableTitle,
+                    body: l10n.workFeedAccessUnavailableBody,
+                  );
+                }
+                return ErrorView(
+                  failure: failure,
+                  onRetry: () => ref.invalidate(workFeedProvider(widget.scope)),
+                );
+              },
               data: (list) {
+                if (list.items.isEmpty) {
+                  return RefreshIndicator(
+                    onRefresh: () async =>
+                        ref.invalidate(workFeedProvider(widget.scope)),
+                    child: ListView(
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      children: [
+                        EmptyView(
+                          icon: Icons.inbox_outlined,
+                          title: l10n.workFeedEmpty,
+                          body: l10n.workFeedEmptyBody,
+                        ),
+                      ],
+                    ),
+                  );
+                }
                 final filtered = _applyFilter(list.items);
                 if (filtered.isEmpty) {
                   return EmptyView(
-                    icon: Icons.inbox_outlined,
-                    title: l10n.workFeedEmpty,
+                    icon: Icons.filter_list_off_outlined,
+                    title: l10n.workFeedFilterEmptyTitle,
                     body: l10n.workFeedEmptyBody,
+                    action: OutlinedButton(
+                      onPressed: () =>
+                          setState(() => _filter = _WorkFeedFilter.all),
+                      child: Text(l10n.workFeedFilterReset),
+                    ),
                   );
                 }
                 return RefreshIndicator(
                   onRefresh: () async =>
                       ref.invalidate(workFeedProvider(widget.scope)),
                   child: ListView.separated(
-                    padding: const EdgeInsets.all(AppSpacing.lg),
+                    key: const Key('work-feed-list'),
+                    padding: const EdgeInsets.fromLTRB(
+                      AppSpacing.lg,
+                      AppSpacing.sm,
+                      AppSpacing.lg,
+                      AppSpacing.xxl,
+                    ),
                     itemCount: filtered.length,
                     separatorBuilder: (_, _) =>
                         const SizedBox(height: AppSpacing.md),
@@ -246,7 +312,10 @@ class _WorkFeedScreenState extends ConsumerState<WorkFeedScreen> {
     return switch (filter) {
       _WorkFeedFilter.all => l10n.workFeedFilterAll,
       _WorkFeedFilter.delivery => l10n.workFeedFilterDelivery,
-      _WorkFeedFilter.rides => l10n.workFeedFilterRides,
+      _WorkFeedFilter.taxi => l10n.workFeedFilterTaxi,
+      _WorkFeedFilter.taxiMoto => l10n.workFeedFilterTaxiMoto,
+      _WorkFeedFilter.parcel => l10n.workFeedFilterParcel,
+      _WorkFeedFilter.cargo => l10n.workFeedFilterCargo,
       _WorkFeedFilter.active => l10n.workFeedFilterActive,
       _WorkFeedFilter.pending => l10n.workFeedFilterPending,
     };

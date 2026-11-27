@@ -228,7 +228,7 @@ class _MobilityRideMapScreenState extends ConsumerState<MobilityRideMapScreen> {
                 Positioned(
                   left: AppSpacing.lg,
                   right: AppSpacing.lg,
-                  bottom: AppSpacing.lg,
+                  bottom: AppSpacing.lg + MediaQuery.paddingOf(context).bottom,
                   child: asyncRide.maybeWhen(
                     data: (ride) => _BottomSheet(
                       ride: ride,

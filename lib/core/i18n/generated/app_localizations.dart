@@ -1713,6 +1713,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'In {distance}: {instruction}'**
   String navigationNextManeuverLabel(String distance, String instruction);
+
+  /// No description provided for @homeMapServiceZone.
+  ///
+  /// In en, this message translates to:
+  /// **'Service area: {zone}'**
+  String homeMapServiceZone(String zone);
+
+  /// No description provided for @homeMapPositionLive.
+  ///
+  /// In en, this message translates to:
+  /// **'Live GPS position'**
+  String get homeMapPositionLive;
+
+  /// No description provided for @homeMapWaitingGps.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for GPS fix'**
+  String get homeMapWaitingGps;
+
+  /// No description provided for @locationOpenLocationSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable GPS'**
+  String get locationOpenLocationSettings;
+
+  /// No description provided for @profileStatusNotEnabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Not enabled'**
+  String get profileStatusNotEnabled;
+
+  /// No description provided for @profileStatusUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Unavailable'**
+  String get profileStatusUnavailable;
+
+  /// No description provided for @workFeedFilterTaxi.
+  ///
+  /// In en, this message translates to:
+  /// **'Taxi'**
+  String get workFeedFilterTaxi;
+
+  /// No description provided for @workFeedFilterTaxiMoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Taxi Moto'**
+  String get workFeedFilterTaxiMoto;
+
+  /// No description provided for @workFeedFilterParcel.
+  ///
+  /// In en, this message translates to:
+  /// **'Parcel'**
+  String get workFeedFilterParcel;
+
+  /// No description provided for @workFeedFilterCargo.
+  ///
+  /// In en, this message translates to:
+  /// **'Cargo'**
+  String get workFeedFilterCargo;
+
+  /// No description provided for @workFeedFilterEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No matching items'**
+  String get workFeedFilterEmptyTitle;
+
+  /// No description provided for @workFeedFilterReset.
+  ///
+  /// In en, this message translates to:
+  /// **'Show all'**
+  String get workFeedFilterReset;
+
+  /// No description provided for @workFeedAccessUnavailableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Work feed unavailable'**
+  String get workFeedAccessUnavailableTitle;
+
+  /// No description provided for @workFeedAccessUnavailableBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account does not have access to this work feed in this organization.'**
+  String get workFeedAccessUnavailableBody;
+
+  /// No description provided for @deliveryHistoryUnavailableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery history unavailable'**
+  String get deliveryHistoryUnavailableTitle;
+
+  /// No description provided for @deliveryHistoryUnavailableBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery missions are not enabled on your driver profile for this organization.'**
+  String get deliveryHistoryUnavailableBody;
+
+  /// No description provided for @mobilityHistoryUnavailableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Mobility history unavailable'**
+  String get mobilityHistoryUnavailableTitle;
+
+  /// No description provided for @mobilityHistoryUnavailableBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed Mobility ride history is not yet available for your account on this server.'**
+  String get mobilityHistoryUnavailableBody;
 }
 
 class _AppLocalizationsDelegate

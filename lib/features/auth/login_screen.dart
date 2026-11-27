@@ -47,112 +47,150 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
     final colors = context.nokiColors;
 
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       body: NokiScreenBackground(
         child: SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(AppSpacing.page),
+          child: LayoutBuilder(
+            builder: (context, constraints) => SingleChildScrollView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.page,
+                AppSpacing.lg,
+                AppSpacing.page,
+                AppSpacing.xxl,
+              ),
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 460),
-                child: NokiSurfaceCard(
-                  tone: NokiSurfaceTone.inverse,
-                  padding: const EdgeInsets.all(AppSpacing.xl),
-                  child: Form(
-                    key: _formKey,
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Semantics(
-                          header: true,
-                          child: Text(
-                            l10n.appTitle,
-                            style: Theme.of(context).textTheme.headlineSmall
-                                ?.copyWith(color: colors.textInverse),
-                          ),
-                        ),
-                        const SizedBox(height: AppSpacing.sm),
-                        Text(
-                          l10n.loginHeadline,
-                          style: Theme.of(context).textTheme.titleMedium
-                              ?.copyWith(color: colors.textInverse),
-                        ),
-                        const SizedBox(height: AppSpacing.xs),
-                        Text(
-                          l10n.loginSubheadline,
-                          style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(color: colors.textSecondary),
-                        ),
-                        const SizedBox(height: AppSpacing.xxl),
-                        TextFormField(
-                          controller: _emailController,
-                          keyboardType: TextInputType.emailAddress,
-                          textInputAction: TextInputAction.next,
-                          autofillHints: const [AutofillHints.username],
-                          enabled: !isSubmitting,
-                          decoration: InputDecoration(
-                            labelText: l10n.loginEmailLabel,
-                          ),
-                          validator: (value) {
-                            final v = value?.trim() ?? '';
-                            if (v.isEmpty) return l10n.loginEmailRequired;
-                            if (!v.contains('@') || !v.contains('.')) {
-                              return l10n.loginEmailInvalid;
-                            }
-                            return null;
-                          },
-                        ),
-                        const SizedBox(height: AppSpacing.lg),
-                        TextFormField(
-                          controller: _passwordController,
-                          obscureText: _obscurePassword,
-                          textInputAction: TextInputAction.done,
-                          autofillHints: const [AutofillHints.password],
-                          enabled: !isSubmitting,
-                          onFieldSubmitted: (_) => _submit(),
-                          decoration: InputDecoration(
-                            labelText: l10n.loginPasswordLabel,
-                            suffixIcon: IconButton(
-                              icon: Icon(
-                                _obscurePassword
-                                    ? Icons.visibility_outlined
-                                    : Icons.visibility_off_outlined,
-                              ),
-                              tooltip: _obscurePassword
-                                  ? l10n.loginShowPassword
-                                  : l10n.loginHidePassword,
-                              onPressed: () => setState(
-                                () => _obscurePassword = !_obscurePassword,
-                              ),
-                            ),
-                          ),
-                          validator: (value) => (value == null || value.isEmpty)
-                              ? l10n.loginPasswordRequired
-                              : null,
-                        ),
-                        if (authState.failure != null) ...[
-                          const SizedBox(height: AppSpacing.lg),
-                          Text(
-                            localizeFailure(context, authState.failure!),
-                            style: Theme.of(context).textTheme.bodyMedium
-                                ?.copyWith(color: colors.danger),
-                          ),
-                        ],
-                        const SizedBox(height: AppSpacing.xxl),
-                        ElevatedButton(
-                          onPressed: isSubmitting ? null : _submit,
-                          child: isSubmitting
-                              ? SizedBox(
-                                  height: 18,
-                                  width: 18,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    color: colors.actionPrimaryInk,
+                constraints: BoxConstraints(
+                  minHeight: (constraints.maxHeight - AppSpacing.xxxl).clamp(
+                    0,
+                    double.infinity,
+                  ),
+                ),
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 460),
+                    child: NokiSurfaceCard(
+                      tone: NokiSurfaceTone.defaultTone,
+                      padding: const EdgeInsets.all(AppSpacing.xl),
+                      child: Form(
+                        key: _formKey,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Row(
+                              children: [
+                                ClipRRect(
+                                  borderRadius: BorderRadius.circular(
+                                    AppRadius.md,
                                   ),
-                                )
-                              : Text(l10n.loginSubmit),
+                                  child: Image.asset(
+                                    'assets/brand/noki_logo.png',
+                                    width: 44,
+                                    height: 44,
+                                    fit: BoxFit.cover,
+                                  ),
+                                ),
+                                const SizedBox(width: AppSpacing.md),
+                                Expanded(
+                                  child: Semantics(
+                                    header: true,
+                                    child: Text(
+                                      l10n.appTitle,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .headlineSmall
+                                          ?.copyWith(color: colors.textPrimary),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: AppSpacing.lg),
+                            Text(
+                              l10n.loginHeadline,
+                              style: Theme.of(context).textTheme.titleMedium
+                                  ?.copyWith(color: colors.textPrimary),
+                            ),
+                            const SizedBox(height: AppSpacing.xs),
+                            Text(
+                              l10n.loginSubheadline,
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(color: colors.textSecondary),
+                            ),
+                            const SizedBox(height: AppSpacing.xl),
+                            TextFormField(
+                              controller: _emailController,
+                              keyboardType: TextInputType.emailAddress,
+                              textInputAction: TextInputAction.next,
+                              autofillHints: const [AutofillHints.username],
+                              enabled: !isSubmitting,
+                              decoration: InputDecoration(
+                                labelText: l10n.loginEmailLabel,
+                              ),
+                              validator: (value) {
+                                final v = value?.trim() ?? '';
+                                if (v.isEmpty) return l10n.loginEmailRequired;
+                                if (!v.contains('@') || !v.contains('.')) {
+                                  return l10n.loginEmailInvalid;
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: AppSpacing.lg),
+                            TextFormField(
+                              controller: _passwordController,
+                              obscureText: _obscurePassword,
+                              textInputAction: TextInputAction.done,
+                              autofillHints: const [AutofillHints.password],
+                              enabled: !isSubmitting,
+                              onFieldSubmitted: (_) => _submit(),
+                              decoration: InputDecoration(
+                                labelText: l10n.loginPasswordLabel,
+                                suffixIcon: IconButton(
+                                  icon: Icon(
+                                    _obscurePassword
+                                        ? Icons.visibility_outlined
+                                        : Icons.visibility_off_outlined,
+                                  ),
+                                  tooltip: _obscurePassword
+                                      ? l10n.loginShowPassword
+                                      : l10n.loginHidePassword,
+                                  onPressed: () => setState(
+                                    () => _obscurePassword = !_obscurePassword,
+                                  ),
+                                ),
+                              ),
+                              validator: (value) =>
+                                  (value == null || value.isEmpty)
+                                  ? l10n.loginPasswordRequired
+                                  : null,
+                            ),
+                            if (authState.failure != null) ...[
+                              const SizedBox(height: AppSpacing.lg),
+                              Text(
+                                localizeFailure(context, authState.failure!),
+                                style: Theme.of(context).textTheme.bodyMedium
+                                    ?.copyWith(color: colors.danger),
+                              ),
+                            ],
+                            const SizedBox(height: AppSpacing.xl),
+                            ElevatedButton(
+                              onPressed: isSubmitting ? null : _submit,
+                              child: isSubmitting
+                                  ? SizedBox(
+                                      height: 18,
+                                      width: 18,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: colors.actionPrimaryInk,
+                                      ),
+                                    )
+                                  : Text(l10n.loginSubmit),
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
                   ),
                 ),

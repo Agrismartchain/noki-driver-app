@@ -901,4 +901,63 @@ class AppLocalizationsAr extends AppLocalizations {
   String navigationNextManeuverLabel(String distance, String instruction) {
     return 'خلال $distance: $instruction';
   }
+
+  @override
+  String homeMapServiceZone(String zone) {
+    return 'منطقة الخدمة: $zone';
+  }
+
+  @override
+  String get homeMapPositionLive => 'الموقع المباشر عبر GPS';
+
+  @override
+  String get homeMapWaitingGps => 'بانتظار إشارة GPS';
+
+  @override
+  String get locationOpenLocationSettings => 'تفعيل GPS';
+
+  @override
+  String get profileStatusNotEnabled => 'غير مفعّل';
+
+  @override
+  String get profileStatusUnavailable => 'غير متاح';
+
+  @override
+  String get workFeedFilterTaxi => 'تاكسي';
+
+  @override
+  String get workFeedFilterTaxiMoto => 'تاكسي موتو';
+
+  @override
+  String get workFeedFilterParcel => 'طرود';
+
+  @override
+  String get workFeedFilterCargo => 'شحن';
+
+  @override
+  String get workFeedFilterEmptyTitle => 'لا توجد عناصر مطابقة لهذا الفلتر';
+
+  @override
+  String get workFeedFilterReset => 'عرض الكل';
+
+  @override
+  String get workFeedAccessUnavailableTitle => 'قائمة العمل غير متاحة';
+
+  @override
+  String get workFeedAccessUnavailableBody =>
+      'ليس لدى حسابك صلاحية الوصول إلى قائمة العمل في هذه الجهة.';
+
+  @override
+  String get deliveryHistoryUnavailableTitle => 'سجل التوصيلات غير متاح';
+
+  @override
+  String get deliveryHistoryUnavailableBody =>
+      'خدمة التوصيل غير مفعّلة في ملف السائق الخاص بك لهذه الجهة.';
+
+  @override
+  String get mobilityHistoryUnavailableTitle => 'سجل التنقل غير متاح';
+
+  @override
+  String get mobilityHistoryUnavailableBody =>
+      'سجل رحلات التنقل المكتملة غير متاح بعد لحسابك على هذا الخادم.';
 }

@@ -921,4 +921,65 @@ class AppLocalizationsFr extends AppLocalizations {
   String navigationNextManeuverLabel(String distance, String instruction) {
     return 'Dans $distance : $instruction';
   }
+
+  @override
+  String homeMapServiceZone(String zone) {
+    return 'Zone de service : $zone';
+  }
+
+  @override
+  String get homeMapPositionLive => 'Position GPS en direct';
+
+  @override
+  String get homeMapWaitingGps => 'En attente du signal GPS';
+
+  @override
+  String get locationOpenLocationSettings => 'Activer le GPS';
+
+  @override
+  String get profileStatusNotEnabled => 'Non activé';
+
+  @override
+  String get profileStatusUnavailable => 'Indisponible';
+
+  @override
+  String get workFeedFilterTaxi => 'Taxi';
+
+  @override
+  String get workFeedFilterTaxiMoto => 'Taxi Moto';
+
+  @override
+  String get workFeedFilterParcel => 'Colis';
+
+  @override
+  String get workFeedFilterCargo => 'Cargo';
+
+  @override
+  String get workFeedFilterEmptyTitle => 'Aucun résultat pour ce filtre';
+
+  @override
+  String get workFeedFilterReset => 'Tout afficher';
+
+  @override
+  String get workFeedAccessUnavailableTitle => 'Fil de travail indisponible';
+
+  @override
+  String get workFeedAccessUnavailableBody =>
+      'Votre compte n\'a pas accès à ce fil de travail dans cette organisation.';
+
+  @override
+  String get deliveryHistoryUnavailableTitle =>
+      'Historique des livraisons indisponible';
+
+  @override
+  String get deliveryHistoryUnavailableBody =>
+      'Le service Livraison n\'est pas activé sur votre profil chauffeur pour cette organisation.';
+
+  @override
+  String get mobilityHistoryUnavailableTitle =>
+      'Historique Mobility indisponible';
+
+  @override
+  String get mobilityHistoryUnavailableBody =>
+      'L\'historique des courses Mobility n\'est pas encore disponible pour votre compte sur ce serveur.';
 }

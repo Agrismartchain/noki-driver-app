@@ -39,6 +39,8 @@ class LocationRepository {
 
   Future<bool> openAppSettings() => Geolocator.openAppSettings();
 
+  Future<bool> openLocationSettings() => Geolocator.openLocationSettings();
+
   LocationPermissionState _fromPermission(LocationPermission permission) {
     switch (permission) {
       case LocationPermission.always:

@@ -229,7 +229,12 @@ class _MobilityOfferDetailScreenState
     return Scaffold(
       appBar: AppBar(title: Text(l10n.mobilityOfferDetailTitle)),
       body: ListView(
-        padding: const EdgeInsets.all(AppSpacing.lg),
+        padding: EdgeInsets.fromLTRB(
+          AppSpacing.lg,
+          AppSpacing.lg,
+          AppSpacing.lg,
+          AppSpacing.xxl + MediaQuery.paddingOf(context).bottom,
+        ),
         children: [
           Row(
             children: [

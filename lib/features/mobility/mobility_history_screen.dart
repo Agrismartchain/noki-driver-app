@@ -26,14 +26,29 @@ class MobilityHistoryScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: Text(l10n.mobilityHistoryTitle)),
       body: NokiScreenBackground(
+        safeBottom: true,
         child: asyncRides.when(
           loading: () => const LoadingView(),
-          error: (error, _) => ErrorView(
-            failure: error is AppFailure
+          error: (error, _) {
+            final failure = error is AppFailure
                 ? error
-                : const AppFailure(AppFailureType.unknown),
-            onRetry: () => ref.invalidate(mobilityRideHistoryProvider(scope)),
-          ),
+                : const AppFailure(AppFailureType.unknown);
+            // `GET /v1/driver/mobility/rides/history` returns 404 on API
+            // deployments where the route is not yet present (matched by
+            // `rides/:id` with id="history") or 403 when access is unavailable.
+            if (failure.type == AppFailureType.notFound ||
+                failure.type == AppFailureType.forbidden) {
+              return EmptyView(
+                icon: Icons.route_outlined,
+                title: l10n.mobilityHistoryUnavailableTitle,
+                body: l10n.mobilityHistoryUnavailableBody,
+              );
+            }
+            return ErrorView(
+              failure: failure,
+              onRetry: () => ref.invalidate(mobilityRideHistoryProvider(scope)),
+            );
+          },
           data: (rides) {
             if (rides.isEmpty) {
               return EmptyView(
@@ -42,7 +57,12 @@ class MobilityHistoryScreen extends ConsumerWidget {
               );
             }
             return ListView.separated(
-              padding: const EdgeInsets.all(AppSpacing.lg),
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.lg,
+                AppSpacing.lg,
+                AppSpacing.lg,
+                AppSpacing.xxl,
+              ),
               itemCount: rides.length,
               separatorBuilder: (_, _) => const SizedBox(height: AppSpacing.md),
               itemBuilder: (context, index) {

@@ -52,115 +52,148 @@ class _MfaVerifyScreenState extends ConsumerState<MfaVerifyScreen> {
     final colors = context.nokiColors;
 
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       body: NokiScreenBackground(
         child: SafeArea(
-          child: Center(
-            child: SingleChildScrollView(
-              padding: const EdgeInsets.all(AppSpacing.page),
+          child: LayoutBuilder(
+            builder: (context, constraints) => SingleChildScrollView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.page,
+                AppSpacing.lg,
+                AppSpacing.page,
+                AppSpacing.xxl,
+              ),
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 460),
-                child: NokiSurfaceCard(
-                  tone: NokiSurfaceTone.inverse,
-                  padding: const EdgeInsets.all(AppSpacing.xl),
-                  child: Form(
-                    key: _formKey,
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Semantics(
-                          header: true,
-                          child: Text(
-                            l10n.mfaVerifyHeadline,
-                            style: Theme.of(context).textTheme.headlineSmall
-                                ?.copyWith(color: colors.textInverse),
-                          ),
-                        ),
-                        const SizedBox(height: AppSpacing.sm),
-                        Text(
-                          _useRecoveryCode
-                              ? l10n.mfaVerifyRecoveryCodeRequired
-                              : l10n.mfaVerifyInstructions,
-                          style: Theme.of(context).textTheme.bodyMedium
-                              ?.copyWith(color: colors.textSecondary),
-                        ),
-                        const SizedBox(height: AppSpacing.xxl),
-                        if (_useRecoveryCode)
-                          TextFormField(
-                            key: const ValueKey('recoveryCodeField'),
-                            controller: _recoveryCodeController,
-                            textInputAction: TextInputAction.done,
-                            enabled: !isSubmitting,
-                            onFieldSubmitted: (_) => _submit(),
-                            decoration: InputDecoration(
-                              labelText: l10n.mfaVerifyRecoveryCodeLabel,
+                constraints: BoxConstraints(
+                  minHeight: (constraints.maxHeight - AppSpacing.xxxl).clamp(
+                    0,
+                    double.infinity,
+                  ),
+                ),
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 460),
+                    child: NokiSurfaceCard(
+                      tone: NokiSurfaceTone.defaultTone,
+                      padding: const EdgeInsets.all(AppSpacing.xl),
+                      child: Form(
+                        key: _formKey,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: [
+                            Semantics(
+                              header: true,
+                              child: Text(
+                                l10n.mfaVerifyHeadline,
+                                style: Theme.of(context).textTheme.headlineSmall
+                                    ?.copyWith(color: colors.textPrimary),
+                              ),
                             ),
-                            validator: (value) => (value == null || value.trim().isEmpty)
-                                ? l10n.mfaVerifyRecoveryCodeRequired
-                                : null,
-                          )
-                        else
-                          TextFormField(
-                            key: const ValueKey('codeField'),
-                            controller: _codeController,
-                            keyboardType: TextInputType.number,
-                            textInputAction: TextInputAction.done,
-                            enabled: !isSubmitting,
-                            maxLength: 6,
-                            onFieldSubmitted: (_) => _submit(),
-                            decoration: InputDecoration(
-                              labelText: l10n.mfaVerifyCodeLabel,
-                              counterText: '',
-                            ),
-                            validator: (value) {
-                              final v = value?.trim() ?? '';
-                              if (v.isEmpty) return l10n.mfaVerifyCodeRequired;
-                              if (!RegExp(r'^\d{6}$').hasMatch(v)) {
-                                return l10n.mfaVerifyCodeRequired;
-                              }
-                              return null;
-                            },
-                          ),
-                        const SizedBox(height: AppSpacing.sm),
-                        Align(
-                          alignment: AlignmentDirectional.centerStart,
-                          child: TextButton(
-                            onPressed: isSubmitting
-                                ? null
-                                : () => setState(() {
-                                    _useRecoveryCode = !_useRecoveryCode;
-                                    _formKey.currentState?.reset();
-                                  }),
-                            child: Text(
+                            const SizedBox(height: AppSpacing.sm),
+                            Text(
                               _useRecoveryCode
-                                  ? l10n.mfaVerifyUseAuthenticatorCode
-                                  : l10n.mfaVerifyUseRecoveryCode,
+                                  ? l10n.mfaVerifyRecoveryCodeRequired
+                                  : l10n.mfaVerifyInstructions,
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(color: colors.textSecondary),
                             ),
-                          ),
+                            const SizedBox(height: AppSpacing.xl),
+                            if (_useRecoveryCode)
+                              TextFormField(
+                                key: const ValueKey('recoveryCodeField'),
+                                controller: _recoveryCodeController,
+                                textInputAction: TextInputAction.done,
+                                enabled: !isSubmitting,
+                                style: Theme.of(context).textTheme.titleMedium
+                                    ?.copyWith(color: colors.textPrimary),
+                                onFieldSubmitted: (_) => _submit(),
+                                decoration: InputDecoration(
+                                  labelText: l10n.mfaVerifyRecoveryCodeLabel,
+                                ),
+                                validator: (value) =>
+                                    (value == null || value.trim().isEmpty)
+                                    ? l10n.mfaVerifyRecoveryCodeRequired
+                                    : null,
+                              )
+                            else
+                              TextFormField(
+                                key: const ValueKey('codeField'),
+                                controller: _codeController,
+                                keyboardType: TextInputType.number,
+                                textInputAction: TextInputAction.done,
+                                autofillHints: const [
+                                  AutofillHints.oneTimeCode,
+                                ],
+                                enabled: !isSubmitting,
+                                maxLength: 6,
+                                style: Theme.of(context).textTheme.titleMedium
+                                    ?.copyWith(
+                                      color: colors.textPrimary,
+                                      letterSpacing: 3,
+                                      fontFeatures: const [
+                                        FontFeature.tabularFigures(),
+                                      ],
+                                    ),
+                                onFieldSubmitted: (_) => _submit(),
+                                decoration: InputDecoration(
+                                  labelText: l10n.mfaVerifyCodeLabel,
+                                  counterText: '',
+                                ),
+                                validator: (value) {
+                                  final v = value?.trim() ?? '';
+                                  if (v.isEmpty) {
+                                    return l10n.mfaVerifyCodeRequired;
+                                  }
+                                  if (!RegExp(r'^\d{6}$').hasMatch(v)) {
+                                    return l10n.mfaVerifyCodeRequired;
+                                  }
+                                  return null;
+                                },
+                              ),
+                            const SizedBox(height: AppSpacing.sm),
+                            Align(
+                              alignment: AlignmentDirectional.centerStart,
+                              child: TextButton(
+                                onPressed: isSubmitting
+                                    ? null
+                                    : () => setState(() {
+                                        _useRecoveryCode = !_useRecoveryCode;
+                                        _formKey.currentState?.reset();
+                                      }),
+                                child: Text(
+                                  _useRecoveryCode
+                                      ? l10n.mfaVerifyUseAuthenticatorCode
+                                      : l10n.mfaVerifyUseRecoveryCode,
+                                ),
+                              ),
+                            ),
+                            if (authState.failure != null) ...[
+                              const SizedBox(height: AppSpacing.lg),
+                              Text(
+                                localizeFailure(context, authState.failure!),
+                                style: Theme.of(context).textTheme.bodyMedium
+                                    ?.copyWith(color: colors.danger),
+                              ),
+                            ],
+                            const SizedBox(height: AppSpacing.xl),
+                            ElevatedButton(
+                              onPressed: isSubmitting ? null : _submit,
+                              child: isSubmitting
+                                  ? SizedBox(
+                                      height: 18,
+                                      width: 18,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: colors.actionPrimaryInk,
+                                      ),
+                                    )
+                                  : Text(l10n.mfaVerifySubmit),
+                            ),
+                          ],
                         ),
-                        if (authState.failure != null) ...[
-                          const SizedBox(height: AppSpacing.lg),
-                          Text(
-                            localizeFailure(context, authState.failure!),
-                            style: Theme.of(context).textTheme.bodyMedium
-                                ?.copyWith(color: colors.danger),
-                          ),
-                        ],
-                        const SizedBox(height: AppSpacing.xxl),
-                        ElevatedButton(
-                          onPressed: isSubmitting ? null : _submit,
-                          child: isSubmitting
-                              ? SizedBox(
-                                  height: 18,
-                                  width: 18,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                    color: colors.actionPrimaryInk,
-                                  ),
-                                )
-                              : Text(l10n.mfaVerifySubmit),
-                        ),
-                      ],
+                      ),
                     ),
                   ),
                 ),

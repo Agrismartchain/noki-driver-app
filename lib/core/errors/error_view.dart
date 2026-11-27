@@ -31,13 +31,15 @@ class EmptyView extends StatelessWidget {
     required this.icon,
     required this.title,
     this.body,
+    this.action,
   });
 
   final IconData icon;
   final String title;
   final String? body;
+  final Widget? action;
 
   @override
   Widget build(BuildContext context) =>
-      NokiEmptyState(icon: icon, title: title, body: body);
+      NokiEmptyState(icon: icon, title: title, body: body, action: action);
 }

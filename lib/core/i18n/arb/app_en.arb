@@ -303,5 +303,25 @@
   "navigationDistanceRemainingLabel": "{distance} remaining",
   "@navigationDistanceRemainingLabel": {"placeholders": {"distance": {"type": "String"}}},
   "navigationNextManeuverLabel": "In {distance}: {instruction}",
-  "@navigationNextManeuverLabel": {"placeholders": {"distance": {"type": "String"}, "instruction": {"type": "String"}}}
+  "@navigationNextManeuverLabel": {"placeholders": {"distance": {"type": "String"}, "instruction": {"type": "String"}}},
+
+  "homeMapServiceZone": "Service area: {zone}",
+  "@homeMapServiceZone": {"placeholders": {"zone": {"type": "String"}}},
+  "homeMapPositionLive": "Live GPS position",
+  "homeMapWaitingGps": "Waiting for GPS fix",
+  "locationOpenLocationSettings": "Enable GPS",
+  "profileStatusNotEnabled": "Not enabled",
+  "profileStatusUnavailable": "Unavailable",
+  "workFeedFilterTaxi": "Taxi",
+  "workFeedFilterTaxiMoto": "Taxi Moto",
+  "workFeedFilterParcel": "Parcel",
+  "workFeedFilterCargo": "Cargo",
+  "workFeedFilterEmptyTitle": "No matching items",
+  "workFeedFilterReset": "Show all",
+  "workFeedAccessUnavailableTitle": "Work feed unavailable",
+  "workFeedAccessUnavailableBody": "Your account does not have access to this work feed in this organization.",
+  "deliveryHistoryUnavailableTitle": "Delivery history unavailable",
+  "deliveryHistoryUnavailableBody": "Delivery missions are not enabled on your driver profile for this organization.",
+  "mobilityHistoryUnavailableTitle": "Mobility history unavailable",
+  "mobilityHistoryUnavailableBody": "Completed Mobility ride history is not yet available for your account on this server."
 }

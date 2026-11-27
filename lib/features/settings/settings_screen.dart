@@ -33,7 +33,13 @@ class SettingsScreen extends ConsumerWidget {
       appBar: AppBar(title: Text(l10n.settingsTitle)),
       body: NokiScreenBackground(
         child: ListView(
-          padding: const EdgeInsets.all(AppSpacing.page),
+          key: const Key('profile-scroll-view'),
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.page,
+            AppSpacing.lg,
+            AppSpacing.page,
+            AppSpacing.xxl,
+          ),
           children: [
             if (driverContext != null) ...[
               _DriverIdentityCard(driverContext: driverContext),
@@ -65,15 +71,24 @@ class SettingsScreen extends ConsumerWidget {
             ),
             const SizedBox(height: AppSpacing.xl),
             NokiSurfaceCard(
-              tone: NokiSurfaceTone.subtle,
-              child: OutlinedButton.icon(
-                style: OutlinedButton.styleFrom(
-                  foregroundColor: context.nokiColors.textSecondary,
-                  side: BorderSide(color: context.nokiColors.border),
+              tone: NokiSurfaceTone.defaultTone,
+              child: SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  key: const Key('profile-logout-button'),
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: context.nokiColors.danger,
+                    side: BorderSide(
+                      color: context.nokiColors.danger.withValues(alpha: 0.55),
+                    ),
+                    minimumSize: const Size.fromHeight(
+                      AppControlSize.minTouchTarget,
+                    ),
+                  ),
+                  icon: const Icon(Icons.logout),
+                  label: Text(l10n.settingsLogout),
+                  onPressed: () => _confirmLogout(context, ref),
                 ),
-                icon: const Icon(Icons.logout),
-                label: Text(l10n.settingsLogout),
-                onPressed: () => _confirmLogout(context, ref),
               ),
             ),
           ],
@@ -96,6 +111,9 @@ class SettingsScreen extends ConsumerWidget {
           ),
           TextButton(
             onPressed: () => Navigator.of(dialogContext).pop(true),
+            style: TextButton.styleFrom(
+              foregroundColor: dialogContext.nokiColors.danger,
+            ),
             child: Text(l10n.settingsLogout),
           ),
         ],
@@ -115,25 +133,63 @@ class _DriverIdentityCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final colors = context.nokiColors;
+    final trimmedName = driverContext.displayName.trim();
+    final initial = trimmedName.isEmpty ? 'N' : trimmedName[0].toUpperCase();
+
     return NokiSurfaceCard(
-      tone: NokiSurfaceTone.inverse,
+      tone: NokiSurfaceTone.defaultTone,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          NokiSectionHeader(
-            title: driverContext.displayName,
-            subtitle: driverContext.email ?? l10n.profileNoEmail,
-            trailing: NokiBadge(
-              label: l10n.profileIdentityEyebrow,
-              tone: NokiBadgeTone.offline,
-              icon: Icons.verified_user_outlined,
-            ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
+                  color: colors.actionPrimary,
+                  borderRadius: BorderRadius.circular(AppRadius.md),
+                ),
+                alignment: Alignment.center,
+                child: Text(
+                  initial,
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                    color: colors.actionPrimaryInk,
+                    fontWeight: FontWeight.w800,
+                  ),
+                ),
+              ),
+              const SizedBox(width: AppSpacing.md),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      driverContext.displayName,
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                    Text(
+                      driverContext.email ?? l10n.profileNoEmail,
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: AppSpacing.lg),
+          const SizedBox(height: AppSpacing.md),
           Wrap(
             spacing: AppSpacing.sm,
             runSpacing: AppSpacing.sm,
             children: [
+              NokiBadge(
+                label: l10n.profileIdentityEyebrow,
+                tone: NokiBadgeTone.neutral,
+                icon: Icons.verified_user_outlined,
+              ),
               NokiBadge(
                 label: '${driverContext.profiles.length}',
                 tone: NokiBadgeTone.primary,
@@ -570,7 +626,9 @@ String _deliveryStatusLabel(
       l10n.profileStatusInactive,
     DriverContextProfileDtoDeliveryStatus.suspended =>
       l10n.profileStatusSuspended,
-    _ => l10n.errorUnknown,
+    null => l10n.profileStatusNotEnabled,
+    DriverContextProfileDtoDeliveryStatus.unknown =>
+      l10n.profileStatusUnavailable,
   };
 }
 
@@ -581,7 +639,8 @@ NokiBadgeTone _deliveryStatusTone(
     DriverContextProfileDtoDeliveryStatus.active => NokiBadgeTone.success,
     DriverContextProfileDtoDeliveryStatus.inactive => NokiBadgeTone.offline,
     DriverContextProfileDtoDeliveryStatus.suspended => NokiBadgeTone.danger,
-    _ => NokiBadgeTone.neutral,
+    null => NokiBadgeTone.neutral,
+    DriverContextProfileDtoDeliveryStatus.unknown => NokiBadgeTone.neutral,
   };
 }
 
@@ -597,7 +656,7 @@ String _mobilityOperationalLabel(
     DriverContextProfileDtoMobilityOperationalStatus.suspended =>
       l10n.profileStatusSuspended,
     DriverContextProfileDtoMobilityOperationalStatus.unknown =>
-      l10n.errorUnknown,
+      l10n.profileStatusUnavailable,
   };
 }
 
@@ -628,7 +687,7 @@ String _mobilityAvailabilityLabel(
     DriverContextProfileDtoMobilityAvailabilityStatus.busy =>
       l10n.profileStatusBusy,
     DriverContextProfileDtoMobilityAvailabilityStatus.unknown =>
-      l10n.errorUnknown,
+      l10n.profileStatusUnavailable,
   };
 }
 
@@ -669,7 +728,7 @@ String _mobilityOnboardingLabel(
     DriverContextProfileDtoMobilityOnboardingStatus.suspended =>
       l10n.profileStatusSuspended,
     DriverContextProfileDtoMobilityOnboardingStatus.unknown =>
-      l10n.errorUnknown,
+      l10n.profileStatusUnavailable,
   };
 }
 
@@ -684,7 +743,8 @@ String _vehicleStatusLabel(
     DriverContextVehicleSummaryDtoStatus.suspended =>
       l10n.vehicleStatusSuspended,
     DriverContextVehicleSummaryDtoStatus.retired => l10n.vehicleStatusRetired,
-    DriverContextVehicleSummaryDtoStatus.unknown => l10n.errorUnknown,
+    DriverContextVehicleSummaryDtoStatus.unknown =>
+      l10n.profileStatusUnavailable,
   };
 }
 
@@ -713,6 +773,6 @@ String _vehicleServiceLabel(
     DriverContextVehicleSummaryDtoAllowedServiceTypes.cargo =>
       l10n.serviceTypeCargo,
     DriverContextVehicleSummaryDtoAllowedServiceTypes.unknown =>
-      l10n.errorUnknown,
+      l10n.profileStatusUnavailable,
   };
 }
