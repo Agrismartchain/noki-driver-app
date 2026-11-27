@@ -1,5 +1,6 @@
 import 'package:noki_driver_app/core/api/driver_api_client.dart';
 import 'package:noki_driver_app/core/api/generated/driver_models.generated.dart';
+import 'package:noki_driver_app/core/api/mfa/mfa_models.dart';
 import 'package:noki_driver_app/core/errors/app_failure.dart';
 
 /// Controllable [DriverApiClient] fake for tests, per DRIVER-APP-01 section
@@ -7,9 +8,34 @@ import 'package:noki_driver_app/core/errors/app_failure.dart';
 /// throws a preset [AppFailure], set by the test before exercising the
 /// repository/controller under test. No real HTTP call is ever made.
 class FakeDriverApiClient implements DriverApiClient {
+  /// Set for a plain, no-MFA login success - wrapped in [AuthLoginSuccess]
+  /// by [login] below. Mutually exclusive with [loginMfaChallengeResponse];
+  /// most existing tests only ever set this one.
   AuthTokensResponseDto? loginResponse;
+
+  /// Set for a login that comes back as an MFA challenge (202) instead of
+  /// tokens - wrapped in [AuthLoginMfaChallenge] by [login] below.
+  AuthMfaChallengeResponseDto? loginMfaChallengeResponse;
   AppFailure? loginFailure;
   Duration? loginDelay;
+
+  MfaEnrollmentStartResponseDto? mfaEnrollStartResponse;
+  AppFailure? mfaEnrollStartFailure;
+  String? lastMfaEnrollStartChallengeToken;
+  int mfaEnrollStartCallCount = 0;
+
+  MfaEnrollConfirmResponseDto? mfaEnrollConfirmResponse;
+  AppFailure? mfaEnrollConfirmFailure;
+  String? lastMfaEnrollConfirmCode;
+  int mfaEnrollConfirmCallCount = 0;
+
+  AuthTokensResponseDto? mfaVerifyResponse;
+  AppFailure? mfaVerifyFailure;
+  String? lastMfaVerifyCode;
+  String? lastMfaVerifyRecoveryCode;
+  int mfaVerifyCallCount = 0;
+
+  int driverContextCallCount = 0;
 
   AuthTokensResponseDto? refreshResponse;
   AppFailure? refreshFailure;
@@ -115,14 +141,51 @@ class FakeDriverApiClient implements DriverApiClient {
   int refreshCallCount = 0;
 
   @override
-  Future<AuthTokensResponseDto> login({
+  Future<AuthLoginResult> login({
     required String email,
     required String password,
   }) async {
     loginCallCount++;
     if (loginDelay != null) await Future<void>.delayed(loginDelay!);
     if (loginFailure != null) throw loginFailure!;
-    return loginResponse!;
+    if (loginMfaChallengeResponse != null) {
+      return AuthLoginMfaChallenge(loginMfaChallengeResponse!);
+    }
+    return AuthLoginSuccess(loginResponse!);
+  }
+
+  @override
+  Future<MfaEnrollmentStartResponseDto> mfaEnrollStart({
+    required String challengeToken,
+  }) async {
+    mfaEnrollStartCallCount++;
+    lastMfaEnrollStartChallengeToken = challengeToken;
+    if (mfaEnrollStartFailure != null) throw mfaEnrollStartFailure!;
+    return mfaEnrollStartResponse!;
+  }
+
+  @override
+  Future<MfaEnrollConfirmResponseDto> mfaEnrollConfirm({
+    required String challengeToken,
+    required String code,
+  }) async {
+    mfaEnrollConfirmCallCount++;
+    lastMfaEnrollConfirmCode = code;
+    if (mfaEnrollConfirmFailure != null) throw mfaEnrollConfirmFailure!;
+    return mfaEnrollConfirmResponse!;
+  }
+
+  @override
+  Future<AuthTokensResponseDto> mfaVerify({
+    required String challengeToken,
+    String? code,
+    String? recoveryCode,
+  }) async {
+    mfaVerifyCallCount++;
+    lastMfaVerifyCode = code;
+    lastMfaVerifyRecoveryCode = recoveryCode;
+    if (mfaVerifyFailure != null) throw mfaVerifyFailure!;
+    return mfaVerifyResponse!;
   }
 
   @override
@@ -144,6 +207,7 @@ class FakeDriverApiClient implements DriverApiClient {
 
   @override
   Future<DriverContextResponseDto> driverContext() async {
+    driverContextCallCount++;
     if (driverContextFailure != null) throw driverContextFailure!;
     return driverContextResponse!;
   }

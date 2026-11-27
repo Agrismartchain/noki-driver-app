@@ -15,6 +15,38 @@ Map<String, dynamic> sampleAuthTokens({
   'refreshTokenExpiresIn': 2592000,
 };
 
+Map<String, dynamic> sampleMfaChallenge({
+  String mfaStatus = 'ENROLL',
+  String challengeToken = 'mfa-challenge-token-1',
+  num challengeExpiresIn = 300,
+}) => {
+  'mfaStatus': mfaStatus,
+  'challengeToken': challengeToken,
+  'challengeExpiresIn': challengeExpiresIn,
+};
+
+Map<String, dynamic> sampleMfaEnrollmentStart({
+  String secretBase32 = 'JBSWY3DPEHPK3PXP',
+  String issuer = 'NOKI',
+}) => {
+  'secretBase32': secretBase32,
+  'otpauthUri': 'otpauth://totp/$issuer:driver%40example.test?secret=$secretBase32&issuer=$issuer',
+  'issuer': issuer,
+};
+
+Map<String, dynamic> sampleMfaEnrollConfirm({
+  List<String> recoveryCodes = const ['ABCD-EFGH-JKMN', 'PQRS-TUVW-XY23'],
+  String access = 'access-token-1',
+  String refresh = 'refresh-token-1',
+}) => {
+  'recoveryCodes': recoveryCodes,
+  'tokenType': 'Bearer',
+  'accessToken': access,
+  'accessTokenExpiresIn': 900,
+  'refreshToken': refresh,
+  'refreshTokenExpiresIn': 2592000,
+};
+
 Map<String, dynamic> sampleDriverContext({
   bool withProfile = true,
   bool withVehicle = true,
