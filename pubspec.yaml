@@ -64,6 +64,10 @@ dependencies:
   # fallback, not replaced.
   mobile_scanner: ^7.0.1
 
+  # Driver profile photo selection (gallery/camera) behind an injectable
+  # DriverAvatarPicker abstraction so widget tests remain deterministic.
+  image_picker: ^1.1.2
+
   intl: any
 
 dev_dependencies:

@@ -119,10 +119,27 @@ class AuthController extends Notifier<AuthState> implements AuthSessionGateway {
   }
 
   AuthState _resolveRoleGuard(DriverContextResponseDto context) {
+    final avatarUrl = _apiClient.lastContextAvatarUrl;
     if (context.profiles.isEmpty) {
-      return AuthState(status: AuthStatus.accessDenied, driverContext: context);
+      return AuthState(
+        status: AuthStatus.accessDenied,
+        driverContext: context,
+        avatarUrl: avatarUrl,
+      );
     }
-    return AuthState(status: AuthStatus.authenticated, driverContext: context);
+    return AuthState(
+      status: AuthStatus.authenticated,
+      driverContext: context,
+      avatarUrl: avatarUrl,
+    );
+  }
+
+  /// Updates the authenticated driver's avatar URL in memory immediately after
+  /// saving, replacing, or removing the photo via NOKI media storage.
+  void updateAvatarUrl(String? avatarUrl) {
+    state = avatarUrl == null
+        ? state.copyWith(clearAvatarUrl: true)
+        : state.copyWith(avatarUrl: avatarUrl);
   }
 
   Future<void> login({required String email, required String password}) async {

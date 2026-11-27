@@ -971,4 +971,206 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get mobilityHistoryUnavailableBody =>
       'Completed Mobility ride history is not yet available for your account on this server.';
+
+  @override
+  String get navEarnings => 'Earnings';
+
+  @override
+  String get earningsTitle => 'Earnings & wallet';
+
+  @override
+  String get earningsAvailableLabel => 'Available';
+
+  @override
+  String get earningsPendingLabel => 'Pending';
+
+  @override
+  String get earningsPaidLabel => 'Paid';
+
+  @override
+  String get earningsOnHoldLabel => 'On hold';
+
+  @override
+  String get earningsZeroHint => 'Your verified balance is currently 0.';
+
+  @override
+  String get earningsUnavailableTitle => 'Wallet unavailable';
+
+  @override
+  String get earningsUnavailableBody =>
+      'Driver earnings and wallet data are not yet available on this server.';
+
+  @override
+  String earningsRulesMissingNotice(String services) {
+    return 'Remuneration rule pending approval for: $services';
+  }
+
+  @override
+  String get earningsTabMissions => 'Mission earnings';
+
+  @override
+  String get earningsTabPayouts => 'Payouts';
+
+  @override
+  String get earningsTabCod => 'COD';
+
+  @override
+  String get earningsEmptyMissionsTitle => 'No earnings recorded yet';
+
+  @override
+  String get earningsEmptyMissionsBody =>
+      'Your approved earnings per mission and ride will appear here in XAF.';
+
+  @override
+  String get earningsEmptyPayoutsTitle => 'No payout requests yet';
+
+  @override
+  String get earningsEmptyPayoutsBody =>
+      'Your payout requests and settlements will appear here with live status.';
+
+  @override
+  String get earningsEmptyCodTitle => 'No COD collections';
+
+  @override
+  String get earningsEmptyCodBody =>
+      'Cash collected on behalf of NOKI will appear separately here.';
+
+  @override
+  String get earningsCodSectionTitle =>
+      'COD collections (separate from earnings)';
+
+  @override
+  String get earningsCodToRemitLabel => 'To remit';
+
+  @override
+  String get earningsCodRemittedLabel => 'Remitted';
+
+  @override
+  String get earningsCodReconciledLabel => 'Reconciled';
+
+  @override
+  String get earningsCodSeparationNotice =>
+      'COD cash collected for NOKI is tracked separately and is never added to your driver earnings balance.';
+
+  @override
+  String get earningsRequestPayoutButton => 'Request payout';
+
+  @override
+  String get earningsPayoutSheetTitle => 'Request payout';
+
+  @override
+  String get earningsPayoutEligibleAmount => 'Eligible amount';
+
+  @override
+  String get earningsPayoutDestinationLabel => 'Payout destination';
+
+  @override
+  String get earningsPayoutNoMethod => 'No active payout method configured';
+
+  @override
+  String get earningsPayoutConfirmButton => 'Confirm payout request';
+
+  @override
+  String get earningsPayoutSuccessMessage =>
+      'Payout request submitted for Finance approval.';
+
+  @override
+  String get earningsPayoutCancelButton => 'Cancel request';
+
+  @override
+  String get earningsPayoutCancelledMessage =>
+      'Payout request cancelled. The amount is available again.';
+
+  @override
+  String get earningsPayoutStatusPending => 'Pending approval';
+
+  @override
+  String get earningsPayoutStatusApproved => 'Approved';
+
+  @override
+  String get earningsPayoutStatusSent => 'Sent';
+
+  @override
+  String get earningsPayoutStatusPaid => 'Paid';
+
+  @override
+  String get earningsPayoutStatusOnHold => 'On hold';
+
+  @override
+  String get earningsPayoutStatusFailed => 'Failed';
+
+  @override
+  String get earningsPayoutStatusCancelled => 'Cancelled';
+
+  @override
+  String get earningsObligationStatusOpen => 'Available';
+
+  @override
+  String get earningsObligationStatusAllocated => 'Allocated to payout';
+
+  @override
+  String get earningsObligationStatusSettled => 'Paid';
+
+  @override
+  String get earningsObligationStatusOnHold => 'On hold';
+
+  @override
+  String get earningsObligationReceivableTag => 'Cash commission';
+
+  @override
+  String get earningsCodStatusDeclared => 'To remit';
+
+  @override
+  String get earningsCodStatusRemitted => 'Remitted';
+
+  @override
+  String get earningsCodStatusReconciled => 'Reconciled';
+
+  @override
+  String get earningsCodStatusVoided => 'Voided';
+
+  @override
+  String earningsMissionRefLabel(String ref) {
+    return 'Reference: $ref';
+  }
+
+  @override
+  String get profileSettingsSectionTitle => 'Settings';
+
+  @override
+  String get profileAppearanceLabel => 'Appearance';
+
+  @override
+  String get profileAuthorizedServicesLabel => 'Authorized services';
+
+  @override
+  String get profileAvatarSheetTitle => 'Profile photo';
+
+  @override
+  String get profileAvatarChooseGallery => 'Choose from gallery';
+
+  @override
+  String get profileAvatarChooseCamera => 'Take a photo';
+
+  @override
+  String get profileAvatarReplace => 'Replace photo';
+
+  @override
+  String get profileAvatarRemove => 'Remove photo';
+
+  @override
+  String get profileAvatarSave => 'Save';
+
+  @override
+  String get profileAvatarSavedMessage => 'Profile photo saved.';
+
+  @override
+  String get profileAvatarRemovedMessage => 'Profile photo removed.';
+
+  @override
+  String get profileAvatarUnavailableMessage =>
+      'Profile photo management is not yet available on this server.';
+
+  @override
+  String get profileAvatarEditTooltip => 'Edit profile photo';
 }

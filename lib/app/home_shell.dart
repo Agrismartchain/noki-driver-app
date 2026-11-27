@@ -11,13 +11,15 @@ import '../core/theme/motion.dart';
 import '../features/auth/auth_providers.dart';
 import '../features/driver_context/driver_context_repository.dart';
 import '../features/driver_context/home_screen.dart';
+import '../features/earnings/earnings_screen.dart';
 import '../features/mobility/mobility_offer_poller.dart';
 import '../features/settings/settings_screen.dart';
 import '../features/work_feed/work_feed_screen.dart';
 
-/// Bottom-navigation shell for the three operational sections: Home, Work and
-/// Profile. Uses standard (non-extended) Scaffold body layout so tab content
-/// always terminates cleanly above the navigation bar and system insets.
+/// Bottom-navigation shell for the four operational sections: Home, Work,
+/// Earnings and Profile. Uses standard (non-extended) Scaffold body layout so
+/// tab content always terminates cleanly above the navigation bar and system
+/// insets.
 class HomeShell extends ConsumerStatefulWidget {
   const HomeShell({super.key});
 
@@ -78,6 +80,10 @@ class _HomeShellState extends ConsumerState<HomeShell>
         WorkFeedScreen(scope: scope)
       else
         const SizedBox.shrink(),
+      if (scope != null)
+        EarningsScreen(scope: scope)
+      else
+        const SizedBox.shrink(),
       const SettingsScreen(),
     ];
 
@@ -92,7 +98,7 @@ class _HomeShellState extends ConsumerState<HomeShell>
           top: false,
           child: Padding(
             padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.md,
+              horizontal: AppSpacing.sm,
               vertical: AppSpacing.xs,
             ),
             child: Row(
@@ -113,10 +119,17 @@ class _HomeShellState extends ConsumerState<HomeShell>
                 ),
                 _ShellDestination(
                   selected: _index == 2,
+                  icon: Icons.account_balance_wallet_outlined,
+                  selectedIcon: Icons.account_balance_wallet_rounded,
+                  label: l10n.navEarnings,
+                  onTap: () => setState(() => _index = 2),
+                ),
+                _ShellDestination(
+                  selected: _index == 3,
                   icon: Icons.person_outline,
                   selectedIcon: Icons.person_rounded,
                   label: l10n.navProfile,
-                  onTap: () => setState(() => _index = 2),
+                  onTap: () => setState(() => _index = 3),
                 ),
               ],
             ),

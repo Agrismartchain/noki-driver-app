@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/api/generated/driver_models.generated.dart';
 import '../../core/i18n/generated/app_localizations.dart';
 import '../../core/i18n/locale_controller.dart';
+import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/theme/theme_controller.dart';
@@ -12,6 +13,7 @@ import '../auth/auth_providers.dart';
 import '../delivery/delivery_history_screen.dart';
 import '../driver_context/driver_context_repository.dart';
 import '../mobility/mobility_history_screen.dart';
+import '../profile/driver_avatar_sheet.dart';
 import '../vehicles/vehicles_screen.dart';
 
 class SettingsScreen extends ConsumerWidget {
@@ -24,6 +26,7 @@ class SettingsScreen extends ConsumerWidget {
     final themeMode = ref.watch(themeModeProvider);
     final authState = ref.watch(authControllerProvider);
     final driverContext = authState.driverContext;
+    final avatarUrl = authState.avatarUrl;
     final profile = driverContext == null || driverContext.profiles.isEmpty
         ? null
         : driverContext.profiles.first;
@@ -42,22 +45,19 @@ class SettingsScreen extends ConsumerWidget {
           ),
           children: [
             if (driverContext != null) ...[
-              _DriverIdentityCard(driverContext: driverContext),
-              const SizedBox(height: AppSpacing.xl),
-            ],
-            if (profile != null) ...[
-              _OperationalStatusCard(profile: profile),
-              const SizedBox(height: AppSpacing.xl),
-              _OrganizationCard(profile: profile),
-              const SizedBox(height: AppSpacing.xl),
-              _VehicleSummaryCard(profile: profile, scope: scope),
-              const SizedBox(height: AppSpacing.xl),
-              _ActivationCard(profile: profile),
-              const SizedBox(height: AppSpacing.xl),
-              _OperationalActivityCard(scope: scope),
+              _DriverIdentityCard(
+                driverContext: driverContext,
+                avatarUrl: avatarUrl,
+                onAvatarTap: () => _openAvatarSheet(
+                  context,
+                  driverContext: driverContext,
+                  avatarUrl: avatarUrl,
+                ),
+              ),
               const SizedBox(height: AppSpacing.xl),
             ],
             NokiSurfaceCard(
+              key: const Key('profile-settings-card'),
               child: _PreferencesCard(
                 locale: locale,
                 themeMode: themeMode,
@@ -70,6 +70,18 @@ class SettingsScreen extends ConsumerWidget {
               ),
             ),
             const SizedBox(height: AppSpacing.xl),
+            if (profile != null) ...[
+              _OperationalStatusCard(profile: profile),
+              const SizedBox(height: AppSpacing.xl),
+              _OrganizationCard(profile: profile),
+              const SizedBox(height: AppSpacing.xl),
+              _VehicleSummaryCard(profile: profile, scope: scope),
+              const SizedBox(height: AppSpacing.xl),
+              _ActivationCard(profile: profile),
+              const SizedBox(height: AppSpacing.xl),
+              _OperationalActivityCard(scope: scope),
+              const SizedBox(height: AppSpacing.xl),
+            ],
             NokiSurfaceCard(
               tone: NokiSurfaceTone.defaultTone,
               child: SizedBox(
@@ -95,6 +107,27 @@ class SettingsScreen extends ConsumerWidget {
         ),
       ),
     );
+  }
+
+  Future<void> _openAvatarSheet(
+    BuildContext context, {
+    required DriverContextResponseDto driverContext,
+    required String? avatarUrl,
+  }) async {
+    final trimmedName = driverContext.displayName.trim();
+    final initial = trimmedName.isEmpty ? 'N' : trimmedName[0].toUpperCase();
+    final feedback = await showModalBottomSheet<String>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      builder: (_) =>
+          DriverAvatarSheet(initial: initial, currentAvatarUrl: avatarUrl),
+    );
+    if (feedback != null && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(feedback)),
+      );
+    }
   }
 
   Future<void> _confirmLogout(BuildContext context, WidgetRef ref) async {
@@ -126,9 +159,15 @@ class SettingsScreen extends ConsumerWidget {
 }
 
 class _DriverIdentityCard extends StatelessWidget {
-  const _DriverIdentityCard({required this.driverContext});
+  const _DriverIdentityCard({
+    required this.driverContext,
+    required this.avatarUrl,
+    required this.onAvatarTap,
+  });
 
   final DriverContextResponseDto driverContext;
+  final String? avatarUrl;
+  final VoidCallback onAvatarTap;
 
   @override
   Widget build(BuildContext context) {
@@ -136,8 +175,11 @@ class _DriverIdentityCard extends StatelessWidget {
     final colors = context.nokiColors;
     final trimmedName = driverContext.displayName.trim();
     final initial = trimmedName.isEmpty ? 'N' : trimmedName[0].toUpperCase();
+    final authorizedServices = _authorizedServiceLabels(l10n, driverContext);
+    final hasAvatar = avatarUrl != null && avatarUrl!.isNotEmpty;
 
     return NokiSurfaceCard(
+      key: const Key('profile-identity-card'),
       tone: NokiSurfaceTone.defaultTone,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -145,19 +187,59 @@ class _DriverIdentityCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  color: colors.actionPrimary,
-                  borderRadius: BorderRadius.circular(AppRadius.md),
-                ),
-                alignment: Alignment.center,
-                child: Text(
-                  initial,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                    color: colors.actionPrimaryInk,
-                    fontWeight: FontWeight.w800,
+              Semantics(
+                button: true,
+                label: l10n.profileAvatarEditTooltip,
+                child: Tooltip(
+                  message: l10n.profileAvatarEditTooltip,
+                  child: InkWell(
+                    key: const Key('profile-avatar-button'),
+                    onTap: onAvatarTap,
+                    borderRadius: BorderRadius.circular(AppRadius.md),
+                    child: Stack(
+                      clipBehavior: Clip.none,
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(AppRadius.md),
+                          child: SizedBox(
+                            width: 56,
+                            height: 56,
+                            child: hasAvatar
+                                ? Image.network(
+                                    avatarUrl!,
+                                    key: const Key('profile-avatar-image'),
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (_, _, _) => _AvatarInitials(
+                                      initial: initial,
+                                      colors: colors,
+                                    ),
+                                  )
+                                : _AvatarInitials(
+                                    initial: initial,
+                                    colors: colors,
+                                  ),
+                          ),
+                        ),
+                        Positioned(
+                          right: -4,
+                          bottom: -4,
+                          child: Container(
+                            width: 22,
+                            height: 22,
+                            decoration: BoxDecoration(
+                              color: colors.surface,
+                              shape: BoxShape.circle,
+                              border: Border.all(color: colors.border),
+                            ),
+                            child: Icon(
+                              Icons.camera_alt_outlined,
+                              size: 13,
+                              color: colors.textPrimary,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -181,31 +263,88 @@ class _DriverIdentityCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: AppSpacing.md),
+          Text(
+            l10n.profileAuthorizedServicesLabel,
+            style: Theme.of(context).textTheme.labelSmall,
+          ),
+          const SizedBox(height: AppSpacing.xs),
           Wrap(
+            key: const Key('profile-authorized-services-wrap'),
             spacing: AppSpacing.sm,
             runSpacing: AppSpacing.sm,
             children: [
-              NokiBadge(
-                label: l10n.profileIdentityEyebrow,
-                tone: NokiBadgeTone.neutral,
-                icon: Icons.verified_user_outlined,
-              ),
-              NokiBadge(
-                label: '${driverContext.profiles.length}',
-                tone: NokiBadgeTone.primary,
-                icon: Icons.layers_outlined,
-              ),
-              NokiBadge(
-                label: '${driverContext.capabilities.length}',
-                tone: NokiBadgeTone.info,
-                icon: Icons.tune_outlined,
-              ),
+              if (authorizedServices.isEmpty)
+                NokiBadge(
+                  label: l10n.homeNoServices,
+                  tone: NokiBadgeTone.neutral,
+                )
+              else
+                for (final serviceLabel in authorizedServices)
+                  NokiBadge(
+                    label: serviceLabel,
+                    tone: NokiBadgeTone.primary,
+                    icon: Icons.check_circle_outline,
+                  ),
             ],
           ),
         ],
       ),
     );
   }
+}
+
+class _AvatarInitials extends StatelessWidget {
+  const _AvatarInitials({required this.initial, required this.colors});
+
+  final String initial;
+  final NokiColorScheme colors;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      color: colors.actionPrimary,
+      alignment: Alignment.center,
+      child: Text(
+        initial,
+        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+          color: colors.actionPrimaryInk,
+          fontWeight: FontWeight.w800,
+        ),
+      ),
+    );
+  }
+}
+
+List<String> _authorizedServiceLabels(
+  AppLocalizations l10n,
+  DriverContextResponseDto driverContext,
+) {
+  final seen = <String>{};
+  final labels = <String>[];
+  void addLabel(String label) {
+    if (seen.add(label)) labels.add(label);
+  }
+
+  for (final profile in driverContext.profiles) {
+    if (profile.deliveryStatus != null) {
+      addLabel(l10n.workFeedTypeDelivery);
+    }
+    for (final type in profile.serviceTypes) {
+      switch (type) {
+        case DriverContextProfileDtoServiceTypes.taxi:
+          addLabel(l10n.serviceTypeTaxi);
+        case DriverContextProfileDtoServiceTypes.taxiMoto:
+          addLabel(l10n.serviceTypeTaxiMoto);
+        case DriverContextProfileDtoServiceTypes.courier:
+          addLabel(l10n.serviceTypeCourier);
+        case DriverContextProfileDtoServiceTypes.cargo:
+          addLabel(l10n.serviceTypeCargo);
+        case DriverContextProfileDtoServiceTypes.unknown:
+          break;
+      }
+    }
+  }
+  return labels;
 }
 
 class _OperationalStatusCard extends StatelessWidget {
@@ -507,26 +646,15 @@ class _PreferencesCard extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        NokiSectionHeader(title: l10n.profilePreferencesTitle),
+        NokiSectionHeader(title: l10n.profileSettingsSectionTitle),
         const SizedBox(height: AppSpacing.lg),
         Text(
-          l10n.settingsLanguage,
+          l10n.profileAppearanceLabel,
           style: Theme.of(context).textTheme.labelSmall,
         ),
         const SizedBox(height: AppSpacing.sm),
-        SegmentedButton<Locale>(
-          segments: const [
-            ButtonSegment(value: Locale('fr'), label: Text('Français')),
-            ButtonSegment(value: Locale('en'), label: Text('English')),
-            ButtonSegment(value: Locale('ar'), label: Text('العربية')),
-          ],
-          selected: {locale},
-          onSelectionChanged: onLocaleSelected,
-        ),
-        const SizedBox(height: AppSpacing.xl),
-        Text(l10n.settingsTheme, style: Theme.of(context).textTheme.labelSmall),
-        const SizedBox(height: AppSpacing.sm),
         SegmentedButton<ThemeMode>(
+          key: const Key('profile-appearance-selector'),
           segments: [
             ButtonSegment(
               value: ThemeMode.system,
@@ -543,6 +671,22 @@ class _PreferencesCard extends StatelessWidget {
           ],
           selected: {themeMode},
           onSelectionChanged: onThemeSelected,
+        ),
+        const SizedBox(height: AppSpacing.xl),
+        Text(
+          l10n.settingsLanguage,
+          style: Theme.of(context).textTheme.labelSmall,
+        ),
+        const SizedBox(height: AppSpacing.sm),
+        SegmentedButton<Locale>(
+          key: const Key('profile-language-selector'),
+          segments: const [
+            ButtonSegment(value: Locale('fr'), label: Text('Français')),
+            ButtonSegment(value: Locale('en'), label: Text('English')),
+            ButtonSegment(value: Locale('ar'), label: Text('العربية')),
+          ],
+          selected: {locale},
+          onSelectionChanged: onLocaleSelected,
         ),
       ],
     );

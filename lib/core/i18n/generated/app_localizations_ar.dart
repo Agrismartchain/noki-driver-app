@@ -960,4 +960,205 @@ class AppLocalizationsAr extends AppLocalizations {
   @override
   String get mobilityHistoryUnavailableBody =>
       'سجل رحلات التنقل المكتملة غير متاح بعد لحسابك على هذا الخادم.';
+
+  @override
+  String get navEarnings => 'الأرباح';
+
+  @override
+  String get earningsTitle => 'الأرباح والمحفظة';
+
+  @override
+  String get earningsAvailableLabel => 'المتاح';
+
+  @override
+  String get earningsPendingLabel => 'قيد الانتظار';
+
+  @override
+  String get earningsPaidLabel => 'المدفوع';
+
+  @override
+  String get earningsOnHoldLabel => 'المعلّق';
+
+  @override
+  String get earningsZeroHint => 'رصيدك المؤكد حالياً هو 0.';
+
+  @override
+  String get earningsUnavailableTitle => 'المحفظة غير متاحة';
+
+  @override
+  String get earningsUnavailableBody =>
+      'بيانات الأرباح والمحفظة غير متاحة بعد على هذا الخادم.';
+
+  @override
+  String earningsRulesMissingNotice(String services) {
+    return 'قاعدة الأجر بانتظار الاعتماد للخدمات التالية: $services';
+  }
+
+  @override
+  String get earningsTabMissions => 'أرباح المهام';
+
+  @override
+  String get earningsTabPayouts => 'المدفوعات';
+
+  @override
+  String get earningsTabCod => 'الدفع عند الاستلام';
+
+  @override
+  String get earningsEmptyMissionsTitle => 'لا توجد أرباح مسجلة';
+
+  @override
+  String get earningsEmptyMissionsBody =>
+      'ستظهر أرباحك المعتمدة لكل مهمة ورحلة هنا بعملة XAF.';
+
+  @override
+  String get earningsEmptyPayoutsTitle => 'لا توجد طلبات دفع';
+
+  @override
+  String get earningsEmptyPayoutsBody => 'ستظهر طلبات الدفع وحالتها هنا.';
+
+  @override
+  String get earningsEmptyCodTitle => 'لا توجد تحصيلات نقدية';
+
+  @override
+  String get earningsEmptyCodBody =>
+      'ستظهر المبالغ النقدية المحصّلة لصالح NOKI بشكل منفصل هنا.';
+
+  @override
+  String get earningsCodSectionTitle =>
+      'تحصيلات الدفع عند الاستلام (منفصلة عن الأرباح)';
+
+  @override
+  String get earningsCodToRemitLabel => 'للتوريد';
+
+  @override
+  String get earningsCodRemittedLabel => 'تم التوريد';
+
+  @override
+  String get earningsCodReconciledLabel => 'تمت التسوية';
+
+  @override
+  String get earningsCodSeparationNotice =>
+      'المبالغ النقدية المحصّلة لصالح NOKI تُتابع بشكل منفصل ولا تُضاف إلى رصيد أرباحك.';
+
+  @override
+  String get earningsRequestPayoutButton => 'طلب دفع';
+
+  @override
+  String get earningsPayoutSheetTitle => 'طلب دفع';
+
+  @override
+  String get earningsPayoutEligibleAmount => 'المبلغ المؤهل';
+
+  @override
+  String get earningsPayoutDestinationLabel => 'وسيلة الاستلام';
+
+  @override
+  String get earningsPayoutNoMethod => 'لا توجد وسيلة دفع نشطة مضبوطة';
+
+  @override
+  String get earningsPayoutConfirmButton => 'تأكيد الطلب';
+
+  @override
+  String get earningsPayoutSuccessMessage =>
+      'تم إرسال طلب الدفع لاعتماد قسم المالية.';
+
+  @override
+  String get earningsPayoutCancelButton => 'إلغاء الطلب';
+
+  @override
+  String get earningsPayoutCancelledMessage =>
+      'تم إلغاء طلب الدفع وأصبح المبلغ متاحاً من جديد.';
+
+  @override
+  String get earningsPayoutStatusPending => 'بانتظار الاعتماد';
+
+  @override
+  String get earningsPayoutStatusApproved => 'معتمد';
+
+  @override
+  String get earningsPayoutStatusSent => 'مرسل';
+
+  @override
+  String get earningsPayoutStatusPaid => 'مدفوع';
+
+  @override
+  String get earningsPayoutStatusOnHold => 'معلّق';
+
+  @override
+  String get earningsPayoutStatusFailed => 'فشل';
+
+  @override
+  String get earningsPayoutStatusCancelled => 'ملغى';
+
+  @override
+  String get earningsObligationStatusOpen => 'متاح';
+
+  @override
+  String get earningsObligationStatusAllocated => 'مخصص للدفع';
+
+  @override
+  String get earningsObligationStatusSettled => 'مدفوع';
+
+  @override
+  String get earningsObligationStatusOnHold => 'معلّق';
+
+  @override
+  String get earningsObligationReceivableTag => 'عمولة نقدية';
+
+  @override
+  String get earningsCodStatusDeclared => 'للتوريد';
+
+  @override
+  String get earningsCodStatusRemitted => 'تم التوريد';
+
+  @override
+  String get earningsCodStatusReconciled => 'تمت التسوية';
+
+  @override
+  String get earningsCodStatusVoided => 'ملغى';
+
+  @override
+  String earningsMissionRefLabel(String ref) {
+    return 'المرجع: $ref';
+  }
+
+  @override
+  String get profileSettingsSectionTitle => 'الإعدادات';
+
+  @override
+  String get profileAppearanceLabel => 'المظهر';
+
+  @override
+  String get profileAuthorizedServicesLabel => 'الخدمات المصرّح بها';
+
+  @override
+  String get profileAvatarSheetTitle => 'صورة الملف الشخصي';
+
+  @override
+  String get profileAvatarChooseGallery => 'اختيار من المعرض';
+
+  @override
+  String get profileAvatarChooseCamera => 'التقاط صورة';
+
+  @override
+  String get profileAvatarReplace => 'استبدال الصورة';
+
+  @override
+  String get profileAvatarRemove => 'حذف الصورة';
+
+  @override
+  String get profileAvatarSave => 'حفظ';
+
+  @override
+  String get profileAvatarSavedMessage => 'تم حفظ صورة الملف الشخصي.';
+
+  @override
+  String get profileAvatarRemovedMessage => 'تم حذف صورة الملف الشخصي.';
+
+  @override
+  String get profileAvatarUnavailableMessage =>
+      'إدارة صورة الملف الشخصي غير متاحة بعد على هذا الخادم.';
+
+  @override
+  String get profileAvatarEditTooltip => 'تعديل صورة الملف الشخصي';
 }

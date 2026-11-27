@@ -1,8 +1,12 @@
+import 'dart:typed_data';
+
 import 'package:dio/dio.dart';
 
 import '../errors/app_failure.dart';
+import 'finance/driver_finance_models.dart';
 import 'generated/driver_models.generated.dart';
 import 'mfa/mfa_models.dart';
+import 'profile/driver_avatar_models.dart';
 
 /// Thin, hand-written transport layer over the generated Dart models.
 ///
@@ -159,6 +163,77 @@ abstract class DriverApiClient {
   Future<MobilityDriverDto> submitMobilityLocation(
     SubmitMobilityLocationDto body,
   );
+
+  // --- Driver Profile Avatar (own-scoped NOKI media storage) ---------------
+
+  /// Cached `avatarUrl` extracted from the most recent `GET /v1/driver/context`
+  /// response (or avatar update/remove mutation) without altering generated DTOs.
+  String? get lastContextAvatarUrl;
+
+  Future<DriverAvatarUploadIntentDto> createDriverAvatarUploadIntent({
+    required String contentType,
+    required int byteSizeExpected,
+  });
+
+  Future<void> uploadDriverAvatarBytes({
+    required String uploadUrl,
+    required Map<String, String> headers,
+    required Uint8List bytes,
+  });
+
+  Future<DriverAvatarResponseDto> completeDriverAvatarUpload(String intentId);
+
+  Future<DriverAvatarResponseDto> removeDriverAvatar();
+
+  // --- Driver Finance & Wallet (own-scoped) --------------------------------
+
+  Future<DriverFinanceSummaryDto> driverFinanceSummary({
+    required String organizationId,
+    required String countryCode,
+  });
+
+  Future<List<DriverEarningItemDto>> driverFinanceEarnings({
+    required String organizationId,
+    required String countryCode,
+    int page = 1,
+    int pageSize = 25,
+  });
+
+  Future<List<DriverCodCollectionItemDto>> driverFinanceCod({
+    required String organizationId,
+    required String countryCode,
+    int page = 1,
+    int pageSize = 25,
+  });
+
+  Future<DriverPayoutEligibilityDto> driverPayoutEligibility({
+    required String organizationId,
+    required String countryCode,
+  });
+
+  Future<List<DriverPayoutItemDto>> driverPayouts({
+    required String organizationId,
+    required String countryCode,
+    int page = 1,
+    int pageSize = 25,
+  });
+
+  Future<DriverPayoutItemDto> requestDriverPayout({
+    required String organizationId,
+    required String countryCode,
+    required String idempotencyKey,
+    String? paymentMethodId,
+    List<String>? obligationIds,
+    String? requestedAmount,
+  });
+
+  Future<DriverPayoutItemDto> cancelDriverPayout({
+    required String payoutId,
+    required String organizationId,
+    required String countryCode,
+    required String reason,
+    required String idempotencyKey,
+  });
 }
 
 class DioDriverApiClient implements DriverApiClient {
@@ -281,9 +356,10 @@ class DioDriverApiClient implements DriverApiClient {
   @override
   Future<DriverContextResponseDto> driverContext() => _guarded(() async {
     final response = await _dio.get('/v1/driver/context');
-    return DriverContextResponseDto.fromJson(
-      response.data as Map<String, dynamic>,
-    );
+    final body = response.data as Map<String, dynamic>;
+    final rawAvatar = body['avatarUrl'] as String?;
+    _lastContextAvatarUrl = _resolveMediaUrl(rawAvatar);
+    return DriverContextResponseDto.fromJson(body);
   });
 
   @override
@@ -656,5 +732,239 @@ class DioDriverApiClient implements DriverApiClient {
       data: body.toJson(),
     );
     return MobilityDriverDto.fromJson(response.data as Map<String, dynamic>);
+  });
+
+  // --- Driver Profile Avatar -----------------------------------------------
+
+  String? _lastContextAvatarUrl;
+
+  @override
+  String? get lastContextAvatarUrl => _lastContextAvatarUrl;
+
+  String? _resolveMediaUrl(String? rawUrl) {
+    if (rawUrl == null || rawUrl.trim().isEmpty) return null;
+    final trimmed = rawUrl.trim();
+    if (trimmed.startsWith('http://') || trimmed.startsWith('https://')) {
+      return trimmed;
+    }
+    final base = _dio.options.baseUrl;
+    if (base.isEmpty) return trimmed;
+    return Uri.parse(base).resolve(trimmed).toString();
+  }
+
+  @override
+  Future<DriverAvatarUploadIntentDto> createDriverAvatarUploadIntent({
+    required String contentType,
+    required int byteSizeExpected,
+  }) => _guarded(() async {
+    final response = await _dio.post(
+      '/v1/driver/profile/avatar/upload-intent',
+      data: {
+        'contentType': contentType,
+        'byteSizeExpected': byteSizeExpected,
+      },
+    );
+    return DriverAvatarUploadIntentDto.fromJson(
+      response.data as Map<String, dynamic>,
+    );
+  });
+
+  @override
+  Future<void> uploadDriverAvatarBytes({
+    required String uploadUrl,
+    required Map<String, String> headers,
+    required Uint8List bytes,
+  }) => _guarded(() async {
+    final resolved = _resolveMediaUrl(uploadUrl) ?? uploadUrl;
+    final isExternalPresigned =
+        uploadUrl.startsWith('http://') || uploadUrl.startsWith('https://');
+    final client = isExternalPresigned ? Dio() : _dio;
+    await client.put<void>(
+      resolved,
+      data: Stream.fromIterable([bytes]),
+      options: Options(
+        headers: {
+          ...headers,
+          Headers.contentLengthHeader: bytes.length,
+        },
+        contentType: headers['Content-Type'] ?? headers['content-type'],
+      ),
+    );
+  });
+
+  @override
+  Future<DriverAvatarResponseDto> completeDriverAvatarUpload(String intentId) =>
+      _guarded(() async {
+        final response = await _dio.post(
+          '/v1/driver/profile/avatar/upload-intent/$intentId/complete',
+        );
+        final dto = DriverAvatarResponseDto.fromJson(
+          response.data as Map<String, dynamic>,
+        );
+        final resolved = _resolveMediaUrl(dto.avatarUrl);
+        _lastContextAvatarUrl = resolved;
+        return DriverAvatarResponseDto(avatarUrl: resolved);
+      });
+
+  @override
+  Future<DriverAvatarResponseDto> removeDriverAvatar() => _guarded(() async {
+    final response = await _dio.delete('/v1/driver/profile/avatar');
+    final dto = DriverAvatarResponseDto.fromJson(
+      response.data as Map<String, dynamic>,
+    );
+    _lastContextAvatarUrl = null;
+    return dto;
+  });
+
+  // --- Driver Finance & Wallet ---------------------------------------------
+
+  @override
+  Future<DriverFinanceSummaryDto> driverFinanceSummary({
+    required String organizationId,
+    required String countryCode,
+  }) => _guarded(() async {
+    final response = await _dio.get(
+      '/v1/driver/finance/summary',
+      queryParameters: {
+        'organizationId': organizationId,
+        'countryCode': countryCode,
+      },
+    );
+    return DriverFinanceSummaryDto.fromJson(
+      response.data as Map<String, dynamic>,
+    );
+  });
+
+  @override
+  Future<List<DriverEarningItemDto>> driverFinanceEarnings({
+    required String organizationId,
+    required String countryCode,
+    int page = 1,
+    int pageSize = 25,
+  }) => _guarded(() async {
+    final response = await _dio.get(
+      '/v1/driver/finance/earnings',
+      queryParameters: {
+        'organizationId': organizationId,
+        'countryCode': countryCode,
+        'page': page,
+        'pageSize': pageSize,
+      },
+    );
+    final body = response.data as Map<String, dynamic>;
+    final items = body['items'] as List<dynamic>? ?? const [];
+    return items
+        .whereType<Map<String, dynamic>>()
+        .map(DriverEarningItemDto.fromJson)
+        .toList(growable: false);
+  });
+
+  @override
+  Future<List<DriverCodCollectionItemDto>> driverFinanceCod({
+    required String organizationId,
+    required String countryCode,
+    int page = 1,
+    int pageSize = 25,
+  }) => _guarded(() async {
+    final response = await _dio.get(
+      '/v1/driver/finance/cod',
+      queryParameters: {
+        'organizationId': organizationId,
+        'countryCode': countryCode,
+        'page': page,
+        'pageSize': pageSize,
+      },
+    );
+    final body = response.data as Map<String, dynamic>;
+    final items = body['items'] as List<dynamic>? ?? const [];
+    return items
+        .whereType<Map<String, dynamic>>()
+        .map(DriverCodCollectionItemDto.fromJson)
+        .toList(growable: false);
+  });
+
+  @override
+  Future<DriverPayoutEligibilityDto> driverPayoutEligibility({
+    required String organizationId,
+    required String countryCode,
+  }) => _guarded(() async {
+    final response = await _dio.get(
+      '/v1/driver/finance/payouts/eligibility',
+      queryParameters: {
+        'organizationId': organizationId,
+        'countryCode': countryCode,
+      },
+    );
+    return DriverPayoutEligibilityDto.fromJson(
+      response.data as Map<String, dynamic>,
+    );
+  });
+
+  @override
+  Future<List<DriverPayoutItemDto>> driverPayouts({
+    required String organizationId,
+    required String countryCode,
+    int page = 1,
+    int pageSize = 25,
+  }) => _guarded(() async {
+    final response = await _dio.get(
+      '/v1/driver/finance/payouts',
+      queryParameters: {
+        'organizationId': organizationId,
+        'countryCode': countryCode,
+        'page': page,
+        'pageSize': pageSize,
+      },
+    );
+    final body = response.data as Map<String, dynamic>;
+    final items = body['items'] as List<dynamic>? ?? const [];
+    return items
+        .whereType<Map<String, dynamic>>()
+        .map(DriverPayoutItemDto.fromJson)
+        .toList(growable: false);
+  });
+
+  @override
+  Future<DriverPayoutItemDto> requestDriverPayout({
+    required String organizationId,
+    required String countryCode,
+    required String idempotencyKey,
+    String? paymentMethodId,
+    List<String>? obligationIds,
+    String? requestedAmount,
+  }) => _guarded(() async {
+    final response = await _dio.post(
+      '/v1/driver/finance/payouts',
+      data: {
+        'organizationId': organizationId,
+        'countryCode': countryCode,
+        if (paymentMethodId != null) 'paymentMethodId': paymentMethodId,
+        if (obligationIds != null && obligationIds.isNotEmpty)
+          'obligationIds': obligationIds,
+        if (requestedAmount != null) 'requestedAmount': requestedAmount,
+      },
+      options: Options(headers: {'Idempotency-Key': idempotencyKey}),
+    );
+    return DriverPayoutItemDto.fromJson(response.data as Map<String, dynamic>);
+  });
+
+  @override
+  Future<DriverPayoutItemDto> cancelDriverPayout({
+    required String payoutId,
+    required String organizationId,
+    required String countryCode,
+    required String reason,
+    required String idempotencyKey,
+  }) => _guarded(() async {
+    final response = await _dio.post(
+      '/v1/driver/finance/payouts/$payoutId/cancel',
+      data: {
+        'organizationId': organizationId,
+        'countryCode': countryCode,
+        'reason': reason,
+      },
+      options: Options(headers: {'Idempotency-Key': idempotencyKey}),
+    );
+    return DriverPayoutItemDto.fromJson(response.data as Map<String, dynamic>);
   });
 }

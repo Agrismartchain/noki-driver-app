@@ -92,6 +92,7 @@ class AuthState {
   const AuthState({
     required this.status,
     this.driverContext,
+    this.avatarUrl,
     this.failure,
     this.mfaChallenge,
     this.pendingRecoveryCodes,
@@ -101,6 +102,7 @@ class AuthState {
 
   final AuthStatus status;
   final DriverContextResponseDto? driverContext;
+  final String? avatarUrl;
   final AppFailure? failure;
   final MfaChallengeState? mfaChallenge;
   final PendingMfaSession? pendingRecoveryCodes;
@@ -108,17 +110,20 @@ class AuthState {
   AuthState copyWith({
     AuthStatus? status,
     DriverContextResponseDto? driverContext,
+    String? avatarUrl,
     AppFailure? failure,
     MfaChallengeState? mfaChallenge,
     PendingMfaSession? pendingRecoveryCodes,
     bool clearFailure = false,
     bool clearDriverContext = false,
+    bool clearAvatarUrl = false,
     bool clearMfaChallenge = false,
     bool clearPendingRecoveryCodes = false,
   }) {
     return AuthState(
       status: status ?? this.status,
       driverContext: clearDriverContext ? null : (driverContext ?? this.driverContext),
+      avatarUrl: clearAvatarUrl ? null : (avatarUrl ?? this.avatarUrl),
       failure: clearFailure ? null : (failure ?? this.failure),
       mfaChallenge: clearMfaChallenge ? null : (mfaChallenge ?? this.mfaChallenge),
       pendingRecoveryCodes: clearPendingRecoveryCodes

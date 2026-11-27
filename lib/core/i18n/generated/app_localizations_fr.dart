@@ -982,4 +982,206 @@ class AppLocalizationsFr extends AppLocalizations {
   @override
   String get mobilityHistoryUnavailableBody =>
       'L\'historique des courses Mobility n\'est pas encore disponible pour votre compte sur ce serveur.';
+
+  @override
+  String get navEarnings => 'Gains';
+
+  @override
+  String get earningsTitle => 'Gains et portefeuille';
+
+  @override
+  String get earningsAvailableLabel => 'Disponible';
+
+  @override
+  String get earningsPendingLabel => 'En attente';
+
+  @override
+  String get earningsPaidLabel => 'Payé';
+
+  @override
+  String get earningsOnHoldLabel => 'Bloqué';
+
+  @override
+  String get earningsZeroHint => 'Votre solde vérifié est actuellement à 0.';
+
+  @override
+  String get earningsUnavailableTitle => 'Portefeuille indisponible';
+
+  @override
+  String get earningsUnavailableBody =>
+      'Les données de gains et de portefeuille chauffeur ne sont pas encore disponibles sur ce serveur.';
+
+  @override
+  String earningsRulesMissingNotice(String services) {
+    return 'Règle de rémunération en attente d\'approbation pour : $services';
+  }
+
+  @override
+  String get earningsTabMissions => 'Gains par mission';
+
+  @override
+  String get earningsTabPayouts => 'Paiements';
+
+  @override
+  String get earningsTabCod => 'COD';
+
+  @override
+  String get earningsEmptyMissionsTitle => 'Aucun gain enregistré';
+
+  @override
+  String get earningsEmptyMissionsBody =>
+      'Vos gains validés par mission et par course apparaîtront ici en XAF.';
+
+  @override
+  String get earningsEmptyPayoutsTitle => 'Aucune demande de paiement';
+
+  @override
+  String get earningsEmptyPayoutsBody =>
+      'Vos demandes et versements apparaîtront ici avec leur statut.';
+
+  @override
+  String get earningsEmptyCodTitle => 'Aucun encaissement COD';
+
+  @override
+  String get earningsEmptyCodBody =>
+      'Les montants espèces encaissés pour NOKI apparaîtront séparément ici.';
+
+  @override
+  String get earningsCodSectionTitle => 'Encaissements COD (séparés des gains)';
+
+  @override
+  String get earningsCodToRemitLabel => 'À reverser';
+
+  @override
+  String get earningsCodRemittedLabel => 'Reversé';
+
+  @override
+  String get earningsCodReconciledLabel => 'Rapproché';
+
+  @override
+  String get earningsCodSeparationNotice =>
+      'Les espèces COD encaissées pour NOKI sont suivies séparément et ne s\'ajoutent pas à votre solde de gains.';
+
+  @override
+  String get earningsRequestPayoutButton => 'Demander un paiement';
+
+  @override
+  String get earningsPayoutSheetTitle => 'Demander un paiement';
+
+  @override
+  String get earningsPayoutEligibleAmount => 'Montant éligible';
+
+  @override
+  String get earningsPayoutDestinationLabel => 'Compte de versement';
+
+  @override
+  String get earningsPayoutNoMethod =>
+      'Aucun moyen de paiement actif configuré';
+
+  @override
+  String get earningsPayoutConfirmButton => 'Confirmer la demande';
+
+  @override
+  String get earningsPayoutSuccessMessage =>
+      'Demande de paiement envoyée pour validation Finance.';
+
+  @override
+  String get earningsPayoutCancelButton => 'Annuler la demande';
+
+  @override
+  String get earningsPayoutCancelledMessage =>
+      'Demande de paiement annulée. Le montant redevient disponible.';
+
+  @override
+  String get earningsPayoutStatusPending => 'En attente de validation';
+
+  @override
+  String get earningsPayoutStatusApproved => 'Approuvé';
+
+  @override
+  String get earningsPayoutStatusSent => 'Envoyé';
+
+  @override
+  String get earningsPayoutStatusPaid => 'Payé';
+
+  @override
+  String get earningsPayoutStatusOnHold => 'Bloqué';
+
+  @override
+  String get earningsPayoutStatusFailed => 'Échoué';
+
+  @override
+  String get earningsPayoutStatusCancelled => 'Annulé';
+
+  @override
+  String get earningsObligationStatusOpen => 'Disponible';
+
+  @override
+  String get earningsObligationStatusAllocated => 'Alloué au paiement';
+
+  @override
+  String get earningsObligationStatusSettled => 'Payé';
+
+  @override
+  String get earningsObligationStatusOnHold => 'Bloqué';
+
+  @override
+  String get earningsObligationReceivableTag => 'Commission espèces';
+
+  @override
+  String get earningsCodStatusDeclared => 'À reverser';
+
+  @override
+  String get earningsCodStatusRemitted => 'Reversé';
+
+  @override
+  String get earningsCodStatusReconciled => 'Rapproché';
+
+  @override
+  String get earningsCodStatusVoided => 'Annulé';
+
+  @override
+  String earningsMissionRefLabel(String ref) {
+    return 'Référence : $ref';
+  }
+
+  @override
+  String get profileSettingsSectionTitle => 'Réglages';
+
+  @override
+  String get profileAppearanceLabel => 'Apparence';
+
+  @override
+  String get profileAuthorizedServicesLabel => 'Services autorisés';
+
+  @override
+  String get profileAvatarSheetTitle => 'Photo de profil';
+
+  @override
+  String get profileAvatarChooseGallery => 'Choisir depuis la galerie';
+
+  @override
+  String get profileAvatarChooseCamera => 'Prendre une photo';
+
+  @override
+  String get profileAvatarReplace => 'Remplacer la photo';
+
+  @override
+  String get profileAvatarRemove => 'Retirer la photo';
+
+  @override
+  String get profileAvatarSave => 'Enregistrer';
+
+  @override
+  String get profileAvatarSavedMessage => 'Photo de profil enregistrée.';
+
+  @override
+  String get profileAvatarRemovedMessage => 'Photo de profil retirée.';
+
+  @override
+  String get profileAvatarUnavailableMessage =>
+      'La gestion de la photo de profil n\'est pas encore disponible sur ce serveur.';
+
+  @override
+  String get profileAvatarEditTooltip => 'Modifier la photo de profil';
 }
