@@ -8,6 +8,19 @@ import 'app_failure.dart';
 /// logs only - see AppLogger.
 String localizeFailure(BuildContext context, AppFailure failure) {
   final l10n = AppLocalizations.of(context);
+  // Several distinct MFA failures all share one AppFailureType (every one
+  // of them is a 401 `unauthenticated` - see mfa.service.ts) but need
+  // different copy, so these are checked by the backend's structured
+  // `code` first; anything else falls through to the generic type switch
+  // below unchanged.
+  switch (failure.code) {
+    case 'MFA_CODE_INVALID':
+      return l10n.errorMfaCodeInvalid;
+    case 'MFA_CHALLENGE_INVALID':
+      return l10n.errorMfaChallengeExpired;
+    case 'MFA_LOCKED':
+      return l10n.errorMfaLocked;
+  }
   switch (failure.type) {
     case AppFailureType.network:
       return l10n.errorNetwork;

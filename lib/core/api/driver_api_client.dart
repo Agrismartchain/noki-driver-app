@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 
 import '../errors/app_failure.dart';
 import 'generated/driver_models.generated.dart';
+import 'mfa/mfa_models.dart';
 
 /// Thin, hand-written transport layer over the generated Dart models.
 ///
@@ -11,8 +12,18 @@ import 'generated/driver_models.generated.dart';
 /// document. This class is an interface so tests and the repository layer
 /// can substitute a fake without mocking Dio directly (see
 /// `test/fixtures/fake_driver_api_client.dart`).
+///
+/// The MFA methods below (`mfaEnrollStart`/`mfaEnrollConfirm`/`mfaVerify`)
+/// are the one exception to "every method maps to a whitelisted
+/// operationId": see `core/api/mfa/mfa_models.dart`'s doc comment for why.
 abstract class DriverApiClient {
-  Future<AuthTokensResponseDto> login({
+  /// Either a full session ([AuthLoginSuccess]) or a pre-session MFA
+  /// challenge ([AuthLoginMfaChallenge]) - `/v1/auth/login` returns 202 with
+  /// no tokens at all for a privileged account that has not completed its
+  /// second factor yet. Callers MUST switch on both cases (Dart's
+  /// exhaustiveness check on the sealed [AuthLoginResult] enforces this) -
+  /// never assume 200/[AuthTokensResponseDto].
+  Future<AuthLoginResult> login({
     required String email,
     required String password,
   });
@@ -20,6 +31,30 @@ abstract class DriverApiClient {
   Future<LogoutResponseDto> logout();
   Future<MeResponseDto> me();
   Future<AuthCapabilitiesResponseDto> capabilities();
+
+  // --- MFA (pre-session challenge flow) -----------------------------------
+
+  /// Begins two-factor setup for an `ENROLL`-status challenge. The returned
+  /// secret is shown exactly once - never persisted, never logged.
+  Future<MfaEnrollmentStartResponseDto> mfaEnrollStart({
+    required String challengeToken,
+  });
+
+  /// Confirms enrollment with the first authenticator code. On success the
+  /// account now has an active second factor and a full session is issued
+  /// in the same response, alongside one-time recovery codes.
+  Future<MfaEnrollConfirmResponseDto> mfaEnrollConfirm({
+    required String challengeToken,
+    required String code,
+  });
+
+  /// Completes sign-in for a `VERIFY`-status challenge with either an
+  /// authenticator code or a one-time recovery code.
+  Future<AuthTokensResponseDto> mfaVerify({
+    required String challengeToken,
+    String? code,
+    String? recoveryCode,
+  });
 
   Future<DriverContextResponseDto> driverContext();
   Future<DriverVehicleListResponseDto> driverVehicles({
@@ -140,13 +175,71 @@ class DioDriverApiClient implements DriverApiClient {
   }
 
   @override
-  Future<AuthTokensResponseDto> login({
+  Future<AuthLoginResult> login({
     required String email,
     required String password,
   }) => _guarded(() async {
     final response = await _dio.post(
       '/v1/auth/login',
       data: LoginRequestDto(email: email, password: password).toJson(),
+    );
+    final body = response.data as Map<String, dynamic>;
+    // 202 Accepted: password step succeeded but a second factor is still
+    // required - `body` is an `AuthMfaChallengeResponseDto`, not tokens.
+    // This status-code check is the one thing standing between this client
+    // and the original bug (deserializing every response as
+    // `AuthTokensResponseDto` regardless of `mfaStatus`).
+    if (response.statusCode == 202) {
+      return AuthLoginMfaChallenge(AuthMfaChallengeResponseDto.fromJson(body));
+    }
+    return AuthLoginSuccess(AuthTokensResponseDto.fromJson(body));
+  });
+
+  @override
+  Future<MfaEnrollmentStartResponseDto> mfaEnrollStart({
+    required String challengeToken,
+  }) => _guarded(() async {
+    final response = await _dio.post(
+      '/v1/auth/mfa/challenge/enroll/start',
+      data: MfaChallengeEnrollStartRequestDto(
+        challengeToken: challengeToken,
+      ).toJson(),
+    );
+    return MfaEnrollmentStartResponseDto.fromJson(
+      response.data as Map<String, dynamic>,
+    );
+  });
+
+  @override
+  Future<MfaEnrollConfirmResponseDto> mfaEnrollConfirm({
+    required String challengeToken,
+    required String code,
+  }) => _guarded(() async {
+    final response = await _dio.post(
+      '/v1/auth/mfa/challenge/enroll/confirm',
+      data: MfaChallengeEnrollConfirmRequestDto(
+        challengeToken: challengeToken,
+        code: code,
+      ).toJson(),
+    );
+    return MfaEnrollConfirmResponseDto.fromJson(
+      response.data as Map<String, dynamic>,
+    );
+  });
+
+  @override
+  Future<AuthTokensResponseDto> mfaVerify({
+    required String challengeToken,
+    String? code,
+    String? recoveryCode,
+  }) => _guarded(() async {
+    final response = await _dio.post(
+      '/v1/auth/mfa/challenge/verify',
+      data: MfaChallengeVerifyRequestDto(
+        challengeToken: challengeToken,
+        code: code,
+        recoveryCode: recoveryCode,
+      ).toJson(),
     );
     return AuthTokensResponseDto.fromJson(
       response.data as Map<String, dynamic>,

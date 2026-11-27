@@ -24,6 +24,7 @@ class AppFailure implements Exception {
     this.message,
     this.statusCode,
     this.fieldErrors,
+    this.code,
   });
 
   final AppFailureType type;
@@ -34,6 +35,15 @@ class AppFailure implements Exception {
 
   /// Field-level validation errors (422), keyed by field name.
   final Map<String, List<String>>? fieldErrors;
+
+  /// The backend's stable machine-readable error code (its JSON body's
+  /// `code` field, e.g. `"MFA_CODE_INVALID"`), when present. Several
+  /// distinct failures share one [type]/[statusCode] (every MFA failure
+  /// below is a 401 `unauthenticated`) but need different handling - an
+  /// invalid code lets the driver retry the same challenge, an expired one
+  /// does not. Callers that need that distinction switch on [code] instead
+  /// of parsing [message].
+  final String? code;
 
   static AppFailure fromDioException(DioException e) {
     switch (e.type) {
@@ -56,18 +66,21 @@ class AppFailure implements Exception {
 
   static AppFailure _fromStatusCode(int? statusCode, dynamic data) {
     final message = _extractMessage(data);
+    final code = _extractCode(data);
     switch (statusCode) {
       case 401:
         return AppFailure(
           AppFailureType.unauthenticated,
           message: message,
           statusCode: statusCode,
+          code: code,
         );
       case 403:
         return AppFailure(
           AppFailureType.forbidden,
           message: message,
           statusCode: statusCode,
+          code: code,
         );
       case 404:
         // Deliberately non-enumerating: never distinguish "does not exist"
@@ -76,12 +89,14 @@ class AppFailure implements Exception {
           AppFailureType.notFound,
           message: message,
           statusCode: statusCode,
+          code: code,
         );
       case 409:
         return AppFailure(
           AppFailureType.conflict,
           message: message,
           statusCode: statusCode,
+          code: code,
         );
       case 422:
         return AppFailure(
@@ -89,12 +104,14 @@ class AppFailure implements Exception {
           message: message,
           statusCode: statusCode,
           fieldErrors: _extractFieldErrors(data),
+          code: code,
         );
       case 429:
         return AppFailure(
           AppFailureType.rateLimited,
           message: message,
           statusCode: statusCode,
+          code: code,
         );
       default:
         if (statusCode != null && statusCode >= 500) {
@@ -102,14 +119,23 @@ class AppFailure implements Exception {
             AppFailureType.server,
             message: message,
             statusCode: statusCode,
+            code: code,
           );
         }
         return AppFailure(
           AppFailureType.unknown,
           message: message,
           statusCode: statusCode,
+          code: code,
         );
     }
+  }
+
+  static String? _extractCode(dynamic data) {
+    if (data is Map && data['code'] is String) {
+      return data['code'] as String;
+    }
+    return null;
   }
 
   static String? _extractMessage(dynamic data) {
