@@ -1,0 +1,231 @@
+name: Android Release AAB (Google Play Internal)
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_number:
+        description: 'Android versionCode for Google Play (default 1; increment if Play Console reports the code is already taken)'
+        required: false
+        default: '1'
+        type: string
+
+permissions:
+  contents: read
+
+env:
+  FLUTTER_VERSION: '3.47.0'
+  EXPECTED_PACKAGE: 'com.agrismartchain.noki.noki_driver_app'
+  NOKI_ENV: 'production'
+  NOKI_API_BASE_URL: 'https://api.noki-services.com'
+
+jobs:
+  build_signed_aab:
+    name: Build signed release AAB (no Play Console publish)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Validate inputs and required signing secrets
+        id: validate
+        shell: bash
+        env:
+          INPUT_BUILD_NUMBER: ${{ inputs.build_number }}
+          NOKI_DRIVER_RELEASE_KEYSTORE_BASE64: ${{ secrets.NOKI_DRIVER_RELEASE_KEYSTORE_BASE64 }}
+          NOKI_DRIVER_RELEASE_STORE_PASSWORD: ${{ secrets.NOKI_DRIVER_RELEASE_STORE_PASSWORD }}
+          NOKI_DRIVER_RELEASE_KEY_ALIAS: ${{ secrets.NOKI_DRIVER_RELEASE_KEY_ALIAS }}
+          NOKI_DRIVER_RELEASE_KEY_PASSWORD: ${{ secrets.NOKI_DRIVER_RELEASE_KEY_PASSWORD }}
+        run: |
+          set -euo pipefail
+
+          build_number="${INPUT_BUILD_NUMBER:-1}"
+          if [[ ! "$build_number" =~ ^[1-9][0-9]*$ ]] || (( build_number > 2100000000 )); then
+            echo "::error::Invalid build_number '$build_number'. Provide a positive integer (1..2100000000)."
+            exit 1
+          fi
+
+          missing=()
+          [[ -z "${NOKI_DRIVER_RELEASE_KEYSTORE_BASE64}" ]] && missing+=("NOKI_DRIVER_RELEASE_KEYSTORE_BASE64")
+          [[ -z "${NOKI_DRIVER_RELEASE_STORE_PASSWORD}" ]] && missing+=("NOKI_DRIVER_RELEASE_STORE_PASSWORD")
+          [[ -z "${NOKI_DRIVER_RELEASE_KEY_ALIAS}" ]] && missing+=("NOKI_DRIVER_RELEASE_KEY_ALIAS")
+          [[ -z "${NOKI_DRIVER_RELEASE_KEY_PASSWORD}" ]] && missing+=("NOKI_DRIVER_RELEASE_KEY_PASSWORD")
+
+          if (( ${#missing[@]} > 0 )); then
+            echo "::error::Missing required GitHub Actions signing secret(s): ${missing[*]}"
+            echo "Configure all four repository secrets before running this workflow:"
+            echo "  - NOKI_DRIVER_RELEASE_KEYSTORE_BASE64"
+            echo "  - NOKI_DRIVER_RELEASE_STORE_PASSWORD"
+            echo "  - NOKI_DRIVER_RELEASE_KEY_ALIAS"
+            echo "  - NOKI_DRIVER_RELEASE_KEY_PASSWORD"
+            exit 1
+          fi
+
+          echo "build_number=${build_number}" >> "$GITHUB_OUTPUT"
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Record source commit metadata
+        id: meta
+        shell: bash
+        run: |
+          set -euo pipefail
+          full_sha="$(git rev-parse HEAD)"
+          short_sha="$(git rev-parse --short=7 HEAD)"
+          version_name="$(awk -F': ' '/^version:/ { split($2, a, "+"); gsub(/[[:space:]]/, "", a[1]); print a[1]; exit }' pubspec.yaml)"
+          if [[ -z "$version_name" ]]; then
+            echo "::error::Could not read versionName from pubspec.yaml"
+            exit 1
+          fi
+          echo "full_sha=${full_sha}" >> "$GITHUB_OUTPUT"
+          echo "short_sha=${short_sha}" >> "$GITHUB_OUTPUT"
+          echo "version_name=${version_name}" >> "$GITHUB_OUTPUT"
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Decode and validate upload keystore
+        id: keystore
+        shell: bash
+        env:
+          KEYSTORE_PATH: ${{ runner.temp }}/noki-driver-upload.jks
+          NOKI_DRIVER_RELEASE_KEYSTORE_BASE64: ${{ secrets.NOKI_DRIVER_RELEASE_KEYSTORE_BASE64 }}
+          NOKI_DRIVER_RELEASE_STORE_PASSWORD: ${{ secrets.NOKI_DRIVER_RELEASE_STORE_PASSWORD }}
+          NOKI_DRIVER_RELEASE_KEY_ALIAS: ${{ secrets.NOKI_DRIVER_RELEASE_KEY_ALIAS }}
+        run: |
+          set -euo pipefail
+
+          umask 077
+          printf '%s' "$NOKI_DRIVER_RELEASE_KEYSTORE_BASE64" | tr -d '\r\n ' | base64 --decode > "$KEYSTORE_PATH"
+          chmod 600 "$KEYSTORE_PATH"
+
+          if [[ ! -s "$KEYSTORE_PATH" ]]; then
+            echo "::error::Decoded keystore file is empty. Verify NOKI_DRIVER_RELEASE_KEYSTORE_BASE64."
+            exit 1
+          fi
+
+          cert_info="$(keytool -list -v \
+            -keystore "$KEYSTORE_PATH" \
+            -alias "$NOKI_DRIVER_RELEASE_KEY_ALIAS" \
+            -storepass:env NOKI_DRIVER_RELEASE_STORE_PASSWORD)"
+
+          if grep -q 'CN=Android Debug' <<< "$cert_info"; then
+            echo "::error::Refusing Android Debug keystore for Google Play release signing."
+            exit 1
+          fi
+
+          cert_sha256="$(awk '/SHA256:/ { print $2; exit }' <<< "$cert_info")"
+          if [[ -z "$cert_sha256" ]]; then
+            echo "::error::Could not extract SHA256 certificate fingerprint for configured key alias."
+            exit 1
+          fi
+
+          echo "cert_sha256=${cert_sha256}" >> "$GITHUB_OUTPUT"
+          echo "Upload keystore validated (SHA256 fingerprint: ${cert_sha256})."
+
+      - name: Install dependencies and generate localizations
+        shell: bash
+        run: |
+          set -euo pipefail
+          flutter pub get
+          flutter gen-l10n
+
+      - name: Build signed release App Bundle (.aab)
+        shell: bash
+        env:
+          NOKI_DRIVER_RELEASE_STORE_FILE: ${{ runner.temp }}/noki-driver-upload.jks
+          NOKI_DRIVER_RELEASE_STORE_PASSWORD: ${{ secrets.NOKI_DRIVER_RELEASE_STORE_PASSWORD }}
+          NOKI_DRIVER_RELEASE_KEY_ALIAS: ${{ secrets.NOKI_DRIVER_RELEASE_KEY_ALIAS }}
+          NOKI_DRIVER_RELEASE_KEY_PASSWORD: ${{ secrets.NOKI_DRIVER_RELEASE_KEY_PASSWORD }}
+          NOKI_ALLOW_DEBUG_RELEASE_SIGNING: 'false'
+        run: |
+          set -euo pipefail
+          flutter build appbundle --release \
+            --build-number="${{ steps.validate.outputs.build_number }}" \
+            --dart-define=NOKI_ENV="${NOKI_ENV}" \
+            --dart-define=NOKI_API_BASE_URL="${NOKI_API_BASE_URL}"
+
+      - name: Verify package, versionCode, signature and compute SHA-256
+        id: verify
+        shell: bash
+        run: |
+          set -euo pipefail
+          src_aab="build/app/outputs/bundle/release/app-release.aab"
+          if [[ ! -f "$src_aab" ]]; then
+            echo "::error::Expected release AAB not found at ${src_aab}"
+            exit 1
+          fi
+
+          stage_dir="${{ runner.temp }}/release-artifact"
+          mkdir -p "$stage_dir"
+
+          version_name="${{ steps.meta.outputs.version_name }}"
+          build_number="${{ steps.validate.outputs.build_number }}"
+          short_sha="${{ steps.meta.outputs.short_sha }}"
+          aab_name="noki-driver-prod-v${version_name}-vc${build_number}-${short_sha}.aab"
+          out_aab="${stage_dir}/${aab_name}"
+          meta_json="${{ runner.temp }}/aab-verification.json"
+
+          cp "$src_aab" "$out_aab"
+
+          python3 tool/verify_release_aab.py \
+            --aab "$out_aab" \
+            --expected-package "${EXPECTED_PACKAGE}" \
+            --expected-version-code "${build_number}" \
+            --expected-cert-sha256 "${{ steps.keystore.outputs.cert_sha256 }}" \
+            --json-out "$meta_json"
+
+          (
+            cd "$stage_dir"
+            sha256sum "$aab_name" > "${aab_name}.sha256"
+          )
+
+          aab_sha256="$(awk '{ print $1 }' "${out_aab}.sha256")"
+          aab_size="$(stat -c%s "$out_aab")"
+
+          {
+            echo "## NOKI Driver — Release AAB prêt pour import manuel Google Play"
+            echo ""
+            echo "| Champ | Valeur |"
+            echo "| :--- | :--- |"
+            echo "| Fichier | \`${aab_name}\` |"
+            echo "| Package (\`applicationId\`) | \`${EXPECTED_PACKAGE}\` |"
+            echo "| \`versionName\` | \`${version_name}\` |"
+            echo "| \`versionCode\` | \`${build_number}\` |"
+            echo "| \`NOKI_ENV\` | \`${NOKI_ENV}\` |"
+            echo "| \`NOKI_API_BASE_URL\` | \`${NOKI_API_BASE_URL}\` |"
+            echo "| Commit source | \`${{ steps.meta.outputs.full_sha }}\` |"
+            echo "| Taille | \`${aab_size}\` octets |"
+            echo "| SHA-256 (\`.aab\`) | \`${aab_sha256}\` |"
+            echo "| Empreinte SHA-256 certificat | \`${{ steps.keystore.outputs.cert_sha256 }}\` |"
+            echo "| Publication Google Play | **Non effectuée** (artefact téléchargeable uniquement) |"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          echo "aab_name=${aab_name}" >> "$GITHUB_OUTPUT"
+          echo "aab_sha256=${aab_sha256}" >> "$GITHUB_OUTPUT"
+
+      - name: Remove temporary upload keystore
+        if: always()
+        shell: bash
+        run: |
+          keystore_path="${{ runner.temp }}/noki-driver-upload.jks"
+          if [[ -f "$keystore_path" ]]; then
+            shred -u "$keystore_path" 2>/dev/null || rm -f "$keystore_path"
+          fi
+
+      - name: Upload signed AAB and SHA-256 artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: noki-driver-release-aab-vc${{ steps.validate.outputs.build_number }}-${{ steps.meta.outputs.short_sha }}
+          path: ${{ runner.temp }}/release-artifact/*
+          retention-days: 30
+          if-no-files-found: error
