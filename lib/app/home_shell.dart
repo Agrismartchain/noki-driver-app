@@ -3,21 +3,23 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../core/i18n/generated/app_localizations.dart';
 import '../core/location/gps_publisher.dart';
+import '../core/location/live_position_provider.dart';
+import '../core/location/location_repository.dart';
 import '../core/theme/app_spacing.dart';
 import '../core/theme/app_theme.dart';
+import '../core/theme/motion.dart';
 import '../features/auth/auth_providers.dart';
 import '../features/driver_context/driver_context_repository.dart';
 import '../features/driver_context/home_screen.dart';
+import '../features/earnings/earnings_screen.dart';
 import '../features/mobility/mobility_offer_poller.dart';
 import '../features/settings/settings_screen.dart';
 import '../features/work_feed/work_feed_screen.dart';
 
-/// Bottom-navigation shell for the three sections wired up in
-/// DRIVER-APP-01: Home, Work and Profile. "Activity" (trip/earnings
-/// history) is intentionally not shown as a fourth tab yet - no backend
-/// endpoint backs it in this phase, and DRIVER-APP-01 section 19 forbids
-/// shipping a "coming soon" placeholder in an operational product. It will
-/// be added once its data source exists.
+/// Bottom-navigation shell for the four operational sections: Home, Work,
+/// Earnings and Profile. Uses standard (non-extended) Scaffold body layout so
+/// tab content always terminates cleanly above the navigation bar and system
+/// insets.
 class HomeShell extends ConsumerStatefulWidget {
   const HomeShell({super.key});
 
@@ -41,17 +43,19 @@ class _HomeShellState extends ConsumerState<HomeShell>
     super.dispose();
   }
 
-  // GPS publishing is foreground-only this phase (mandate §10/§35) - no
-  // duplicate stream survives a background/foreground cycle, and nothing is
-  // sent while the app isn't visible to the driver. Mobility offer polling
-  // (DRIVER-APP offer auto-discovery) follows the exact same rule - this is
-  // the one place that pauses/resumes both.
+  // GPS publishing and Mobility offer polling are foreground-only. When the
+  // driver returns to the app (e.g. after toggling GPS or location permission
+  // in Android Settings), we also re-read the location permission/service
+  // state and live position stream so the Home map and GPS banner refresh
+  // immediately.
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     final publisher = ref.read(gpsPublisherControllerProvider);
     final offerPoller = ref.read(mobilityOfferPollerControllerProvider);
     switch (state) {
       case AppLifecycleState.resumed:
+        ref.invalidate(locationPermissionStateProvider);
+        ref.invalidate(livePositionProvider);
         publisher.resumeForForeground();
         offerPoller.resumeForForeground();
       case AppLifecycleState.paused:
@@ -66,6 +70,7 @@ class _HomeShellState extends ConsumerState<HomeShell>
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final colors = context.nokiColors;
     final driverContext = ref.watch(authControllerProvider).driverContext;
     final scope = driverContext == null ? null : activeScopeFrom(driverContext);
 
@@ -75,32 +80,26 @@ class _HomeShellState extends ConsumerState<HomeShell>
         WorkFeedScreen(scope: scope)
       else
         const SizedBox.shrink(),
+      if (scope != null)
+        EarningsScreen(scope: scope)
+      else
+        const SizedBox.shrink(),
       const SettingsScreen(),
     ];
 
     return Scaffold(
       body: IndexedStack(index: _index, children: tabs),
-      extendBody: true,
       bottomNavigationBar: DecoratedBox(
         decoration: BoxDecoration(
-          color: context.nokiColors.chromeSurface.withValues(alpha: 0.94),
-          border: Border(
-            top: BorderSide(color: context.nokiColors.chromeBorder),
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: context.nokiColors.shadowColor.withValues(alpha: 0.14),
-              blurRadius: 18,
-              offset: const Offset(0, -8),
-            ),
-          ],
+          color: colors.surface,
+          border: Border(top: BorderSide(color: colors.border)),
         ),
         child: SafeArea(
           top: false,
           child: Padding(
             padding: const EdgeInsets.symmetric(
-              horizontal: AppSpacing.md,
-              vertical: AppSpacing.sm,
+              horizontal: AppSpacing.sm,
+              vertical: AppSpacing.xs,
             ),
             child: Row(
               children: [
@@ -120,10 +119,17 @@ class _HomeShellState extends ConsumerState<HomeShell>
                 ),
                 _ShellDestination(
                   selected: _index == 2,
+                  icon: Icons.account_balance_wallet_outlined,
+                  selectedIcon: Icons.account_balance_wallet_rounded,
+                  label: l10n.navEarnings,
+                  onTap: () => setState(() => _index = 2),
+                ),
+                _ShellDestination(
+                  selected: _index == 3,
                   icon: Icons.person_outline,
                   selectedIcon: Icons.person_rounded,
                   label: l10n.navProfile,
-                  onTap: () => setState(() => _index = 2),
+                  onTap: () => setState(() => _index = 3),
                 ),
               ],
             ),
@@ -152,7 +158,14 @@ class _ShellDestination extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = context.nokiColors;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final textTheme = Theme.of(context).textTheme;
+    final activeForeground = isDark
+        ? colors.actionPrimary
+        : colors.actionPrimaryInk;
+    final activePillColor = isDark
+        ? colors.surfaceSelected
+        : colors.actionPrimary;
 
     return Expanded(
       child: Material(
@@ -165,27 +178,33 @@ class _ShellDestination extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
-                  selected ? selectedIcon : icon,
-                  color: selected ? colors.actionPrimary : colors.textMuted,
+                AnimatedContainer(
+                  duration: NokiMotion.duration(
+                    context,
+                    const Duration(milliseconds: 180),
+                  ),
+                  curve: Curves.easeOutCubic,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.lg,
+                    vertical: AppSpacing.xs,
+                  ),
+                  decoration: BoxDecoration(
+                    color: selected ? activePillColor : Colors.transparent,
+                    borderRadius: BorderRadius.circular(AppRadius.full),
+                  ),
+                  child: Icon(
+                    selected ? selectedIcon : icon,
+                    color: selected ? activeForeground : colors.textMuted,
+                  ),
                 ),
                 const SizedBox(height: AppSpacing.xs),
                 Text(
                   label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                   style: textTheme.labelSmall?.copyWith(
-                    color: selected ? colors.actionPrimary : colors.textMuted,
+                    color: selected ? colors.textPrimary : colors.textMuted,
                     fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.xs),
-                AnimatedContainer(
-                  duration: const Duration(milliseconds: 180),
-                  curve: Curves.easeOutCubic,
-                  width: selected ? 8 : 4,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: selected ? colors.actionPrimary : Colors.transparent,
-                    borderRadius: BorderRadius.circular(AppRadius.full),
                   ),
                 ),
               ],

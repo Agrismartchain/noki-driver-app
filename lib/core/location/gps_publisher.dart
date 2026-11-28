@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:geolocator/geolocator.dart';
 
@@ -26,6 +27,13 @@ class GpsPublisherController {
   DateTime? _lastPublishedAt;
   int? _activeDistanceFilterMeters;
   DriverTrackingContext _context = DriverTrackingContext.offline;
+
+  /// Overridable clock, test-only - mirrors `NavigationRouteController.nowFn`.
+  /// Lets the cadence floor in [GpsPublishPolicy.shouldPublish] be exercised
+  /// deterministically (e.g. proving `resumeForForeground` really
+  /// re-publishes) without a real-time wait in a unit test.
+  @visibleForTesting
+  DateTime Function() nowFn = DateTime.now;
 
   DriverTrackingContext get context => _context;
 
@@ -65,7 +73,7 @@ class GpsPublisherController {
   Future<void> _onPosition(Position position) async {
     final cadence = GpsPublishPolicy.cadenceFor(_context);
     if (cadence == null) return;
-    final now = DateTime.now();
+    final now = nowFn();
     if (!GpsPublishPolicy.shouldPublish(cadence: cadence, lastPublishedAt: _lastPublishedAt, now: now)) {
       return;
     }

@@ -10,6 +10,14 @@ const List<String> _redactedKeys = [
   'password',
   'otp',
   'token',
+  // MFA (TOTP) secrets - see core/api/mfa/mfa_models.dart. Request/response
+  // *bodies* are never logged at all today (see _RedactedLogInterceptor
+  // below, which only logs headers/query params) - these are defense in
+  // depth for any future ad-hoc `AppLogger` call with structured data.
+  'secretbase32',
+  'otpauthuri',
+  'recoverycode',
+  'recoverycodes',
 ];
 
 const String _redactedPlaceholder = '<redacted>';

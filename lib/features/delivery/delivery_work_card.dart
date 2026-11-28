@@ -5,6 +5,7 @@ import '../../core/i18n/generated/app_localizations.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/ui/noki_finance.dart';
+import '../../core/ui/noki_ui.dart';
 import 'delivery_status_presentation.dart';
 
 /// Work Feed card for a DELIVERY work item. Deliberately distinct from
@@ -22,85 +23,78 @@ class DeliveryWorkCard extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     final colors = context.nokiColors;
 
-    return Card(
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(AppRadius.md),
-        child: Padding(
-          padding: const EdgeInsets.all(AppSpacing.lg),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(Icons.local_shipping_outlined, color: colors.textSecondary),
-              const SizedBox(width: AppSpacing.md),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+    return NokiSurfaceCard(
+      onTap: onTap,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.local_shipping_outlined, color: colors.textSecondary),
+          const SizedBox(width: AppSpacing.md),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // A Wrap, not a Row: a long localized status pill (e.g.
+                // French "En cours de livraison") next to the type label
+                // can legitimately not fit on one line at 320dp - it
+                // drops to its own line instead of overflowing. Same
+                // pattern as vehicles_screen.dart's _VehicleStatusBadge.
+                Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  spacing: AppSpacing.sm,
+                  runSpacing: AppSpacing.xs,
                   children: [
-                    // A Wrap, not a Row: a long localized status pill (e.g.
-                    // French "En cours de livraison") next to the type label
-                    // can legitimately not fit on one line at 320dp - it
-                    // drops to its own line instead of overflowing. Same
-                    // pattern as vehicles_screen.dart's _VehicleStatusBadge.
-                    Wrap(
-                      crossAxisAlignment: WrapCrossAlignment.center,
-                      spacing: AppSpacing.sm,
-                      runSpacing: AppSpacing.xs,
-                      children: [
-                        Text(
-                          l10n.workFeedTypeDelivery,
-                          style: Theme.of(context).textTheme.labelSmall
-                              ?.copyWith(color: colors.textMuted),
-                        ),
-                        _StatusPill(
-                          status: DriverMissionResponseDtoStatus.fromJson(
-                            item.status,
-                          ),
-                        ),
-                      ],
+                    Text(
+                      l10n.workFeedTypeDelivery,
+                      style: Theme.of(context).textTheme.labelSmall
+                          ?.copyWith(color: colors.textMuted),
                     ),
-                    const SizedBox(height: AppSpacing.sm),
-                    if (item.pickup?.addressLine1 != null ||
-                        item.pickup?.label != null)
-                      _RouteLine(
-                        icon: Icons.trip_origin,
-                        // addressLine1 is the real address when present; the
-                        // backend's `label` is a generic placeholder
-                        // ('Pickup'/'Dropoff'/'Customer') except for the
-                        // delivery pickup case, where it is the real
-                        // warehouse name and addressLine1 is null.
-                        label: item.pickup!.addressLine1 ?? item.pickup!.label!,
-                        color: colors.textMuted,
+                    _StatusPill(
+                      status: DriverMissionResponseDtoStatus.fromJson(
+                        item.status,
                       ),
-                    if (item.dropoff?.addressLine1 != null ||
-                        item.dropoff?.label != null) ...[
-                      const SizedBox(height: AppSpacing.xs),
-                      _RouteLine(
-                        icon: Icons.place_outlined,
-                        label:
-                            item.dropoff!.addressLine1 ?? item.dropoff!.label!,
-                        color: colors.textPrimary,
-                      ),
-                    ],
-                    if (item.amount != null) ...[
-                      const SizedBox(height: AppSpacing.sm),
-                      NokiFinanceCallout(
-                        label: l10n.financeAmountToCollectLabel,
-                        amount: item.amount!.amount,
-                        currencyCode: item.amount!.currencyCode,
-                        tone: NokiFinanceTone.collect,
-                        preferFcfa: true,
-                        caption: l10n.missionFinancialCodLabel,
-                        icon: Icons.payments_outlined,
-                      ),
-                    ],
+                    ),
                   ],
                 ),
-              ),
-              Icon(Icons.chevron_right, color: colors.textMuted),
-            ],
+                const SizedBox(height: AppSpacing.sm),
+                if (item.pickup?.addressLine1 != null ||
+                    item.pickup?.label != null)
+                  _RouteLine(
+                    icon: Icons.trip_origin,
+                    // addressLine1 is the real address when present; the
+                    // backend's `label` is a generic placeholder
+                    // ('Pickup'/'Dropoff'/'Customer') except for the
+                    // delivery pickup case, where it is the real
+                    // warehouse name and addressLine1 is null.
+                    label: item.pickup!.addressLine1 ?? item.pickup!.label!,
+                    color: colors.textMuted,
+                  ),
+                if (item.dropoff?.addressLine1 != null ||
+                    item.dropoff?.label != null) ...[
+                  const SizedBox(height: AppSpacing.xs),
+                  _RouteLine(
+                    icon: Icons.place_outlined,
+                    label: item.dropoff!.addressLine1 ?? item.dropoff!.label!,
+                    color: colors.textPrimary,
+                  ),
+                ],
+                if (item.amount != null) ...[
+                  const SizedBox(height: AppSpacing.sm),
+                  NokiFinanceCallout(
+                    label: l10n.financeAmountToCollectLabel,
+                    amount: item.amount!.amount,
+                    currencyCode: item.amount!.currencyCode,
+                    tone: NokiFinanceTone.collect,
+                    preferFcfa: true,
+                    caption: l10n.missionFinancialCodLabel,
+                    icon: Icons.payments_outlined,
+                  ),
+                ],
+              ],
+            ),
           ),
-        ),
+          Icon(Icons.chevron_right, color: colors.textMuted),
+        ],
       ),
     );
   }

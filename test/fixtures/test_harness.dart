@@ -5,6 +5,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:noki_driver_app/core/i18n/generated/app_localizations.dart';
 import 'package:noki_driver_app/core/theme/app_colors.dart';
 import 'package:noki_driver_app/core/theme/app_theme.dart';
+import 'package:noki_driver_app/features/map/map_view.dart';
+
+import 'fake_tile_provider.dart';
 
 /// Pumps [child] inside a [ProviderScope] (with [overrides]) and a
 /// [MaterialApp] configured with every supported locale/RTL delegate, so
@@ -18,7 +21,10 @@ Future<void> pumpWithProviders(
 }) async {
   await tester.pumpWidget(
     ProviderScope(
-      overrides: overrides,
+      overrides: [
+        mapTileProvider.overrideWithValue(FakeTileProvider()),
+        ...overrides,
+      ],
       child: MaterialApp(
         locale: locale,
         theme: theme ?? buildNokiTheme(NokiColors.light, Brightness.light),

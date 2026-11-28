@@ -54,29 +54,28 @@ class _AvailabilityCardState extends ConsumerState<AvailabilityCard> {
     final asyncAvailability = ref.watch(availabilityProvider(widget.scope));
 
     return NokiSurfaceCard(
-      tone: NokiSurfaceTone.inverse,
-      child: Padding(
-        padding: EdgeInsets.zero,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Text(
-                    l10n.availabilityTitle,
-                    style: Theme.of(context).textTheme.titleMedium
-                        ?.copyWith(color: colors.textInverse),
+      tone: NokiSurfaceTone.defaultTone,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Text(
+                  l10n.availabilityTitle,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: colors.textPrimary,
                   ),
                 ),
-                const NokiBadge(
-                  label: 'LIVE',
-                  tone: NokiBadgeTone.primary,
-                  icon: Icons.flash_on,
-                ),
-              ],
-            ),
+              ),
+              const NokiBadge(
+                label: 'LIVE',
+                tone: NokiBadgeTone.primary,
+                icon: Icons.flash_on,
+              ),
+            ],
+          ),
             const SizedBox(height: AppSpacing.md),
             asyncAvailability.when(
               loading: () => const Padding(
@@ -143,15 +142,14 @@ class _AvailabilityCardState extends ConsumerState<AvailabilityCard> {
                 ],
               ),
             ),
-            if (_updateFailure != null) ...[
-              const SizedBox(height: AppSpacing.sm),
-              Text(
-                l10n.availabilityUpdateFailed,
-                style: TextStyle(color: colors.danger),
-              ),
-            ],
+          if (_updateFailure != null) ...[
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              l10n.availabilityUpdateFailed,
+              style: TextStyle(color: colors.danger),
+            ),
           ],
-        ),
+        ],
       ),
     );
   }

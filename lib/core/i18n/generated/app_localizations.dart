@@ -172,6 +172,150 @@ abstract class AppLocalizations {
   /// **'Use the account provided by your organization.'**
   String get loginSubheadline;
 
+  /// No description provided for @mfaEnrollHeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Set up two-factor authentication'**
+  String get mfaEnrollHeadline;
+
+  /// No description provided for @mfaEnrollInstructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account requires an extra security step. Open an authenticator app (such as Google Authenticator or Authy) and add this account using the key below.'**
+  String get mfaEnrollInstructions;
+
+  /// No description provided for @mfaEnrollSecretLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Setup key'**
+  String get mfaEnrollSecretLabel;
+
+  /// No description provided for @mfaEnrollCopySecret.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get mfaEnrollCopySecret;
+
+  /// No description provided for @mfaEnrollSecretCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Setup key copied'**
+  String get mfaEnrollSecretCopied;
+
+  /// No description provided for @mfaEnrollCodeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'6-digit code'**
+  String get mfaEnrollCodeLabel;
+
+  /// No description provided for @mfaEnrollCodeRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the 6-digit code from your authenticator app'**
+  String get mfaEnrollCodeRequired;
+
+  /// No description provided for @mfaEnrollCodeInvalidFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the 6 digits shown in your app'**
+  String get mfaEnrollCodeInvalidFormat;
+
+  /// No description provided for @mfaEnrollSubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get mfaEnrollSubmit;
+
+  /// No description provided for @mfaEnrollLoadingSecret.
+  ///
+  /// In en, this message translates to:
+  /// **'Preparing two-factor setup…'**
+  String get mfaEnrollLoadingSecret;
+
+  /// No description provided for @mfaRecoveryCodesHeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Save your recovery codes'**
+  String get mfaRecoveryCodesHeadline;
+
+  /// No description provided for @mfaRecoveryCodesWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Each code can be used once if you ever lose access to your authenticator app. They will not be shown again - save them somewhere safe now.'**
+  String get mfaRecoveryCodesWarning;
+
+  /// No description provided for @mfaRecoveryCodesCopyAll.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy all'**
+  String get mfaRecoveryCodesCopyAll;
+
+  /// No description provided for @mfaRecoveryCodesCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Recovery codes copied'**
+  String get mfaRecoveryCodesCopied;
+
+  /// No description provided for @mfaRecoveryCodesAcknowledge.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'ve saved these codes'**
+  String get mfaRecoveryCodesAcknowledge;
+
+  /// No description provided for @mfaVerifyHeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your authenticator code'**
+  String get mfaVerifyHeadline;
+
+  /// No description provided for @mfaVerifyInstructions.
+  ///
+  /// In en, this message translates to:
+  /// **'Open your authenticator app and enter the current code.'**
+  String get mfaVerifyInstructions;
+
+  /// No description provided for @mfaVerifyCodeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'6-digit code'**
+  String get mfaVerifyCodeLabel;
+
+  /// No description provided for @mfaVerifyCodeRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the 6-digit code from your authenticator app'**
+  String get mfaVerifyCodeRequired;
+
+  /// No description provided for @mfaVerifySubmit.
+  ///
+  /// In en, this message translates to:
+  /// **'Verify'**
+  String get mfaVerifySubmit;
+
+  /// No description provided for @mfaVerifyUseRecoveryCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Use a recovery code instead'**
+  String get mfaVerifyUseRecoveryCode;
+
+  /// No description provided for @mfaVerifyUseAuthenticatorCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Use my authenticator code instead'**
+  String get mfaVerifyUseAuthenticatorCode;
+
+  /// No description provided for @mfaVerifyRecoveryCodeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Recovery code'**
+  String get mfaVerifyRecoveryCodeLabel;
+
+  /// No description provided for @mfaVerifyRecoveryCodeRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter one of your recovery codes'**
+  String get mfaVerifyRecoveryCodeRequired;
+
   /// No description provided for @navHome.
   ///
   /// In en, this message translates to:
@@ -1165,7 +1309,7 @@ abstract class AppLocalizations {
   /// No description provided for @profileActivityBody.
   ///
   /// In en, this message translates to:
-  /// **'Completed deliveries are available today. Mobility trip history still requires backend support.'**
+  /// **'Completed deliveries and Mobility rides are both available today.'**
   String get profileActivityBody;
 
   /// No description provided for @profileNotificationsBackendRequired.
@@ -1191,6 +1335,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open delivery history'**
   String get profileOpenHistory;
+
+  /// No description provided for @profileOpenMobilityHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Open Mobility history'**
+  String get profileOpenMobilityHistory;
+
+  /// No description provided for @mobilityHistoryTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Mobility history'**
+  String get mobilityHistoryTitle;
+
+  /// No description provided for @mobilityHistoryEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No completed Mobility rides yet'**
+  String get mobilityHistoryEmpty;
 
   /// No description provided for @profileVehicleUnavailable.
   ///
@@ -1366,6 +1528,24 @@ abstract class AppLocalizations {
   /// **'Something went wrong.'**
   String get errorUnknown;
 
+  /// No description provided for @errorMfaCodeInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'That code isn\'t valid. Try again.'**
+  String get errorMfaCodeInvalid;
+
+  /// No description provided for @errorMfaChallengeExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'This sign-in step expired. Sign in again.'**
+  String get errorMfaChallengeExpired;
+
+  /// No description provided for @errorMfaLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many incorrect codes. Wait a few minutes and try again.'**
+  String get errorMfaLocked;
+
   /// No description provided for @actionRetry.
   ///
   /// In en, this message translates to:
@@ -1533,6 +1713,492 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'In {distance}: {instruction}'**
   String navigationNextManeuverLabel(String distance, String instruction);
+
+  /// No description provided for @homeMapServiceZone.
+  ///
+  /// In en, this message translates to:
+  /// **'Service area: {zone}'**
+  String homeMapServiceZone(String zone);
+
+  /// No description provided for @homeMapPositionLive.
+  ///
+  /// In en, this message translates to:
+  /// **'Live GPS position'**
+  String get homeMapPositionLive;
+
+  /// No description provided for @homeMapWaitingGps.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for GPS fix'**
+  String get homeMapWaitingGps;
+
+  /// No description provided for @locationOpenLocationSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable GPS'**
+  String get locationOpenLocationSettings;
+
+  /// No description provided for @profileStatusNotEnabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Not enabled'**
+  String get profileStatusNotEnabled;
+
+  /// No description provided for @profileStatusUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Unavailable'**
+  String get profileStatusUnavailable;
+
+  /// No description provided for @workFeedFilterTaxi.
+  ///
+  /// In en, this message translates to:
+  /// **'Taxi'**
+  String get workFeedFilterTaxi;
+
+  /// No description provided for @workFeedFilterTaxiMoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Taxi Moto'**
+  String get workFeedFilterTaxiMoto;
+
+  /// No description provided for @workFeedFilterParcel.
+  ///
+  /// In en, this message translates to:
+  /// **'Parcel'**
+  String get workFeedFilterParcel;
+
+  /// No description provided for @workFeedFilterCargo.
+  ///
+  /// In en, this message translates to:
+  /// **'Cargo'**
+  String get workFeedFilterCargo;
+
+  /// No description provided for @workFeedFilterEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No matching items'**
+  String get workFeedFilterEmptyTitle;
+
+  /// No description provided for @workFeedFilterReset.
+  ///
+  /// In en, this message translates to:
+  /// **'Show all'**
+  String get workFeedFilterReset;
+
+  /// No description provided for @workFeedAccessUnavailableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Work feed unavailable'**
+  String get workFeedAccessUnavailableTitle;
+
+  /// No description provided for @workFeedAccessUnavailableBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your account does not have access to this work feed in this organization.'**
+  String get workFeedAccessUnavailableBody;
+
+  /// No description provided for @deliveryHistoryUnavailableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery history unavailable'**
+  String get deliveryHistoryUnavailableTitle;
+
+  /// No description provided for @deliveryHistoryUnavailableBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Delivery missions are not enabled on your driver profile for this organization.'**
+  String get deliveryHistoryUnavailableBody;
+
+  /// No description provided for @mobilityHistoryUnavailableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Mobility history unavailable'**
+  String get mobilityHistoryUnavailableTitle;
+
+  /// No description provided for @mobilityHistoryUnavailableBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed Mobility ride history is not yet available for your account on this server.'**
+  String get mobilityHistoryUnavailableBody;
+
+  /// No description provided for @navEarnings.
+  ///
+  /// In en, this message translates to:
+  /// **'Earnings'**
+  String get navEarnings;
+
+  /// No description provided for @earningsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Earnings & wallet'**
+  String get earningsTitle;
+
+  /// No description provided for @earningsAvailableLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Available'**
+  String get earningsAvailableLabel;
+
+  /// No description provided for @earningsPendingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get earningsPendingLabel;
+
+  /// No description provided for @earningsPaidLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid'**
+  String get earningsPaidLabel;
+
+  /// No description provided for @earningsOnHoldLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'On hold'**
+  String get earningsOnHoldLabel;
+
+  /// No description provided for @earningsZeroHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Your verified balance is currently 0.'**
+  String get earningsZeroHint;
+
+  /// No description provided for @earningsUnavailableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallet unavailable'**
+  String get earningsUnavailableTitle;
+
+  /// No description provided for @earningsUnavailableBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Driver earnings and wallet data are not yet available on this server.'**
+  String get earningsUnavailableBody;
+
+  /// No description provided for @earningsRulesMissingNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Remuneration rule pending approval for: {services}'**
+  String earningsRulesMissingNotice(String services);
+
+  /// No description provided for @earningsTabMissions.
+  ///
+  /// In en, this message translates to:
+  /// **'Mission earnings'**
+  String get earningsTabMissions;
+
+  /// No description provided for @earningsTabPayouts.
+  ///
+  /// In en, this message translates to:
+  /// **'Payouts'**
+  String get earningsTabPayouts;
+
+  /// No description provided for @earningsTabCod.
+  ///
+  /// In en, this message translates to:
+  /// **'COD'**
+  String get earningsTabCod;
+
+  /// No description provided for @earningsEmptyMissionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No earnings recorded yet'**
+  String get earningsEmptyMissionsTitle;
+
+  /// No description provided for @earningsEmptyMissionsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your approved earnings per mission and ride will appear here in XAF.'**
+  String get earningsEmptyMissionsBody;
+
+  /// No description provided for @earningsEmptyPayoutsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No payout requests yet'**
+  String get earningsEmptyPayoutsTitle;
+
+  /// No description provided for @earningsEmptyPayoutsBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Your payout requests and settlements will appear here with live status.'**
+  String get earningsEmptyPayoutsBody;
+
+  /// No description provided for @earningsEmptyCodTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No COD collections'**
+  String get earningsEmptyCodTitle;
+
+  /// No description provided for @earningsEmptyCodBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash collected on behalf of NOKI will appear separately here.'**
+  String get earningsEmptyCodBody;
+
+  /// No description provided for @earningsCodSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'COD collections (separate from earnings)'**
+  String get earningsCodSectionTitle;
+
+  /// No description provided for @earningsCodToRemitLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'To remit'**
+  String get earningsCodToRemitLabel;
+
+  /// No description provided for @earningsCodRemittedLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Remitted'**
+  String get earningsCodRemittedLabel;
+
+  /// No description provided for @earningsCodReconciledLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Reconciled'**
+  String get earningsCodReconciledLabel;
+
+  /// No description provided for @earningsCodSeparationNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'COD cash collected for NOKI is tracked separately and is never added to your driver earnings balance.'**
+  String get earningsCodSeparationNotice;
+
+  /// No description provided for @earningsRequestPayoutButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Request payout'**
+  String get earningsRequestPayoutButton;
+
+  /// No description provided for @earningsPayoutSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Request payout'**
+  String get earningsPayoutSheetTitle;
+
+  /// No description provided for @earningsPayoutEligibleAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Eligible amount'**
+  String get earningsPayoutEligibleAmount;
+
+  /// No description provided for @earningsPayoutDestinationLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Payout destination'**
+  String get earningsPayoutDestinationLabel;
+
+  /// No description provided for @earningsPayoutNoMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'No active payout method configured'**
+  String get earningsPayoutNoMethod;
+
+  /// No description provided for @earningsPayoutConfirmButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm payout request'**
+  String get earningsPayoutConfirmButton;
+
+  /// No description provided for @earningsPayoutSuccessMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Payout request submitted for Finance approval.'**
+  String get earningsPayoutSuccessMessage;
+
+  /// No description provided for @earningsPayoutCancelButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel request'**
+  String get earningsPayoutCancelButton;
+
+  /// No description provided for @earningsPayoutCancelledMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Payout request cancelled. The amount is available again.'**
+  String get earningsPayoutCancelledMessage;
+
+  /// No description provided for @earningsPayoutStatusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending approval'**
+  String get earningsPayoutStatusPending;
+
+  /// No description provided for @earningsPayoutStatusApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved'**
+  String get earningsPayoutStatusApproved;
+
+  /// No description provided for @earningsPayoutStatusSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent'**
+  String get earningsPayoutStatusSent;
+
+  /// No description provided for @earningsPayoutStatusPaid.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid'**
+  String get earningsPayoutStatusPaid;
+
+  /// No description provided for @earningsPayoutStatusOnHold.
+  ///
+  /// In en, this message translates to:
+  /// **'On hold'**
+  String get earningsPayoutStatusOnHold;
+
+  /// No description provided for @earningsPayoutStatusFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed'**
+  String get earningsPayoutStatusFailed;
+
+  /// No description provided for @earningsPayoutStatusCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get earningsPayoutStatusCancelled;
+
+  /// No description provided for @earningsObligationStatusOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Available'**
+  String get earningsObligationStatusOpen;
+
+  /// No description provided for @earningsObligationStatusAllocated.
+  ///
+  /// In en, this message translates to:
+  /// **'Allocated to payout'**
+  String get earningsObligationStatusAllocated;
+
+  /// No description provided for @earningsObligationStatusSettled.
+  ///
+  /// In en, this message translates to:
+  /// **'Paid'**
+  String get earningsObligationStatusSettled;
+
+  /// No description provided for @earningsObligationStatusOnHold.
+  ///
+  /// In en, this message translates to:
+  /// **'On hold'**
+  String get earningsObligationStatusOnHold;
+
+  /// No description provided for @earningsObligationReceivableTag.
+  ///
+  /// In en, this message translates to:
+  /// **'Cash commission'**
+  String get earningsObligationReceivableTag;
+
+  /// No description provided for @earningsCodStatusDeclared.
+  ///
+  /// In en, this message translates to:
+  /// **'To remit'**
+  String get earningsCodStatusDeclared;
+
+  /// No description provided for @earningsCodStatusRemitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Remitted'**
+  String get earningsCodStatusRemitted;
+
+  /// No description provided for @earningsCodStatusReconciled.
+  ///
+  /// In en, this message translates to:
+  /// **'Reconciled'**
+  String get earningsCodStatusReconciled;
+
+  /// No description provided for @earningsCodStatusVoided.
+  ///
+  /// In en, this message translates to:
+  /// **'Voided'**
+  String get earningsCodStatusVoided;
+
+  /// No description provided for @earningsMissionRefLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Reference: {ref}'**
+  String earningsMissionRefLabel(String ref);
+
+  /// No description provided for @profileSettingsSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get profileSettingsSectionTitle;
+
+  /// No description provided for @profileAppearanceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get profileAppearanceLabel;
+
+  /// No description provided for @profileAuthorizedServicesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Authorized services'**
+  String get profileAuthorizedServicesLabel;
+
+  /// No description provided for @profileAvatarSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile photo'**
+  String get profileAvatarSheetTitle;
+
+  /// No description provided for @profileAvatarChooseGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose from gallery'**
+  String get profileAvatarChooseGallery;
+
+  /// No description provided for @profileAvatarChooseCamera.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a photo'**
+  String get profileAvatarChooseCamera;
+
+  /// No description provided for @profileAvatarReplace.
+  ///
+  /// In en, this message translates to:
+  /// **'Replace photo'**
+  String get profileAvatarReplace;
+
+  /// No description provided for @profileAvatarRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove photo'**
+  String get profileAvatarRemove;
+
+  /// No description provided for @profileAvatarSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get profileAvatarSave;
+
+  /// No description provided for @profileAvatarSavedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile photo saved.'**
+  String get profileAvatarSavedMessage;
+
+  /// No description provided for @profileAvatarRemovedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile photo removed.'**
+  String get profileAvatarRemovedMessage;
+
+  /// No description provided for @profileAvatarUnavailableMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile photo management is not yet available on this server.'**
+  String get profileAvatarUnavailableMessage;
+
+  /// No description provided for @profileAvatarEditTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit profile photo'**
+  String get profileAvatarEditTooltip;
 }
 
 class _AppLocalizationsDelegate

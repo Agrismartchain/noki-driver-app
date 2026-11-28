@@ -15,13 +15,15 @@ ThemeData buildNokiTheme(NokiColorScheme colors, Brightness brightness) {
     primary: colors.actionPrimary,
     onPrimary: colors.actionPrimaryInk,
     primaryContainer: colors.actionPrimarySubtle,
-    onPrimaryContainer: colors.actionPrimaryInk,
+    onPrimaryContainer: brightness == Brightness.dark
+        ? colors.textPrimary
+        : colors.actionPrimaryInk,
     secondary: colors.codAccent,
     onSecondary: colors.codAccentInk,
     secondaryContainer: colors.codSurface,
     onSecondaryContainer: colors.codAccentInk,
     tertiary: colors.chromeSurface,
-    onTertiary: colors.textInverse,
+    onTertiary: colors.chromeInk,
     tertiaryContainer: colors.surfaceSubtle,
     onTertiaryContainer: colors.textPrimary,
     error: colors.danger,
@@ -36,7 +38,7 @@ ThemeData buildNokiTheme(NokiColorScheme colors, Brightness brightness) {
     shadow: colors.shadowColor,
     scrim: colors.shadowColor,
     inverseSurface: colors.chromeSurface,
-    onInverseSurface: colors.textInverse,
+    onInverseSurface: colors.chromeInk,
     inversePrimary: colors.actionPrimaryHover,
   );
 
@@ -128,6 +130,16 @@ ThemeData buildNokiTheme(NokiColorScheme colors, Brightness brightness) {
       titleTextStyle: textTheme.titleMedium,
       toolbarHeight: AppControlSize.minTouchTarget + AppSpacing.sm,
     ),
+    dialogTheme: DialogThemeData(
+      backgroundColor: colors.surfaceElevated,
+      surfaceTintColor: Colors.transparent,
+      titleTextStyle: textTheme.titleLarge,
+      contentTextStyle: textTheme.bodyMedium,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppRadius.lg),
+        side: BorderSide(color: colors.border),
+      ),
+    ),
     cardTheme: CardThemeData(
       color: colors.surfaceElevated,
       elevation: 0,
@@ -141,18 +153,20 @@ ThemeData buildNokiTheme(NokiColorScheme colors, Brightness brightness) {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppRadius.full),
       ),
-      side: BorderSide(color: colors.border),
+      side: BorderSide(color: colors.borderStrong),
       backgroundColor: colors.surfaceSubtle,
       selectedColor: colors.actionPrimary,
       secondarySelectedColor: colors.actionPrimary,
+      checkmarkColor: colors.actionPrimaryInk,
       labelStyle: textTheme.labelMedium?.copyWith(color: colors.textPrimary),
       secondaryLabelStyle: textTheme.labelMedium?.copyWith(
         color: colors.actionPrimaryInk,
+        fontWeight: AppTypography.weightBold,
       ),
       disabledColor: colors.surfaceSubtle,
       padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.sm,
-        vertical: AppSpacing.xs,
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.sm,
       ),
     ),
     inputDecorationTheme: InputDecorationTheme(
@@ -160,11 +174,11 @@ ThemeData buildNokiTheme(NokiColorScheme colors, Brightness brightness) {
       fillColor: colors.surfaceSubtle,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppRadius.md),
-        borderSide: BorderSide(color: colors.border),
+        borderSide: BorderSide(color: colors.borderStrong),
       ),
       enabledBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppRadius.md),
-        borderSide: BorderSide(color: colors.border),
+        borderSide: BorderSide(color: colors.borderStrong),
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(AppRadius.md),
@@ -179,9 +193,27 @@ ThemeData buildNokiTheme(NokiColorScheme colors, Brightness brightness) {
         borderSide: BorderSide(color: colors.danger, width: 2),
       ),
       labelStyle: TextStyle(color: colors.textSecondary),
+      hintStyle: TextStyle(color: colors.textMuted),
       contentPadding: const EdgeInsets.symmetric(
         horizontal: AppSpacing.lg,
         vertical: AppSpacing.lg,
+      ),
+    ),
+    filledButtonTheme: FilledButtonThemeData(
+      style: FilledButton.styleFrom(
+        backgroundColor: colors.actionPrimary,
+        foregroundColor: colors.actionPrimaryInk,
+        disabledBackgroundColor: colors.border,
+        disabledForegroundColor: colors.textMuted,
+        minimumSize: const Size(0, AppControlSize.minTouchTarget),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(AppRadius.md),
+        ),
+        padding: const EdgeInsets.symmetric(
+          horizontal: AppSpacing.lg,
+          vertical: AppSpacing.md,
+        ),
+        textStyle: textTheme.labelLarge,
       ),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
@@ -204,14 +236,14 @@ ThemeData buildNokiTheme(NokiColorScheme colors, Brightness brightness) {
     outlinedButtonTheme: OutlinedButtonThemeData(
       style: OutlinedButton.styleFrom(
         foregroundColor: colors.textPrimary,
-        minimumSize: const Size.fromHeight(AppControlSize.primaryButtonHeight),
+        minimumSize: const Size(0, AppControlSize.minTouchTarget),
         side: BorderSide(color: colors.borderStrong),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(AppRadius.md),
         ),
         textStyle: textTheme.labelLarge,
         padding: const EdgeInsets.symmetric(
-          horizontal: AppSpacing.xl,
+          horizontal: AppSpacing.lg,
           vertical: AppSpacing.md,
         ),
       ),
@@ -219,7 +251,9 @@ ThemeData buildNokiTheme(NokiColorScheme colors, Brightness brightness) {
     textButtonTheme: TextButtonThemeData(
       style: TextButton.styleFrom(
         foregroundColor: colors.textPrimary,
-        textStyle: textTheme.labelMedium,
+        textStyle: textTheme.labelMedium?.copyWith(
+          fontWeight: AppTypography.weightSemibold,
+        ),
       ),
     ),
     iconButtonTheme: IconButtonThemeData(

@@ -46,6 +46,85 @@ class AppLocalizationsAr extends AppLocalizations {
   String get loginSubheadline => 'استخدم الحساب الذي زوّدتك به منظمتك.';
 
   @override
+  String get mfaEnrollHeadline => 'إعداد المصادقة الثنائية';
+
+  @override
+  String get mfaEnrollInstructions =>
+      'يتطلب حسابك خطوة أمان إضافية. افتح تطبيق مصادقة (مثل Google Authenticator أو Authy) وأضف هذا الحساب باستخدام المفتاح أدناه.';
+
+  @override
+  String get mfaEnrollSecretLabel => 'مفتاح الإعداد';
+
+  @override
+  String get mfaEnrollCopySecret => 'نسخ';
+
+  @override
+  String get mfaEnrollSecretCopied => 'تم نسخ مفتاح الإعداد';
+
+  @override
+  String get mfaEnrollCodeLabel => 'رمز مكوّن من 6 أرقام';
+
+  @override
+  String get mfaEnrollCodeRequired =>
+      'أدخل الرمز المكوّن من 6 أرقام من تطبيق المصادقة';
+
+  @override
+  String get mfaEnrollCodeInvalidFormat =>
+      'أدخل الأرقام الستة المعروضة في تطبيقك';
+
+  @override
+  String get mfaEnrollSubmit => 'تأكيد';
+
+  @override
+  String get mfaEnrollLoadingSecret => 'جارٍ تحضير إعداد المصادقة الثنائية…';
+
+  @override
+  String get mfaRecoveryCodesHeadline => 'احفظ رموز الاسترداد الخاصة بك';
+
+  @override
+  String get mfaRecoveryCodesWarning =>
+      'يمكن استخدام كل رمز مرة واحدة فقط إذا فقدت الوصول إلى تطبيق المصادقة. لن تُعرض مرة أخرى - احفظها الآن في مكان آمن.';
+
+  @override
+  String get mfaRecoveryCodesCopyAll => 'نسخ الكل';
+
+  @override
+  String get mfaRecoveryCodesCopied => 'تم نسخ رموز الاسترداد';
+
+  @override
+  String get mfaRecoveryCodesAcknowledge => 'لقد حفظت هذه الرموز';
+
+  @override
+  String get mfaVerifyHeadline => 'أدخل رمز المصادقة الخاص بك';
+
+  @override
+  String get mfaVerifyInstructions => 'افتح تطبيق المصادقة وأدخل الرمز الحالي.';
+
+  @override
+  String get mfaVerifyCodeLabel => 'رمز مكوّن من 6 أرقام';
+
+  @override
+  String get mfaVerifyCodeRequired =>
+      'أدخل الرمز المكوّن من 6 أرقام من تطبيق المصادقة';
+
+  @override
+  String get mfaVerifySubmit => 'تحقق';
+
+  @override
+  String get mfaVerifyUseRecoveryCode => 'استخدام رمز استرداد بدلاً من ذلك';
+
+  @override
+  String get mfaVerifyUseAuthenticatorCode =>
+      'استخدام رمز المصادقة بدلاً من ذلك';
+
+  @override
+  String get mfaVerifyRecoveryCodeLabel => 'رمز الاسترداد';
+
+  @override
+  String get mfaVerifyRecoveryCodeRequired =>
+      'أدخل أحد رموز الاسترداد الخاصة بك';
+
+  @override
   String get navHome => 'الرئيسية';
 
   @override
@@ -603,7 +682,7 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get profileActivityBody =>
-      'سجل التوصيلات المكتملة متاح اليوم. سجل الرحلات ما زال يحتاج إلى دعم من الواجهة الخلفية.';
+      'سجل التوصيلات المكتملة وسجل رحلات التنقل متاحان كلاهما اليوم.';
 
   @override
   String get profileNotificationsBackendRequired =>
@@ -617,6 +696,15 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get profileOpenHistory => 'فتح سجل التوصيلات';
+
+  @override
+  String get profileOpenMobilityHistory => 'فتح سجل التنقل';
+
+  @override
+  String get mobilityHistoryTitle => 'سجل التنقل';
+
+  @override
+  String get mobilityHistoryEmpty => 'لا توجد رحلات تنقل مكتملة بعد';
 
   @override
   String get profileVehicleUnavailable => 'لا توجد مركبة مخصصة بعد';
@@ -708,6 +796,17 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get errorUnknown => 'حدث خطأ ما.';
+
+  @override
+  String get errorMfaCodeInvalid => 'هذا الرمز غير صالح. حاول مرة أخرى.';
+
+  @override
+  String get errorMfaChallengeExpired =>
+      'انتهت صلاحية خطوة تسجيل الدخول هذه. سجّل الدخول مرة أخرى.';
+
+  @override
+  String get errorMfaLocked =>
+      'عدد كبير جدًا من الرموز غير الصحيحة. انتظر بضع دقائق ثم حاول مرة أخرى.';
 
   @override
   String get actionRetry => 'إعادة المحاولة';
@@ -802,4 +901,264 @@ class AppLocalizationsAr extends AppLocalizations {
   String navigationNextManeuverLabel(String distance, String instruction) {
     return 'خلال $distance: $instruction';
   }
+
+  @override
+  String homeMapServiceZone(String zone) {
+    return 'منطقة الخدمة: $zone';
+  }
+
+  @override
+  String get homeMapPositionLive => 'الموقع المباشر عبر GPS';
+
+  @override
+  String get homeMapWaitingGps => 'بانتظار إشارة GPS';
+
+  @override
+  String get locationOpenLocationSettings => 'تفعيل GPS';
+
+  @override
+  String get profileStatusNotEnabled => 'غير مفعّل';
+
+  @override
+  String get profileStatusUnavailable => 'غير متاح';
+
+  @override
+  String get workFeedFilterTaxi => 'تاكسي';
+
+  @override
+  String get workFeedFilterTaxiMoto => 'تاكسي موتو';
+
+  @override
+  String get workFeedFilterParcel => 'طرود';
+
+  @override
+  String get workFeedFilterCargo => 'شحن';
+
+  @override
+  String get workFeedFilterEmptyTitle => 'لا توجد عناصر مطابقة لهذا الفلتر';
+
+  @override
+  String get workFeedFilterReset => 'عرض الكل';
+
+  @override
+  String get workFeedAccessUnavailableTitle => 'قائمة العمل غير متاحة';
+
+  @override
+  String get workFeedAccessUnavailableBody =>
+      'ليس لدى حسابك صلاحية الوصول إلى قائمة العمل في هذه الجهة.';
+
+  @override
+  String get deliveryHistoryUnavailableTitle => 'سجل التوصيلات غير متاح';
+
+  @override
+  String get deliveryHistoryUnavailableBody =>
+      'خدمة التوصيل غير مفعّلة في ملف السائق الخاص بك لهذه الجهة.';
+
+  @override
+  String get mobilityHistoryUnavailableTitle => 'سجل التنقل غير متاح';
+
+  @override
+  String get mobilityHistoryUnavailableBody =>
+      'سجل رحلات التنقل المكتملة غير متاح بعد لحسابك على هذا الخادم.';
+
+  @override
+  String get navEarnings => 'الأرباح';
+
+  @override
+  String get earningsTitle => 'الأرباح والمحفظة';
+
+  @override
+  String get earningsAvailableLabel => 'المتاح';
+
+  @override
+  String get earningsPendingLabel => 'قيد الانتظار';
+
+  @override
+  String get earningsPaidLabel => 'المدفوع';
+
+  @override
+  String get earningsOnHoldLabel => 'المعلّق';
+
+  @override
+  String get earningsZeroHint => 'رصيدك المؤكد حالياً هو 0.';
+
+  @override
+  String get earningsUnavailableTitle => 'المحفظة غير متاحة';
+
+  @override
+  String get earningsUnavailableBody =>
+      'بيانات الأرباح والمحفظة غير متاحة بعد على هذا الخادم.';
+
+  @override
+  String earningsRulesMissingNotice(String services) {
+    return 'قاعدة الأجر بانتظار الاعتماد للخدمات التالية: $services';
+  }
+
+  @override
+  String get earningsTabMissions => 'أرباح المهام';
+
+  @override
+  String get earningsTabPayouts => 'المدفوعات';
+
+  @override
+  String get earningsTabCod => 'الدفع عند الاستلام';
+
+  @override
+  String get earningsEmptyMissionsTitle => 'لا توجد أرباح مسجلة';
+
+  @override
+  String get earningsEmptyMissionsBody =>
+      'ستظهر أرباحك المعتمدة لكل مهمة ورحلة هنا بعملة XAF.';
+
+  @override
+  String get earningsEmptyPayoutsTitle => 'لا توجد طلبات دفع';
+
+  @override
+  String get earningsEmptyPayoutsBody => 'ستظهر طلبات الدفع وحالتها هنا.';
+
+  @override
+  String get earningsEmptyCodTitle => 'لا توجد تحصيلات نقدية';
+
+  @override
+  String get earningsEmptyCodBody =>
+      'ستظهر المبالغ النقدية المحصّلة لصالح NOKI بشكل منفصل هنا.';
+
+  @override
+  String get earningsCodSectionTitle =>
+      'تحصيلات الدفع عند الاستلام (منفصلة عن الأرباح)';
+
+  @override
+  String get earningsCodToRemitLabel => 'للتوريد';
+
+  @override
+  String get earningsCodRemittedLabel => 'تم التوريد';
+
+  @override
+  String get earningsCodReconciledLabel => 'تمت التسوية';
+
+  @override
+  String get earningsCodSeparationNotice =>
+      'المبالغ النقدية المحصّلة لصالح NOKI تُتابع بشكل منفصل ولا تُضاف إلى رصيد أرباحك.';
+
+  @override
+  String get earningsRequestPayoutButton => 'طلب دفع';
+
+  @override
+  String get earningsPayoutSheetTitle => 'طلب دفع';
+
+  @override
+  String get earningsPayoutEligibleAmount => 'المبلغ المؤهل';
+
+  @override
+  String get earningsPayoutDestinationLabel => 'وسيلة الاستلام';
+
+  @override
+  String get earningsPayoutNoMethod => 'لا توجد وسيلة دفع نشطة مضبوطة';
+
+  @override
+  String get earningsPayoutConfirmButton => 'تأكيد الطلب';
+
+  @override
+  String get earningsPayoutSuccessMessage =>
+      'تم إرسال طلب الدفع لاعتماد قسم المالية.';
+
+  @override
+  String get earningsPayoutCancelButton => 'إلغاء الطلب';
+
+  @override
+  String get earningsPayoutCancelledMessage =>
+      'تم إلغاء طلب الدفع وأصبح المبلغ متاحاً من جديد.';
+
+  @override
+  String get earningsPayoutStatusPending => 'بانتظار الاعتماد';
+
+  @override
+  String get earningsPayoutStatusApproved => 'معتمد';
+
+  @override
+  String get earningsPayoutStatusSent => 'مرسل';
+
+  @override
+  String get earningsPayoutStatusPaid => 'مدفوع';
+
+  @override
+  String get earningsPayoutStatusOnHold => 'معلّق';
+
+  @override
+  String get earningsPayoutStatusFailed => 'فشل';
+
+  @override
+  String get earningsPayoutStatusCancelled => 'ملغى';
+
+  @override
+  String get earningsObligationStatusOpen => 'متاح';
+
+  @override
+  String get earningsObligationStatusAllocated => 'مخصص للدفع';
+
+  @override
+  String get earningsObligationStatusSettled => 'مدفوع';
+
+  @override
+  String get earningsObligationStatusOnHold => 'معلّق';
+
+  @override
+  String get earningsObligationReceivableTag => 'عمولة نقدية';
+
+  @override
+  String get earningsCodStatusDeclared => 'للتوريد';
+
+  @override
+  String get earningsCodStatusRemitted => 'تم التوريد';
+
+  @override
+  String get earningsCodStatusReconciled => 'تمت التسوية';
+
+  @override
+  String get earningsCodStatusVoided => 'ملغى';
+
+  @override
+  String earningsMissionRefLabel(String ref) {
+    return 'المرجع: $ref';
+  }
+
+  @override
+  String get profileSettingsSectionTitle => 'الإعدادات';
+
+  @override
+  String get profileAppearanceLabel => 'المظهر';
+
+  @override
+  String get profileAuthorizedServicesLabel => 'الخدمات المصرّح بها';
+
+  @override
+  String get profileAvatarSheetTitle => 'صورة الملف الشخصي';
+
+  @override
+  String get profileAvatarChooseGallery => 'اختيار من المعرض';
+
+  @override
+  String get profileAvatarChooseCamera => 'التقاط صورة';
+
+  @override
+  String get profileAvatarReplace => 'استبدال الصورة';
+
+  @override
+  String get profileAvatarRemove => 'حذف الصورة';
+
+  @override
+  String get profileAvatarSave => 'حفظ';
+
+  @override
+  String get profileAvatarSavedMessage => 'تم حفظ صورة الملف الشخصي.';
+
+  @override
+  String get profileAvatarRemovedMessage => 'تم حذف صورة الملف الشخصي.';
+
+  @override
+  String get profileAvatarUnavailableMessage =>
+      'إدارة صورة الملف الشخصي غير متاحة بعد على هذا الخادم.';
+
+  @override
+  String get profileAvatarEditTooltip => 'تعديل صورة الملف الشخصي';
 }

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../core/api/generated/driver_models.generated.dart';
+import '../../core/connectivity/offline_banner.dart';
 import '../../core/errors/app_failure.dart';
 import '../../core/errors/error_view.dart';
 import '../../core/errors/failure_localizer.dart';
@@ -236,14 +237,23 @@ class _DeliveryMissionDetailScreenState
 
   Widget _buildContent(DriverMissionResponseDto mission) {
     final l10n = AppLocalizations.of(context);
-    return RefreshIndicator(
-      onRefresh: () async {
-        ref.invalidate(missionDetailProvider(widget.missionId));
-        ref.invalidate(missionIncidentsProvider(widget.missionId));
-      },
-      child: ListView(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        children: [
+    return SafeArea(
+      top: false,
+      child: RefreshIndicator(
+        onRefresh: () async {
+          ref.invalidate(missionDetailProvider(widget.missionId));
+          ref.invalidate(missionIncidentsProvider(widget.missionId));
+        },
+        child: ListView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            AppSpacing.lg,
+            AppSpacing.lg,
+            AppSpacing.xxl,
+          ),
+          children: [
+          const OfflineBanner(),
           _Header(mission: mission),
           const SizedBox(height: AppSpacing.lg),
           _Section(title: l10n.missionSectionPickup, child: _pickupContent()),
@@ -274,7 +284,8 @@ class _DeliveryMissionDetailScreenState
           ),
           const SizedBox(height: AppSpacing.lg),
           _actionsContent(mission),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -700,17 +711,14 @@ class _Section extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(title, style: Theme.of(context).textTheme.titleMedium),
-            const SizedBox(height: AppSpacing.md),
-            child,
-          ],
-        ),
+    return NokiSurfaceCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, style: Theme.of(context).textTheme.titleMedium),
+          const SizedBox(height: AppSpacing.md),
+          child,
+        ],
       ),
     );
   }

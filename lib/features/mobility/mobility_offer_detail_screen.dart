@@ -8,6 +8,7 @@ import '../../core/errors/failure_localizer.dart';
 import '../../core/i18n/generated/app_localizations.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/ui/noki_ui.dart';
 import '../driver_context/driver_context_repository.dart';
 import '../work_feed/work_feed_repository.dart';
 import 'cargo_summary_card.dart';
@@ -228,7 +229,12 @@ class _MobilityOfferDetailScreenState
     return Scaffold(
       appBar: AppBar(title: Text(l10n.mobilityOfferDetailTitle)),
       body: ListView(
-        padding: const EdgeInsets.all(AppSpacing.lg),
+        padding: EdgeInsets.fromLTRB(
+          AppSpacing.lg,
+          AppSpacing.lg,
+          AppSpacing.lg,
+          AppSpacing.xxl + MediaQuery.paddingOf(context).bottom,
+        ),
         children: [
           Row(
             children: [
@@ -245,37 +251,34 @@ class _MobilityOfferDetailScreenState
             ],
           ),
           const SizedBox(height: AppSpacing.lg),
-          Card(
-            child: Padding(
-              padding: const EdgeInsets.all(AppSpacing.lg),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _RoutePoint(
-                    icon: Icons.trip_origin,
-                    label: l10n.missionSectionPickup,
-                    address: offer.pickupAddressSnapshot,
+          NokiSurfaceCard(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _RoutePoint(
+                  icon: Icons.trip_origin,
+                  label: l10n.missionSectionPickup,
+                  address: offer.pickupAddressSnapshot,
+                ),
+                const SizedBox(height: AppSpacing.md),
+                _RoutePoint(
+                  icon: Icons.place_outlined,
+                  label: l10n.missionSectionDropoff,
+                  address: offer.dropoffAddressSnapshot,
+                ),
+                if (offer.estimatedFare != null) ...[
+                  const SizedBox(height: AppSpacing.lg),
+                  Text(
+                    l10n.mobilityEstimatedFareLabel,
+                    style: Theme.of(context).textTheme.labelSmall
+                        ?.copyWith(color: colors.textMuted),
                   ),
-                  const SizedBox(height: AppSpacing.md),
-                  _RoutePoint(
-                    icon: Icons.place_outlined,
-                    label: l10n.missionSectionDropoff,
-                    address: offer.dropoffAddressSnapshot,
+                  Text(
+                    '${offer.estimatedFare!.amount} ${offer.estimatedFare!.currencyCode}',
+                    style: Theme.of(context).textTheme.headlineSmall,
                   ),
-                  if (offer.estimatedFare != null) ...[
-                    const SizedBox(height: AppSpacing.lg),
-                    Text(
-                      l10n.mobilityEstimatedFareLabel,
-                      style: Theme.of(context).textTheme.labelSmall
-                          ?.copyWith(color: colors.textMuted),
-                    ),
-                    Text(
-                      '${offer.estimatedFare!.amount} ${offer.estimatedFare!.currencyCode}',
-                      style: Theme.of(context).textTheme.headlineSmall,
-                    ),
-                  ],
                 ],
-              ),
+              ],
             ),
           ),
           if (offer.cargoSummary != null) ...[

@@ -44,6 +44,12 @@ void main() {
       );
 
       expect(find.text('Amine Tazi'), findsOneWidget);
+
+      await tester.scrollUntilVisible(
+        find.text('NOKI Casablanca'),
+        300,
+        scrollable: find.byType(Scrollable).first,
+      );
       expect(find.text('NOKI Casablanca'), findsOneWidget);
 
       await tester.scrollUntilVisible(
@@ -85,7 +91,8 @@ void main() {
       locale: const Locale('ar'),
     );
 
-    expect(find.text('هوية السائق'), findsOneWidget);
+    expect(find.text('الخدمات المصرّح بها'), findsOneWidget);
+    expect(find.text('المظهر'), findsOneWidget);
     final directionality = Directionality.of(
       tester.element(find.byType(SettingsScreen)),
     );

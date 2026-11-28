@@ -105,16 +105,41 @@ android {
                     )
                     signingConfigs.getByName("debug")
                 }
-                else -> throw GradleException(
-                    "NOKI release signing is not configured for noki-driver-app.\n" +
-                        "Provide ONE of:\n" +
-                        "  1) android/key.properties (gitignored) with storeFile, storePassword, keyAlias, keyPassword\n" +
-                        "  2) NOKI_DRIVER_RELEASE_STORE_FILE / _STORE_PASSWORD / _KEY_ALIAS / _KEY_PASSWORD env vars\n" +
-                        "To prove compilation only (NEVER for distribution), pass " +
-                        "-PnokiAllowDebugReleaseSigning=true or set NOKI_ALLOW_DEBUG_RELEASE_SIGNING=true."
-                )
+                else -> null
             }
         }
+    }
+}
+
+val verifyNokiReleaseSigning = tasks.register("verifyNokiReleaseSigning") {
+    group = "verification"
+    description = "Fails release APK/AAB builds unless NOKI release signing credentials (or explicit debug opt-in) are configured."
+    doLast {
+        if (!hasReleaseSigningCredentials && !allowDebugReleaseSigning) {
+            throw GradleException(
+                "NOKI release signing is not configured for noki-driver-app.\n" +
+                    "Provide ONE of:\n" +
+                    "  1) android/key.properties (gitignored) with storeFile, storePassword, keyAlias, keyPassword\n" +
+                    "  2) NOKI_DRIVER_RELEASE_STORE_FILE / _STORE_PASSWORD / _KEY_ALIAS / _KEY_PASSWORD env vars\n" +
+                    "To prove compilation only (NEVER for distribution), pass " +
+                    "-PnokiAllowDebugReleaseSigning=true or set NOKI_ALLOW_DEBUG_RELEASE_SIGNING=true."
+            )
+        }
+    }
+}
+
+tasks.configureEach {
+    if (name in setOf(
+            "preReleaseBuild",
+            "compileFlutterBuildRelease",
+            "assembleRelease",
+            "packageRelease",
+            "bundleRelease",
+            "packageReleaseBundle",
+            "signReleaseBundle",
+        )
+    ) {
+        dependsOn(verifyNokiReleaseSigning)
     }
 }
 

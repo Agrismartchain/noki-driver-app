@@ -7,6 +7,7 @@ import '../../core/errors/failure_localizer.dart';
 import '../../core/i18n/generated/app_localizations.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/ui/noki_ui.dart';
 import '../driver_context/driver_context_repository.dart';
 import 'mobility_repository.dart';
 import 'mobility_status_presentation.dart';
@@ -86,17 +87,15 @@ class _MobilityIncidentsSectionState
     final colors = context.nokiColors;
     final asyncIncidents = ref.watch(mobilityIncidentsProvider(widget.scope));
 
-    return Card(
-      child: Padding(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              l10n.missionSectionIncidents,
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: AppSpacing.md),
+    return NokiSurfaceCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            l10n.missionSectionIncidents,
+            style: Theme.of(context).textTheme.titleMedium,
+          ),
+          const SizedBox(height: AppSpacing.md),
             asyncIncidents.when(
               loading: () => const Padding(
                 padding: EdgeInsets.symmetric(vertical: AppSpacing.sm),
@@ -201,7 +200,6 @@ class _MobilityIncidentsSectionState
             ],
           ],
         ),
-      ),
     );
   }
 }

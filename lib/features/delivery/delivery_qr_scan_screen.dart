@@ -7,6 +7,7 @@ import '../../core/errors/failure_localizer.dart';
 import '../../core/i18n/generated/app_localizations.dart';
 import '../../core/theme/app_spacing.dart';
 import '../../core/theme/app_theme.dart';
+import '../../core/ui/noki_ui.dart';
 import '../driver_context/driver_context_repository.dart';
 import 'delivery_mission_detail_screen.dart';
 import 'delivery_qr_entry_screen.dart';
@@ -121,42 +122,39 @@ class _DeliveryQrScanScreenState extends ConsumerState<DeliveryQrScanScreen> {
             left: AppSpacing.lg,
             right: AppSpacing.lg,
             bottom: AppSpacing.lg,
-            child: Card(
-              child: Padding(
-                padding: const EdgeInsets.all(AppSpacing.lg),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        if (_submitting)
-                          SizedBox(
-                            height: 16,
-                            width: 16,
-                            child: CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: colors.actionPrimary,
-                            ),
-                          ),
-                        if (_submitting) const SizedBox(width: AppSpacing.sm),
-                        Expanded(
-                          child: Text(
-                            l10n.qrScanHint,
-                            style: Theme.of(context).textTheme.bodySmall,
+            child: NokiSurfaceCard(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      if (_submitting)
+                        SizedBox(
+                          height: 16,
+                          width: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: colors.actionPrimary,
                           ),
                         ),
-                      ],
-                    ),
-                    if (_failure != null) ...[
-                      const SizedBox(height: AppSpacing.sm),
-                      Text(
-                        localizeFailure(context, _failure!),
-                        style: TextStyle(color: colors.danger),
+                      if (_submitting) const SizedBox(width: AppSpacing.sm),
+                      Expanded(
+                        child: Text(
+                          l10n.qrScanHint,
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
                       ),
                     ],
+                  ),
+                  if (_failure != null) ...[
+                    const SizedBox(height: AppSpacing.sm),
+                    Text(
+                      localizeFailure(context, _failure!),
+                      style: TextStyle(color: colors.danger),
+                    ),
                   ],
-                ),
+                ],
               ),
             ),
           ),

@@ -1,5 +1,10 @@
+import 'dart:typed_data';
+
 import 'package:noki_driver_app/core/api/driver_api_client.dart';
+import 'package:noki_driver_app/core/api/finance/driver_finance_models.dart';
 import 'package:noki_driver_app/core/api/generated/driver_models.generated.dart';
+import 'package:noki_driver_app/core/api/mfa/mfa_models.dart';
+import 'package:noki_driver_app/core/api/profile/driver_avatar_models.dart';
 import 'package:noki_driver_app/core/errors/app_failure.dart';
 
 /// Controllable [DriverApiClient] fake for tests, per DRIVER-APP-01 section
@@ -7,9 +12,34 @@ import 'package:noki_driver_app/core/errors/app_failure.dart';
 /// throws a preset [AppFailure], set by the test before exercising the
 /// repository/controller under test. No real HTTP call is ever made.
 class FakeDriverApiClient implements DriverApiClient {
+  /// Set for a plain, no-MFA login success - wrapped in [AuthLoginSuccess]
+  /// by [login] below. Mutually exclusive with [loginMfaChallengeResponse];
+  /// most existing tests only ever set this one.
   AuthTokensResponseDto? loginResponse;
+
+  /// Set for a login that comes back as an MFA challenge (202) instead of
+  /// tokens - wrapped in [AuthLoginMfaChallenge] by [login] below.
+  AuthMfaChallengeResponseDto? loginMfaChallengeResponse;
   AppFailure? loginFailure;
   Duration? loginDelay;
+
+  MfaEnrollmentStartResponseDto? mfaEnrollStartResponse;
+  AppFailure? mfaEnrollStartFailure;
+  String? lastMfaEnrollStartChallengeToken;
+  int mfaEnrollStartCallCount = 0;
+
+  MfaEnrollConfirmResponseDto? mfaEnrollConfirmResponse;
+  AppFailure? mfaEnrollConfirmFailure;
+  String? lastMfaEnrollConfirmCode;
+  int mfaEnrollConfirmCallCount = 0;
+
+  AuthTokensResponseDto? mfaVerifyResponse;
+  AppFailure? mfaVerifyFailure;
+  String? lastMfaVerifyCode;
+  String? lastMfaVerifyRecoveryCode;
+  int mfaVerifyCallCount = 0;
+
+  int driverContextCallCount = 0;
 
   AuthTokensResponseDto? refreshResponse;
   AppFailure? refreshFailure;
@@ -115,14 +145,51 @@ class FakeDriverApiClient implements DriverApiClient {
   int refreshCallCount = 0;
 
   @override
-  Future<AuthTokensResponseDto> login({
+  Future<AuthLoginResult> login({
     required String email,
     required String password,
   }) async {
     loginCallCount++;
     if (loginDelay != null) await Future<void>.delayed(loginDelay!);
     if (loginFailure != null) throw loginFailure!;
-    return loginResponse!;
+    if (loginMfaChallengeResponse != null) {
+      return AuthLoginMfaChallenge(loginMfaChallengeResponse!);
+    }
+    return AuthLoginSuccess(loginResponse!);
+  }
+
+  @override
+  Future<MfaEnrollmentStartResponseDto> mfaEnrollStart({
+    required String challengeToken,
+  }) async {
+    mfaEnrollStartCallCount++;
+    lastMfaEnrollStartChallengeToken = challengeToken;
+    if (mfaEnrollStartFailure != null) throw mfaEnrollStartFailure!;
+    return mfaEnrollStartResponse!;
+  }
+
+  @override
+  Future<MfaEnrollConfirmResponseDto> mfaEnrollConfirm({
+    required String challengeToken,
+    required String code,
+  }) async {
+    mfaEnrollConfirmCallCount++;
+    lastMfaEnrollConfirmCode = code;
+    if (mfaEnrollConfirmFailure != null) throw mfaEnrollConfirmFailure!;
+    return mfaEnrollConfirmResponse!;
+  }
+
+  @override
+  Future<AuthTokensResponseDto> mfaVerify({
+    required String challengeToken,
+    String? code,
+    String? recoveryCode,
+  }) async {
+    mfaVerifyCallCount++;
+    lastMfaVerifyCode = code;
+    lastMfaVerifyRecoveryCode = recoveryCode;
+    if (mfaVerifyFailure != null) throw mfaVerifyFailure!;
+    return mfaVerifyResponse!;
   }
 
   @override
@@ -144,6 +211,7 @@ class FakeDriverApiClient implements DriverApiClient {
 
   @override
   Future<DriverContextResponseDto> driverContext() async {
+    driverContextCallCount++;
     if (driverContextFailure != null) throw driverContextFailure!;
     return driverContextResponse!;
   }
@@ -402,5 +470,243 @@ class FakeDriverApiClient implements DriverApiClient {
     lastComputeRouteRequest = body;
     if (computeRouteFailure != null) throw computeRouteFailure!;
     return computeRouteResponse!;
+  }
+
+  // --- Driver Profile Avatar -----------------------------------------------
+
+  String? driverAvatarUrl;
+  DriverAvatarUploadIntentDto? createAvatarIntentResponse;
+  AppFailure? createAvatarIntentFailure;
+  AppFailure? uploadAvatarBytesFailure;
+  DriverAvatarResponseDto? completeAvatarUploadResponse;
+  AppFailure? completeAvatarUploadFailure;
+  DriverAvatarResponseDto? removeAvatarResponse;
+  AppFailure? removeAvatarFailure;
+  int uploadAvatarBytesCallCount = 0;
+  int completeAvatarUploadCallCount = 0;
+  int removeAvatarCallCount = 0;
+  Uint8List? lastUploadedAvatarBytes;
+
+  @override
+  String? get lastContextAvatarUrl => driverAvatarUrl;
+
+  @override
+  Future<DriverAvatarUploadIntentDto> createDriverAvatarUploadIntent({
+    required String contentType,
+    required int byteSizeExpected,
+  }) async {
+    if (createAvatarIntentFailure != null) throw createAvatarIntentFailure!;
+    return createAvatarIntentResponse ??
+        DriverAvatarUploadIntentDto(
+          intentId: 'intent-1',
+          objectKey: 'driver-avatars/actor-1/avatar.png',
+          uploadUrl: '/v1/_internal/object-storage/local/avatar.png',
+          uploadMethod: 'PUT',
+          uploadHeaders: {'Content-Type': contentType},
+          expiresAt: '2026-12-01T00:00:00Z',
+        );
+  }
+
+  @override
+  Future<void> uploadDriverAvatarBytes({
+    required String uploadUrl,
+    required Map<String, String> headers,
+    required Uint8List bytes,
+  }) async {
+    uploadAvatarBytesCallCount++;
+    lastUploadedAvatarBytes = bytes;
+    if (uploadAvatarBytesFailure != null) throw uploadAvatarBytesFailure!;
+  }
+
+  @override
+  Future<DriverAvatarResponseDto> completeDriverAvatarUpload(
+    String intentId,
+  ) async {
+    completeAvatarUploadCallCount++;
+    if (completeAvatarUploadFailure != null) {
+      throw completeAvatarUploadFailure!;
+    }
+    final dto =
+        completeAvatarUploadResponse ??
+        const DriverAvatarResponseDto(
+          avatarUrl: 'https://cdn.noki-services.com/avatars/driver-1.png',
+        );
+    driverAvatarUrl = dto.avatarUrl;
+    return dto;
+  }
+
+  @override
+  Future<DriverAvatarResponseDto> removeDriverAvatar() async {
+    removeAvatarCallCount++;
+    if (removeAvatarFailure != null) throw removeAvatarFailure!;
+    driverAvatarUrl = null;
+    return removeAvatarResponse ?? const DriverAvatarResponseDto(avatarUrl: null);
+  }
+
+  // --- Driver Finance & Wallet ---------------------------------------------
+
+  DriverFinanceSummaryDto? driverFinanceSummaryResponse;
+  AppFailure? driverFinanceSummaryFailure;
+
+  List<DriverEarningItemDto>? driverFinanceEarningsResponse;
+  AppFailure? driverFinanceEarningsFailure;
+
+  List<DriverCodCollectionItemDto>? driverFinanceCodResponse;
+  AppFailure? driverFinanceCodFailure;
+
+  DriverPayoutEligibilityDto? driverPayoutEligibilityResponse;
+  AppFailure? driverPayoutEligibilityFailure;
+
+  List<DriverPayoutItemDto>? driverPayoutsResponse;
+  AppFailure? driverPayoutsFailure;
+
+  DriverPayoutItemDto? requestDriverPayoutResponse;
+  AppFailure? requestDriverPayoutFailure;
+  int requestDriverPayoutCallCount = 0;
+  String? lastRequestDriverPayoutIdempotencyKey;
+  String? lastRequestDriverPayoutAmount;
+
+  DriverPayoutItemDto? cancelDriverPayoutResponse;
+  AppFailure? cancelDriverPayoutFailure;
+  int cancelDriverPayoutCallCount = 0;
+
+  @override
+  Future<DriverFinanceSummaryDto> driverFinanceSummary({
+    required String organizationId,
+    required String countryCode,
+  }) async {
+    if (driverFinanceSummaryFailure != null) {
+      throw driverFinanceSummaryFailure!;
+    }
+    return driverFinanceSummaryResponse ??
+        DriverFinanceSummaryDto(
+          driverActorId: 'driver-1',
+          organizationId: organizationId,
+          countryCode: countryCode,
+          currencyCode: 'XAF',
+          availableAmount: '0',
+          pendingPayoutAmount: '0',
+          paidAmount: '0',
+          onHoldAmount: '0',
+          grossEarnedAmount: '0',
+          receivableCommissionAmount: '0',
+          paymentMethodStatus: 'NONE',
+          canRequestPayout: false,
+          missingRemunerationRuleServices: const [],
+          codSummary: const DriverCodSummaryDto(
+            currencyCode: 'XAF',
+            toRemitAmount: '0',
+            remittedAmount: '0',
+            reconciledAmount: '0',
+            toRemitCount: 0,
+            totalDeclaredCount: 0,
+          ),
+          generatedAt: '2026-11-27T10:00:00Z',
+        );
+  }
+
+  @override
+  Future<List<DriverEarningItemDto>> driverFinanceEarnings({
+    required String organizationId,
+    required String countryCode,
+    int page = 1,
+    int pageSize = 25,
+  }) async {
+    if (driverFinanceEarningsFailure != null) {
+      throw driverFinanceEarningsFailure!;
+    }
+    return driverFinanceEarningsResponse ?? const [];
+  }
+
+  @override
+  Future<List<DriverCodCollectionItemDto>> driverFinanceCod({
+    required String organizationId,
+    required String countryCode,
+    int page = 1,
+    int pageSize = 25,
+  }) async {
+    if (driverFinanceCodFailure != null) throw driverFinanceCodFailure!;
+    return driverFinanceCodResponse ?? const [];
+  }
+
+  @override
+  Future<DriverPayoutEligibilityDto> driverPayoutEligibility({
+    required String organizationId,
+    required String countryCode,
+  }) async {
+    if (driverPayoutEligibilityFailure != null) {
+      throw driverPayoutEligibilityFailure!;
+    }
+    return driverPayoutEligibilityResponse ??
+        const DriverPayoutEligibilityDto(
+          eligible: false,
+          currencyCode: 'XAF',
+          availableAmount: '0',
+          eligibleObligationIds: [],
+          blockers: [],
+        );
+  }
+
+  @override
+  Future<List<DriverPayoutItemDto>> driverPayouts({
+    required String organizationId,
+    required String countryCode,
+    int page = 1,
+    int pageSize = 25,
+  }) async {
+    if (driverPayoutsFailure != null) throw driverPayoutsFailure!;
+    return driverPayoutsResponse ?? const [];
+  }
+
+  @override
+  Future<DriverPayoutItemDto> requestDriverPayout({
+    required String organizationId,
+    required String countryCode,
+    required String idempotencyKey,
+    String? paymentMethodId,
+    List<String>? obligationIds,
+    String? requestedAmount,
+  }) async {
+    requestDriverPayoutCallCount++;
+    lastRequestDriverPayoutIdempotencyKey = idempotencyKey;
+    lastRequestDriverPayoutAmount = requestedAmount;
+    if (requestDriverPayoutFailure != null) throw requestDriverPayoutFailure!;
+    return requestDriverPayoutResponse ??
+        const DriverPayoutItemDto(
+          id: 'payout-1',
+          code: 'P2-TEST001',
+          status: 'PENDING_FIRST_APPROVAL',
+          currencyCode: 'XAF',
+          totalAmount: '8500',
+          destinationMasked: '+242 05***88',
+          paymentMethodType: 'MOBILE_MONEY',
+          lineCount: 1,
+          createdAt: '2026-11-27T10:00:00Z',
+        );
+  }
+
+  @override
+  Future<DriverPayoutItemDto> cancelDriverPayout({
+    required String payoutId,
+    required String organizationId,
+    required String countryCode,
+    required String reason,
+    required String idempotencyKey,
+  }) async {
+    cancelDriverPayoutCallCount++;
+    if (cancelDriverPayoutFailure != null) throw cancelDriverPayoutFailure!;
+    return cancelDriverPayoutResponse ??
+        DriverPayoutItemDto(
+          id: payoutId,
+          code: 'P2-TEST001',
+          status: 'CANCELLED',
+          currencyCode: 'XAF',
+          totalAmount: '8500',
+          destinationMasked: '+242 05***88',
+          paymentMethodType: 'MOBILE_MONEY',
+          lineCount: 1,
+          createdAt: '2026-11-27T10:00:00Z',
+          cancelledAt: '2026-11-27T10:05:00Z',
+        );
   }
 }

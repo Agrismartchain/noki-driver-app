@@ -24,6 +24,7 @@ class VehiclesScreen extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: Text(l10n.vehiclesTitle)),
       body: NokiScreenBackground(
+        safeBottom: true,
         child: asyncVehicles.when(
           loading: () => const LoadingView(),
           error: (error, _) => ErrorView(
@@ -43,7 +44,12 @@ class VehiclesScreen extends ConsumerWidget {
             return RefreshIndicator(
               onRefresh: () async => ref.invalidate(vehiclesProvider(scope)),
               child: ListView.separated(
-                padding: const EdgeInsets.all(AppSpacing.lg),
+                padding: const EdgeInsets.fromLTRB(
+                  AppSpacing.lg,
+                  AppSpacing.lg,
+                  AppSpacing.lg,
+                  AppSpacing.xxl,
+                ),
                 itemCount: list.items.length,
                 separatorBuilder: (_, _) =>
                     const SizedBox(height: AppSpacing.md),
@@ -117,7 +123,7 @@ class _VehicleTile extends StatelessWidget {
                             DriverVehicleDtoAllowedServiceTypes.cargo =>
                               l10n.serviceTypeCargo,
                             DriverVehicleDtoAllowedServiceTypes.unknown =>
-                              l10n.errorUnknown,
+                              l10n.profileStatusUnavailable,
                           },
                           tone: NokiBadgeTone.info,
                         ),
@@ -178,7 +184,7 @@ class _VehicleStatusBadge extends StatelessWidget {
         colors.textMuted,
       ),
       DriverVehicleDtoStatus.unknown => (
-        l10n.errorUnknown,
+        l10n.profileStatusUnavailable,
         colors.surfaceSubtle,
         colors.textMuted,
       ),

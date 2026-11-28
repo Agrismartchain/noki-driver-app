@@ -18,7 +18,7 @@ String formatNokiMoney(
     'XOF' || 'FCFA' => 'FCFA',
     '' when preferFcfa => 'FCFA',
     '' => null,
-    _ => currencyCode,
+    _ => normalizedCode,
   };
   return displayCode == null ? amount : '$amount $displayCode';
 }

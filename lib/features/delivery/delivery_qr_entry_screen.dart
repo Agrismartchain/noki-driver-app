@@ -81,46 +81,56 @@ class _DeliveryQrEntryScreenState extends ConsumerState<DeliveryQrEntryScreen> {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(AppSpacing.lg),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Text(
-              l10n.qrEntryHint,
-              style: Theme.of(context).textTheme.bodyMedium
-                  ?.copyWith(color: colors.textMuted),
-            ),
-            const SizedBox(height: AppSpacing.lg),
-            TextField(
-              controller: _tokenController,
-              minLines: 2,
-              maxLines: 4,
-              enabled: !_submitting,
-              decoration: InputDecoration(labelText: l10n.qrEntryTokenLabel),
-            ),
-            const SizedBox(height: AppSpacing.lg),
-            ElevatedButton(
-              onPressed: _submitting ? null : _submit,
-              child: _submitting
-                  ? SizedBox(
-                      height: 18,
-                      width: 18,
-                      child: CircularProgressIndicator(
-                        strokeWidth: 2,
-                        color: colors.actionPrimaryInk,
-                      ),
-                    )
-                  : Text(l10n.qrEntrySubmitCta),
-            ),
-            if (_failure != null) ...[
-              const SizedBox(height: AppSpacing.md),
+      body: SafeArea(
+        top: false,
+        child: SingleChildScrollView(
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          padding: const EdgeInsets.fromLTRB(
+            AppSpacing.lg,
+            AppSpacing.lg,
+            AppSpacing.lg,
+            AppSpacing.xxl,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
               Text(
-                localizeFailure(context, _failure!),
-                style: TextStyle(color: colors.danger),
+                l10n.qrEntryHint,
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(color: colors.textMuted),
               ),
+              const SizedBox(height: AppSpacing.lg),
+              TextField(
+                controller: _tokenController,
+                minLines: 2,
+                maxLines: 4,
+                enabled: !_submitting,
+                decoration: InputDecoration(labelText: l10n.qrEntryTokenLabel),
+              ),
+              const SizedBox(height: AppSpacing.lg),
+              ElevatedButton(
+                onPressed: _submitting ? null : _submit,
+                child: _submitting
+                    ? SizedBox(
+                        height: 18,
+                        width: 18,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: colors.actionPrimaryInk,
+                        ),
+                      )
+                    : Text(l10n.qrEntrySubmitCta),
+              ),
+              if (_failure != null) ...[
+                const SizedBox(height: AppSpacing.md),
+                Text(
+                  localizeFailure(context, _failure!),
+                  style: TextStyle(color: colors.danger),
+                ),
+              ],
             ],
-          ],
+          ),
         ),
       ),
     );

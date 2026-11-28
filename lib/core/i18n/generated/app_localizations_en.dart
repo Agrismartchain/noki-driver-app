@@ -47,6 +47,86 @@ class AppLocalizationsEn extends AppLocalizations {
       'Use the account provided by your organization.';
 
   @override
+  String get mfaEnrollHeadline => 'Set up two-factor authentication';
+
+  @override
+  String get mfaEnrollInstructions =>
+      'Your account requires an extra security step. Open an authenticator app (such as Google Authenticator or Authy) and add this account using the key below.';
+
+  @override
+  String get mfaEnrollSecretLabel => 'Setup key';
+
+  @override
+  String get mfaEnrollCopySecret => 'Copy';
+
+  @override
+  String get mfaEnrollSecretCopied => 'Setup key copied';
+
+  @override
+  String get mfaEnrollCodeLabel => '6-digit code';
+
+  @override
+  String get mfaEnrollCodeRequired =>
+      'Enter the 6-digit code from your authenticator app';
+
+  @override
+  String get mfaEnrollCodeInvalidFormat =>
+      'Enter the 6 digits shown in your app';
+
+  @override
+  String get mfaEnrollSubmit => 'Confirm';
+
+  @override
+  String get mfaEnrollLoadingSecret => 'Preparing two-factor setup…';
+
+  @override
+  String get mfaRecoveryCodesHeadline => 'Save your recovery codes';
+
+  @override
+  String get mfaRecoveryCodesWarning =>
+      'Each code can be used once if you ever lose access to your authenticator app. They will not be shown again - save them somewhere safe now.';
+
+  @override
+  String get mfaRecoveryCodesCopyAll => 'Copy all';
+
+  @override
+  String get mfaRecoveryCodesCopied => 'Recovery codes copied';
+
+  @override
+  String get mfaRecoveryCodesAcknowledge => 'I\'ve saved these codes';
+
+  @override
+  String get mfaVerifyHeadline => 'Enter your authenticator code';
+
+  @override
+  String get mfaVerifyInstructions =>
+      'Open your authenticator app and enter the current code.';
+
+  @override
+  String get mfaVerifyCodeLabel => '6-digit code';
+
+  @override
+  String get mfaVerifyCodeRequired =>
+      'Enter the 6-digit code from your authenticator app';
+
+  @override
+  String get mfaVerifySubmit => 'Verify';
+
+  @override
+  String get mfaVerifyUseRecoveryCode => 'Use a recovery code instead';
+
+  @override
+  String get mfaVerifyUseAuthenticatorCode =>
+      'Use my authenticator code instead';
+
+  @override
+  String get mfaVerifyRecoveryCodeLabel => 'Recovery code';
+
+  @override
+  String get mfaVerifyRecoveryCodeRequired =>
+      'Enter one of your recovery codes';
+
+  @override
   String get navHome => 'Home';
 
   @override
@@ -609,7 +689,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileActivityBody =>
-      'Completed deliveries are available today. Mobility trip history still requires backend support.';
+      'Completed deliveries and Mobility rides are both available today.';
 
   @override
   String get profileNotificationsBackendRequired =>
@@ -623,6 +703,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileOpenHistory => 'Open delivery history';
+
+  @override
+  String get profileOpenMobilityHistory => 'Open Mobility history';
+
+  @override
+  String get mobilityHistoryTitle => 'Mobility history';
+
+  @override
+  String get mobilityHistoryEmpty => 'No completed Mobility rides yet';
 
   @override
   String get profileVehicleUnavailable => 'No vehicle assigned yet';
@@ -715,6 +804,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorUnknown => 'Something went wrong.';
+
+  @override
+  String get errorMfaCodeInvalid => 'That code isn\'t valid. Try again.';
+
+  @override
+  String get errorMfaChallengeExpired =>
+      'This sign-in step expired. Sign in again.';
+
+  @override
+  String get errorMfaLocked =>
+      'Too many incorrect codes. Wait a few minutes and try again.';
 
   @override
   String get actionRetry => 'Retry';
@@ -812,4 +912,265 @@ class AppLocalizationsEn extends AppLocalizations {
   String navigationNextManeuverLabel(String distance, String instruction) {
     return 'In $distance: $instruction';
   }
+
+  @override
+  String homeMapServiceZone(String zone) {
+    return 'Service area: $zone';
+  }
+
+  @override
+  String get homeMapPositionLive => 'Live GPS position';
+
+  @override
+  String get homeMapWaitingGps => 'Waiting for GPS fix';
+
+  @override
+  String get locationOpenLocationSettings => 'Enable GPS';
+
+  @override
+  String get profileStatusNotEnabled => 'Not enabled';
+
+  @override
+  String get profileStatusUnavailable => 'Unavailable';
+
+  @override
+  String get workFeedFilterTaxi => 'Taxi';
+
+  @override
+  String get workFeedFilterTaxiMoto => 'Taxi Moto';
+
+  @override
+  String get workFeedFilterParcel => 'Parcel';
+
+  @override
+  String get workFeedFilterCargo => 'Cargo';
+
+  @override
+  String get workFeedFilterEmptyTitle => 'No matching items';
+
+  @override
+  String get workFeedFilterReset => 'Show all';
+
+  @override
+  String get workFeedAccessUnavailableTitle => 'Work feed unavailable';
+
+  @override
+  String get workFeedAccessUnavailableBody =>
+      'Your account does not have access to this work feed in this organization.';
+
+  @override
+  String get deliveryHistoryUnavailableTitle => 'Delivery history unavailable';
+
+  @override
+  String get deliveryHistoryUnavailableBody =>
+      'Delivery missions are not enabled on your driver profile for this organization.';
+
+  @override
+  String get mobilityHistoryUnavailableTitle => 'Mobility history unavailable';
+
+  @override
+  String get mobilityHistoryUnavailableBody =>
+      'Completed Mobility ride history is not yet available for your account on this server.';
+
+  @override
+  String get navEarnings => 'Earnings';
+
+  @override
+  String get earningsTitle => 'Earnings & wallet';
+
+  @override
+  String get earningsAvailableLabel => 'Available';
+
+  @override
+  String get earningsPendingLabel => 'Pending';
+
+  @override
+  String get earningsPaidLabel => 'Paid';
+
+  @override
+  String get earningsOnHoldLabel => 'On hold';
+
+  @override
+  String get earningsZeroHint => 'Your verified balance is currently 0.';
+
+  @override
+  String get earningsUnavailableTitle => 'Wallet unavailable';
+
+  @override
+  String get earningsUnavailableBody =>
+      'Driver earnings and wallet data are not yet available on this server.';
+
+  @override
+  String earningsRulesMissingNotice(String services) {
+    return 'Remuneration rule pending approval for: $services';
+  }
+
+  @override
+  String get earningsTabMissions => 'Mission earnings';
+
+  @override
+  String get earningsTabPayouts => 'Payouts';
+
+  @override
+  String get earningsTabCod => 'COD';
+
+  @override
+  String get earningsEmptyMissionsTitle => 'No earnings recorded yet';
+
+  @override
+  String get earningsEmptyMissionsBody =>
+      'Your approved earnings per mission and ride will appear here in XAF.';
+
+  @override
+  String get earningsEmptyPayoutsTitle => 'No payout requests yet';
+
+  @override
+  String get earningsEmptyPayoutsBody =>
+      'Your payout requests and settlements will appear here with live status.';
+
+  @override
+  String get earningsEmptyCodTitle => 'No COD collections';
+
+  @override
+  String get earningsEmptyCodBody =>
+      'Cash collected on behalf of NOKI will appear separately here.';
+
+  @override
+  String get earningsCodSectionTitle =>
+      'COD collections (separate from earnings)';
+
+  @override
+  String get earningsCodToRemitLabel => 'To remit';
+
+  @override
+  String get earningsCodRemittedLabel => 'Remitted';
+
+  @override
+  String get earningsCodReconciledLabel => 'Reconciled';
+
+  @override
+  String get earningsCodSeparationNotice =>
+      'COD cash collected for NOKI is tracked separately and is never added to your driver earnings balance.';
+
+  @override
+  String get earningsRequestPayoutButton => 'Request payout';
+
+  @override
+  String get earningsPayoutSheetTitle => 'Request payout';
+
+  @override
+  String get earningsPayoutEligibleAmount => 'Eligible amount';
+
+  @override
+  String get earningsPayoutDestinationLabel => 'Payout destination';
+
+  @override
+  String get earningsPayoutNoMethod => 'No active payout method configured';
+
+  @override
+  String get earningsPayoutConfirmButton => 'Confirm payout request';
+
+  @override
+  String get earningsPayoutSuccessMessage =>
+      'Payout request submitted for Finance approval.';
+
+  @override
+  String get earningsPayoutCancelButton => 'Cancel request';
+
+  @override
+  String get earningsPayoutCancelledMessage =>
+      'Payout request cancelled. The amount is available again.';
+
+  @override
+  String get earningsPayoutStatusPending => 'Pending approval';
+
+  @override
+  String get earningsPayoutStatusApproved => 'Approved';
+
+  @override
+  String get earningsPayoutStatusSent => 'Sent';
+
+  @override
+  String get earningsPayoutStatusPaid => 'Paid';
+
+  @override
+  String get earningsPayoutStatusOnHold => 'On hold';
+
+  @override
+  String get earningsPayoutStatusFailed => 'Failed';
+
+  @override
+  String get earningsPayoutStatusCancelled => 'Cancelled';
+
+  @override
+  String get earningsObligationStatusOpen => 'Available';
+
+  @override
+  String get earningsObligationStatusAllocated => 'Allocated to payout';
+
+  @override
+  String get earningsObligationStatusSettled => 'Paid';
+
+  @override
+  String get earningsObligationStatusOnHold => 'On hold';
+
+  @override
+  String get earningsObligationReceivableTag => 'Cash commission';
+
+  @override
+  String get earningsCodStatusDeclared => 'To remit';
+
+  @override
+  String get earningsCodStatusRemitted => 'Remitted';
+
+  @override
+  String get earningsCodStatusReconciled => 'Reconciled';
+
+  @override
+  String get earningsCodStatusVoided => 'Voided';
+
+  @override
+  String earningsMissionRefLabel(String ref) {
+    return 'Reference: $ref';
+  }
+
+  @override
+  String get profileSettingsSectionTitle => 'Settings';
+
+  @override
+  String get profileAppearanceLabel => 'Appearance';
+
+  @override
+  String get profileAuthorizedServicesLabel => 'Authorized services';
+
+  @override
+  String get profileAvatarSheetTitle => 'Profile photo';
+
+  @override
+  String get profileAvatarChooseGallery => 'Choose from gallery';
+
+  @override
+  String get profileAvatarChooseCamera => 'Take a photo';
+
+  @override
+  String get profileAvatarReplace => 'Replace photo';
+
+  @override
+  String get profileAvatarRemove => 'Remove photo';
+
+  @override
+  String get profileAvatarSave => 'Save';
+
+  @override
+  String get profileAvatarSavedMessage => 'Profile photo saved.';
+
+  @override
+  String get profileAvatarRemovedMessage => 'Profile photo removed.';
+
+  @override
+  String get profileAvatarUnavailableMessage =>
+      'Profile photo management is not yet available on this server.';
+
+  @override
+  String get profileAvatarEditTooltip => 'Edit profile photo';
 }

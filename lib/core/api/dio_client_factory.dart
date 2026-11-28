@@ -45,7 +45,21 @@ class _AuthInterceptor extends Interceptor {
 
   Future<String?>? _refreshInFlight;
 
-  static const _noAuthPaths = ['/v1/auth/login', '/v1/auth/refresh'];
+  static const _noAuthPaths = [
+    '/v1/auth/login',
+    '/v1/auth/refresh',
+    // Pre-session MFA challenge endpoints (see core/api/mfa/mfa_models.dart):
+    // guarded by the opaque `challengeToken` in the request body, not a
+    // bearer token - there is no session yet. Critically, these also need
+    // to be exempt from the 401 handling below: an invalid-code or
+    // expired-challenge 401 here is a normal, retryable step in the MFA
+    // flow, not a session expiry, and must never trigger
+    // `sessionGateway.onSessionExpired()` (which would wipe the in-progress
+    // MFA challenge state the driver is actively working through).
+    '/v1/auth/mfa/challenge/verify',
+    '/v1/auth/mfa/challenge/enroll/start',
+    '/v1/auth/mfa/challenge/enroll/confirm',
+  ];
 
   bool _isAuthExempt(String path) => _noAuthPaths.any((p) => path.contains(p));
 

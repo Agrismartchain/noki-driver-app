@@ -64,6 +64,10 @@ dependencies:
   # fallback, not replaced.
   mobile_scanner: ^7.0.1
 
+  # Driver profile photo selection (gallery/camera) behind an injectable
+  # DriverAvatarPicker abstraction so widget tests remain deterministic.
+  image_picker: ^1.1.2
+
   intl: any
 
 dev_dependencies:
@@ -77,3 +81,9 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   generate: true
+  assets:
+    # Real NOKI brand mark (same image as the Android launcher icon -
+    # android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png), reused on the
+    # splash screen rather than an invented/placeholder mark. See
+    # SplashScreen's doc comment.
+    - assets/brand/noki_logo.png

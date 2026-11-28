@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:noki_driver_app/core/api/api_providers.dart';
 import 'package:noki_driver_app/core/api/generated/driver_models.generated.dart';
+import 'package:noki_driver_app/core/api/mfa/mfa_models.dart';
 import 'package:noki_driver_app/core/errors/app_failure.dart';
 import 'package:noki_driver_app/core/storage/storage_providers.dart';
 import 'package:noki_driver_app/features/auth/auth_providers.dart';
@@ -106,6 +107,235 @@ void main() {
       final state = container.read(authControllerProvider);
       expect(state.status, AuthStatus.unauthenticated);
       expect(state.failure?.type, AppFailureType.unauthenticated);
+    });
+  });
+
+  group('AuthController.login with MFA (POST /v1/auth/login -> 202)', () {
+    test('mfaStatus ENROLL -> mfaEnrollRequired, no tokens persisted, driverContext not called', () async {
+      final client = FakeDriverApiClient()
+        ..loginMfaChallengeResponse = AuthMfaChallengeResponseDto.fromJson(
+          sampleMfaChallenge(mfaStatus: 'ENROLL', challengeToken: 'chal-1'),
+        );
+      final storage = FakeSecureSessionStorage();
+      final container = _buildContainer(client, storage);
+      container.read(authControllerProvider);
+      await _settle();
+
+      await container.read(authControllerProvider.notifier).login(email: 'a@b.test', password: 'secret');
+
+      final state = container.read(authControllerProvider);
+      expect(state.status, AuthStatus.mfaEnrollRequired);
+      expect(state.mfaChallenge?.challengeToken, 'chal-1');
+      expect(await storage.readAccessToken(), isNull);
+      expect(client.driverContextCallCount, 0);
+    });
+
+    test('mfaStatus VERIFY -> mfaVerifyRequired, no tokens persisted, driverContext not called', () async {
+      final client = FakeDriverApiClient()
+        ..loginMfaChallengeResponse = AuthMfaChallengeResponseDto.fromJson(
+          sampleMfaChallenge(mfaStatus: 'VERIFY', challengeToken: 'chal-2'),
+        );
+      final storage = FakeSecureSessionStorage();
+      final container = _buildContainer(client, storage);
+      container.read(authControllerProvider);
+      await _settle();
+
+      await container.read(authControllerProvider.notifier).login(email: 'a@b.test', password: 'secret');
+
+      final state = container.read(authControllerProvider);
+      expect(state.status, AuthStatus.mfaVerifyRequired);
+      expect(state.mfaChallenge?.challengeToken, 'chal-2');
+      expect(await storage.readAccessToken(), isNull);
+      expect(client.driverContextCallCount, 0);
+    });
+  });
+
+  group('AuthController MFA enrollment', () {
+    Future<ProviderContainer> loginToEnrollRequired(FakeDriverApiClient client) async {
+      client.loginMfaChallengeResponse = AuthMfaChallengeResponseDto.fromJson(
+        sampleMfaChallenge(mfaStatus: 'ENROLL', challengeToken: 'chal-1'),
+      );
+      final container = _buildContainer(client, FakeSecureSessionStorage());
+      container.read(authControllerProvider);
+      await _settle();
+      await container.read(authControllerProvider.notifier).login(email: 'a@b.test', password: 'secret');
+      return container;
+    }
+
+    test('startMfaEnrollment success -> enrollment secret stored in state', () async {
+      final client = FakeDriverApiClient()
+        ..mfaEnrollStartResponse = MfaEnrollmentStartResponseDto.fromJson(sampleMfaEnrollmentStart());
+      final container = await loginToEnrollRequired(client);
+
+      await container.read(authControllerProvider.notifier).startMfaEnrollment();
+
+      expect(client.lastMfaEnrollStartChallengeToken, 'chal-1');
+      expect(
+        container.read(authControllerProvider).mfaChallenge?.enrollment?.secretBase32,
+        'JBSWY3DPEHPK3PXP',
+      );
+      expect(container.read(authControllerProvider).status, AuthStatus.mfaEnrollRequired);
+    });
+
+    test('confirmMfaEnrollment success -> mfaRecoveryCodesPending, tokens not yet persisted', () async {
+      final client = FakeDriverApiClient()
+        ..mfaEnrollConfirmResponse = MfaEnrollConfirmResponseDto.fromJson(sampleMfaEnrollConfirm());
+      final container = await loginToEnrollRequired(client);
+
+      await container.read(authControllerProvider.notifier).confirmMfaEnrollment(code: '123456');
+
+      final state = container.read(authControllerProvider);
+      expect(state.status, AuthStatus.mfaRecoveryCodesPending);
+      expect(state.pendingRecoveryCodes?.recoveryCodes, ['ABCD-EFGH-JKMN', 'PQRS-TUVW-XY23']);
+      expect(client.driverContextCallCount, 0);
+    });
+
+    test('acknowledgeRecoveryCodes -> persists tokens, calls driverContext once, authenticated', () async {
+      final client = FakeDriverApiClient()
+        ..mfaEnrollConfirmResponse = MfaEnrollConfirmResponseDto.fromJson(sampleMfaEnrollConfirm())
+        ..driverContextResponse = DriverContextResponseDto.fromJson(sampleDriverContext());
+      final container = await loginToEnrollRequired(client);
+      await container.read(authControllerProvider.notifier).confirmMfaEnrollment(code: '123456');
+
+      await container.read(authControllerProvider.notifier).acknowledgeRecoveryCodes();
+
+      final state = container.read(authControllerProvider);
+      expect(state.status, AuthStatus.authenticated);
+      expect(client.driverContextCallCount, 1);
+    });
+
+    test('confirmMfaEnrollment with an invalid code -> stays mfaEnrollRequired, no tokens persisted', () async {
+      final client = FakeDriverApiClient()
+        ..mfaEnrollConfirmFailure = const AppFailure(
+          AppFailureType.unauthenticated,
+          code: 'MFA_CODE_INVALID',
+        );
+      final storage = FakeSecureSessionStorage();
+      final container = await loginToEnrollRequired(client);
+      final notifier = container.read(authControllerProvider.notifier);
+
+      await notifier.confirmMfaEnrollment(code: '000000');
+
+      final state = container.read(authControllerProvider);
+      expect(state.status, AuthStatus.mfaEnrollRequired);
+      expect(state.mfaChallenge?.challengeToken, 'chal-1');
+      expect(state.failure?.code, 'MFA_CODE_INVALID');
+      expect(await storage.readAccessToken(), isNull);
+    });
+
+    test('confirmMfaEnrollment with an expired challenge -> resets to unauthenticated', () async {
+      final client = FakeDriverApiClient()
+        ..mfaEnrollConfirmFailure = const AppFailure(
+          AppFailureType.unauthenticated,
+          code: 'MFA_CHALLENGE_INVALID',
+        );
+      final container = await loginToEnrollRequired(client);
+
+      await container.read(authControllerProvider.notifier).confirmMfaEnrollment(code: '000000');
+
+      final state = container.read(authControllerProvider);
+      expect(state.status, AuthStatus.unauthenticated);
+      expect(state.mfaChallenge, isNull);
+      expect(state.failure?.code, 'MFA_CHALLENGE_INVALID');
+    });
+  });
+
+  group('AuthController MFA verify', () {
+    Future<ProviderContainer> loginToVerifyRequired(FakeDriverApiClient client) async {
+      client.loginMfaChallengeResponse = AuthMfaChallengeResponseDto.fromJson(
+        sampleMfaChallenge(mfaStatus: 'VERIFY', challengeToken: 'chal-2'),
+      );
+      final container = _buildContainer(client, FakeSecureSessionStorage());
+      container.read(authControllerProvider);
+      await _settle();
+      await container.read(authControllerProvider.notifier).login(email: 'a@b.test', password: 'secret');
+      return container;
+    }
+
+    test('verifyMfa with a valid code -> persists tokens, calls driverContext, authenticated', () async {
+      final client = FakeDriverApiClient()
+        ..mfaVerifyResponse = AuthTokensResponseDto.fromJson(sampleAuthTokens())
+        ..driverContextResponse = DriverContextResponseDto.fromJson(sampleDriverContext());
+      final storage = FakeSecureSessionStorage();
+      final container = _buildContainer(client, storage);
+      client.loginMfaChallengeResponse = AuthMfaChallengeResponseDto.fromJson(
+        sampleMfaChallenge(mfaStatus: 'VERIFY', challengeToken: 'chal-2'),
+      );
+      container.read(authControllerProvider);
+      await _settle();
+      await container.read(authControllerProvider.notifier).login(email: 'a@b.test', password: 'secret');
+
+      await container.read(authControllerProvider.notifier).verifyMfa(code: '123456');
+
+      expect(client.lastMfaVerifyCode, '123456');
+      expect(container.read(authControllerProvider).status, AuthStatus.authenticated);
+      expect(await storage.readAccessToken(), 'access-token-1');
+      expect(client.driverContextCallCount, 1);
+    });
+
+    test('verifyMfa with a recovery code -> persists tokens, authenticated', () async {
+      final client = FakeDriverApiClient()
+        ..mfaVerifyResponse = AuthTokensResponseDto.fromJson(sampleAuthTokens())
+        ..driverContextResponse = DriverContextResponseDto.fromJson(sampleDriverContext());
+      final container = await loginToVerifyRequired(client);
+
+      await container
+          .read(authControllerProvider.notifier)
+          .verifyMfa(recoveryCode: 'ABCD-EFGH-JKMN');
+
+      expect(client.lastMfaVerifyRecoveryCode, 'ABCD-EFGH-JKMN');
+      expect(container.read(authControllerProvider).status, AuthStatus.authenticated);
+    });
+
+    test('verifyMfa with an invalid code -> stays mfaVerifyRequired with the failure attached', () async {
+      final client = FakeDriverApiClient()
+        ..mfaVerifyFailure = const AppFailure(
+          AppFailureType.unauthenticated,
+          code: 'MFA_CODE_INVALID',
+        );
+      final storage = FakeSecureSessionStorage();
+      final container = await loginToVerifyRequired(client);
+
+      await container.read(authControllerProvider.notifier).verifyMfa(code: '000000');
+
+      final state = container.read(authControllerProvider);
+      expect(state.status, AuthStatus.mfaVerifyRequired);
+      expect(state.mfaChallenge?.challengeToken, 'chal-2');
+      expect(state.failure?.code, 'MFA_CODE_INVALID');
+      expect(await storage.readAccessToken(), isNull);
+      expect(client.driverContextCallCount, 0);
+    });
+
+    test('verifyMfa with an expired challenge -> resets to unauthenticated', () async {
+      final client = FakeDriverApiClient()
+        ..mfaVerifyFailure = const AppFailure(
+          AppFailureType.unauthenticated,
+          code: 'MFA_CHALLENGE_INVALID',
+        );
+      final container = await loginToVerifyRequired(client);
+
+      await container.read(authControllerProvider.notifier).verifyMfa(code: '000000');
+
+      final state = container.read(authControllerProvider);
+      expect(state.status, AuthStatus.unauthenticated);
+      expect(state.mfaChallenge, isNull);
+      expect(state.failure?.code, 'MFA_CHALLENGE_INVALID');
+    });
+
+    test('verifyMfa locked (too many attempts) -> stays mfaVerifyRequired with the failure attached', () async {
+      final client = FakeDriverApiClient()
+        ..mfaVerifyFailure = const AppFailure(
+          AppFailureType.rateLimited,
+          code: 'MFA_LOCKED',
+          statusCode: 429,
+        );
+      final container = await loginToVerifyRequired(client);
+
+      await container.read(authControllerProvider.notifier).verifyMfa(code: '000000');
+
+      final state = container.read(authControllerProvider);
+      expect(state.status, AuthStatus.mfaVerifyRequired);
+      expect(state.failure?.code, 'MFA_LOCKED');
     });
   });
 

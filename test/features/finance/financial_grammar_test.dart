@@ -47,4 +47,23 @@ void main() {
     expect(find.text('1 200 FCFA'), findsOneWidget);
     expect(find.text('Amount to collect'), findsNothing);
   });
+
+  testWidgets('XAF currency amounts are preserved verbatim and COD stays distinct from earnings', (
+    tester,
+  ) async {
+    final deliveryItem = DriverWorkFeedItemDto.fromJson({
+      ...sampleWorkFeedDeliveryItem(),
+      'amount': {'amount': '15 000', 'currencyCode': 'xaf'},
+    });
+
+    await pumpWithProviders(
+      tester,
+      Scaffold(
+        body: DeliveryWorkCard(item: deliveryItem, onTap: () {}),
+      ),
+    );
+
+    expect(find.text('15 000 XAF'), findsOneWidget);
+    expect(find.text('AMOUNT TO COLLECT'), findsOneWidget);
+  });
 }

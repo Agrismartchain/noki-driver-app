@@ -10,6 +10,7 @@ class FakeLocationRepository implements LocationRepository {
 
   LocationPermissionState state;
   bool openSettingsCalled = false;
+  bool openLocationSettingsCalled = false;
   Position? position;
 
   @override
@@ -32,6 +33,12 @@ class FakeLocationRepository implements LocationRepository {
   @override
   Future<bool> openAppSettings() async {
     openSettingsCalled = true;
+    return true;
+  }
+
+  @override
+  Future<bool> openLocationSettings() async {
+    openLocationSettingsCalled = true;
     return true;
   }
 
