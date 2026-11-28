@@ -173,7 +173,7 @@ def verify_signature(aab_path: str, expected_cert_sha256: str | None) -> dict[st
     #   <flags> <size> <timestamp...> <entry_name>
     # Example: `sm       5 Sat Nov 28 09:11:36 UTC 2026 base/manifest/AndroidManifest.xml`
     entry_line_re = re.compile(
-        r"^(?P<flags>[ smk?iX]{6})\s+\d+\s+[A-Z][a-z]{2}\s+[A-Z][a-z]{2}\s+\d{1,2}\s+\d{2}:\d{2}:\d{2}\s+\S+\s+\d{4}\s+(?P<name>.+)$"
+        r"^(?P<flags>[ smk?iX]{6})\s*\d+\s+[A-Z][a-z]{2}\s+[A-Z][a-z]{2}\s+\d{1,2}\s+\d{2}:\d{2}:\d{2}\s+\S+\s+\d{4}\s+(?P<name>.+)$"
     )
     signed_entries: set[str] = set()
     unsigned_entries: list[str] = []

@@ -177,12 +177,15 @@ class VerifyReleaseAabTests(unittest.TestCase):
         package: str = EXPECTED_PACKAGE,
         version_code: int = 1,
         version_name: str = "0.1.0",
+        extra_entries: dict[str, bytes] | None = None,
     ) -> Path:
         aab = self.tmp_dir / filename
         manifest_bytes = build_proto_manifest(package, version_code, version_name)
         with zipfile.ZipFile(aab, "w", zipfile.ZIP_DEFLATED) as zf:
             zf.writestr("base/manifest/AndroidManifest.xml", manifest_bytes)
             zf.writestr("base/dex/classes.dex", b"fake-dex-payload")
+            for entry_name, payload in (extra_entries or {}).items():
+                zf.writestr(entry_name, payload)
 
         subprocess.run(
             [
@@ -232,6 +235,20 @@ class VerifyReleaseAabTests(unittest.TestCase):
         self.assertEqual(payload["package"], EXPECTED_PACKAGE)
         self.assertEqual(payload["versionCode"], 1)
         self.assertEqual(payload["signerCertSha256"], self.cert_sha256.upper())
+
+    def test_accepts_large_signed_entry_at_least_100000_bytes(self) -> None:
+        # Entries >= 100,000 bytes (6+ digits) leave zero spaces between the
+        # 6-char jarsigner flag column and the size field (e.g. `sm    150000`).
+        large_payload = b"N" * 150_000
+        aab = self._create_signed_aab(
+            "large-entry.aab",
+            extra_entries={"base/lib/arm64-v8a/libapp.so": large_payload},
+        )
+        res = self._run_verifier(aab, expected_cert_sha256=self.cert_sha256)
+        self.assertEqual(res.returncode, 0, msg=f"stdout={res.stdout}\nstderr={res.stderr}")
+        payload = json.loads(res.stdout)
+        self.assertEqual(payload["package"], EXPECTED_PACKAGE)
+        self.assertEqual(payload["versionCode"], 1)
 
     def test_rejects_unsigned_entry_added_after_signing(self) -> None:
         aab = self._create_signed_aab("tampered.aab")
