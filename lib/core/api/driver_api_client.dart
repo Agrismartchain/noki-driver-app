@@ -938,10 +938,10 @@ class DioDriverApiClient implements DriverApiClient {
       data: {
         'organizationId': organizationId,
         'countryCode': countryCode,
-        if (paymentMethodId != null) 'paymentMethodId': paymentMethodId,
+        'paymentMethodId': ?paymentMethodId,
         if (obligationIds != null && obligationIds.isNotEmpty)
           'obligationIds': obligationIds,
-        if (requestedAmount != null) 'requestedAmount': requestedAmount,
+        'requestedAmount': ?requestedAmount,
       },
       options: Options(headers: {'Idempotency-Key': idempotencyKey}),
     );
