@@ -111,13 +111,52 @@ def normalise_fingerprint(fp: str) -> str:
     return re.sub(r"[^0-9A-Fa-f]", "", fp).upper()
 
 
+SIGNATURE_META_RE = re.compile(
+    r"^META-INF/(MANIFEST\.MF|SIG-[^/]+|[^/]+\.(SF|RSA|DSA|EC))$",
+    re.IGNORECASE,
+)
+
+
+def is_signature_metadata(entry_name: str) -> bool:
+    return bool(SIGNATURE_META_RE.match(entry_name))
+
+
+def parse_manifest_entries(aab_path: str) -> set[str]:
+    with zipfile.ZipFile(aab_path, "r") as zf:
+        if "META-INF/MANIFEST.MF" not in zf.namelist():
+            raise RuntimeError("Missing META-INF/MANIFEST.MF in signed bundle")
+        raw = zf.read("META-INF/MANIFEST.MF").decode("utf-8", errors="replace")
+
+    unfolded_lines: list[str] = []
+    for line in raw.replace("\r\n", "\n").split("\n"):
+        if line.startswith(" ") and unfolded_lines:
+            unfolded_lines[-1] += line[1:]
+        else:
+            unfolded_lines.append(line)
+
+    entries: set[str] = set()
+    for line in unfolded_lines:
+        if line.startswith("Name: "):
+            entries.add(line[len("Name: ") :])
+    return entries
+
+
 def verify_signature(aab_path: str, expected_cert_sha256: str | None) -> dict[str, str]:
     jarsigner = subprocess.run(
-        ["jarsigner", "-verify", "-verbose", "-certs", aab_path],
+        [
+            "jarsigner",
+            "-J-Duser.language=en",
+            "-J-Duser.country=US",
+            "-verify",
+            "-verbose",
+            "-certs",
+            aab_path,
+        ],
         capture_output=True,
         text=True,
         check=False,
     )
+    combined_output = f"{jarsigner.stdout}\n{jarsigner.stderr}"
     if jarsigner.returncode != 0 or "jar verified." not in jarsigner.stdout:
         raise RuntimeError(
             "jarsigner verification failed:\n"
@@ -125,8 +164,68 @@ def verify_signature(aab_path: str, expected_cert_sha256: str | None) -> dict[st
             f"stderr: {jarsigner.stderr[-1500:]}"
         )
 
+    if "unsigned entries" in combined_output.lower():
+        raise RuntimeError(
+            "AAB contains unsigned entries that are not integrity-checked by jarsigner"
+        )
+
+    # Parse every entry line emitted by `jarsigner -verify -verbose`:
+    #   <flags> <size> <timestamp...> <entry_name>
+    # Example: `sm       5 Sat Nov 28 09:11:36 UTC 2026 base/manifest/AndroidManifest.xml`
+    entry_line_re = re.compile(
+        r"^(?P<flags>[ smk?iX]{6})\s+\d+\s+[A-Z][a-z]{2}\s+[A-Z][a-z]{2}\s+\d{1,2}\s+\d{2}:\d{2}:\d{2}\s+\S+\s+\d{4}\s+(?P<name>.+)$"
+    )
+    signed_entries: set[str] = set()
+    unsigned_entries: list[str] = []
+    for line in jarsigner.stdout.splitlines():
+        match = entry_line_re.match(line)
+        if not match:
+            continue
+        flags = match.group("flags")
+        name = match.group("name")
+        if name.endswith("/") or is_signature_metadata(name):
+            continue
+        if "?" in flags or "s" not in flags or "m" not in flags:
+            unsigned_entries.append(name)
+        else:
+            signed_entries.add(name)
+
+    if unsigned_entries:
+        raise RuntimeError(
+            f"AAB contains unsigned or unverified entries: {', '.join(sorted(unsigned_entries))}"
+        )
+
+    # Cross-check every non-directory, non-signature ZIP member against both
+    # META-INF/MANIFEST.MF and the verified `sm` entries from jarsigner.
+    manifest_entries = parse_manifest_entries(aab_path)
+    with zipfile.ZipFile(aab_path, "r") as zf:
+        payload_entries = {
+            info.filename
+            for info in zf.infolist()
+            if not info.is_dir() and not is_signature_metadata(info.filename)
+        }
+
+    missing_from_manifest = sorted(payload_entries - manifest_entries)
+    if missing_from_manifest:
+        raise RuntimeError(
+            f"AAB contains entries missing from META-INF/MANIFEST.MF: {', '.join(missing_from_manifest)}"
+        )
+
+    missing_from_signed = sorted(payload_entries - signed_entries)
+    if missing_from_signed:
+        raise RuntimeError(
+            f"AAB contains entries not verified as signed by jarsigner: {', '.join(missing_from_signed)}"
+        )
+
     printcert = subprocess.run(
-        ["keytool", "-printcert", "-jarfile", aab_path],
+        [
+            "keytool",
+            "-J-Duser.language=en",
+            "-J-Duser.country=US",
+            "-printcert",
+            "-jarfile",
+            aab_path,
+        ],
         capture_output=True,
         text=True,
         check=False,
